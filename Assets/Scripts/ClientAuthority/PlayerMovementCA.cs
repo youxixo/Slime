@@ -6,21 +6,21 @@ using Unity.Burst.CompilerServices;
 
 public class PlayerMovementCA : NetworkBehaviour
 {
-    [SerializeField] float movementSpeedBase = 5;
-    [SerializeField] float jumpForce = 5;
+    [SerializeField] float movementSpeedBase = 5; //移动速度
+    [SerializeField] float jumpForce = 5; //跳跃强度
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform firePos;
-    private float originalGravityScale;
+    private float originalGravityScale; //存正常的gravity力
 
     private Rigidbody2D rb;
     public int playerScore;
     Vector2 movementDirection = new Vector2();
 
-    private bool jumpClicked = false;
-    private bool allowToMove = true;
-    private bool isGrounded = false;
+    private bool jumpClicked = false; //按下跳跃
+    private bool allowToMove = true; //能否移动
+    private bool isGrounded = false; //检查是否在地上
+    private Vector2 velocity; //角色目前移动速度&方向
     private Vector2 surfaceNormal;
-    private Vector2 velocity;
 
     [SerializeField] LayerMask groundLayer;
     [SerializeField] float raycastDistance = 0.5f;
