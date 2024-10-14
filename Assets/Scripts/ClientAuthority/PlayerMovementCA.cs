@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine.UIElements;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 
 public class PlayerMovementCA : NetworkBehaviour
 {
@@ -13,21 +14,24 @@ public class PlayerMovementCA : NetworkBehaviour
     private float originalGravityScale; //存正常的gravity力
 
     private Rigidbody2D rb;
-    public int playerScore;
-    Vector2 movementDirection = new Vector2();
+    Vector2 movementDirection = new Vector2(); //移动方向
 
     private bool jumpClicked = false; //按下跳跃
     private bool allowToMove = true; //能否移动
     private bool isGrounded = false; //检查是否在地上
     private Vector2 velocity; //角色目前移动速度&方向
-    private Vector2 surfaceNormal;
 
+    [Header("贴墙移动")]
+    private Vector2 surfaceNormal; //角色目前所在地板的法线（用于贴墙移动）
     [SerializeField] LayerMask groundLayer;
     [SerializeField] float raycastDistance = 0.5f;
-    [SerializeField] GameObject contactPoint;
+    [SerializeField] Transform wallDetect;
+    Vector2 movementAxis = new Vector2();
+    private bool releaseMove = true;
+    private float angleWhenMove;
+    [SerializeField] GameObject contactPoint; //角色碰撞题接触到的点
+    private bool unintentionalLeftWall = false; //并非玩家操作导致离开墙体
 
-    [SerializeField] Transform leftDetect;
-    [SerializeField] Transform rightDetect;
 
     [Header("Dash")]
     private bool canDash = true;
@@ -43,7 +47,7 @@ public class PlayerMovementCA : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner)
+        if (!IsOwner)
         {
             enabled = false;
             return;
@@ -54,70 +58,89 @@ public class PlayerMovementCA : NetworkBehaviour
     {
         Vector2 rayDirection = -transform.up * raycastDistance;
 
-        Debug.DrawRay(leftDetect.position, -transform.up * raycastDistance, Color.red);
-        Debug.DrawRay(rightDetect.position, -transform.up * raycastDistance, Color.yellow);
+        Debug.DrawRay(wallDetect.position, -transform.up * raycastDistance, Color.yellow);
         //Debug.Log(rb.linearVelocity);
         if (!isDashing && allowToMove)
         {
             Move();
         }
         Attack();
-        if(Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             StartCoroutine(DashA());
         }
 
-
-
-        if (isGrounded && rb.gravityScale == 0)
+        //想个办法不要放在update里
+        if (!jumpClicked && !isDashing && rb.gravityScale == 0)
         {
             Vector2 gravityDirection = -transform.up;
-            float gravitySpeed = 50f;
-            rb.AddForce(gravityDirection * gravitySpeed, ForceMode2D.Force);
+            float gravitySpeed = 5f;
+            rb.AddForce(gravityDirection * gravitySpeed, ForceMode2D.Impulse);
         }
     }
+    //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
+    private Vector2 DetermineMovementAxis(float angle)
+    {
+        int moveType = -1;
+        Vector2 _movementAxis = new Vector2();
+        if ((angle >= 0 && angle <= 90) || angle >= 270)
+        {
+            _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+            moveType = 0;
+        }
+        else if ((angle > 90 && angle < 270))
+        {
+            _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
+            moveType = 1;
+        }
+        else
+        {
+            Debug.LogWarning("Error: " + angle);
+            moveType = -1;
+        }
 
+
+        if (angleWhenMove != float.NaN || !releaseMove)
+        {
+            if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove >= 270) && moveType != 0)
+            {
+                //Debug.Log("reversing move");
+                _movementAxis = -_movementAxis;
+            }
+            else if ((angleWhenMove > 90 && angleWhenMove < 270) && moveType != 1)
+            {
+                _movementAxis = -_movementAxis;
+            }
+        }
+        return _movementAxis;
+    }
+
+    //移动
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
 
         // 根據地面朝向決定移動方向
-        Vector2 movementAxis = new Vector2();
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
-        transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+
         if (isGrounded)
         {
-            if (convertedAngleZ == 270)
+            transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
+            convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+            if (horizontalInput != 0 && releaseMove == true)
             {
-                movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+                releaseMove = false;
+                angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
             }
-            else if(convertedAngleZ == 90)
+            else if (horizontalInput == 0 && releaseMove == false)
             {
-                movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+                releaseMove = true;
+                angleWhenMove = float.NaN;
             }
-            else if(convertedAngleZ == 180)
-            {
-                movementAxis = new Vector2(-surfaceNormal.y, -surfaceNormal.x);
-            }
-            else if (convertedAngleZ > 270)
-            {
-                movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
-            }
-            else if (convertedAngleZ > 180)
-            {
-                movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
-            }
-            else if (convertedAngleZ > 90)
-            {
-                movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
-            }
-            else if(convertedAngleZ >= 0)
-            {
-                movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
-            }
+            movementAxis = DetermineMovementAxis(convertedAngleZ);
 
-            velocity = movementAxis * movementSpeedBase * horizontalInput;
+            velocity = horizontalInput * movementSpeedBase * movementAxis;
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
         }
         else
@@ -139,36 +162,38 @@ public class PlayerMovementCA : NetworkBehaviour
             transform.localScale = new Vector3(1, 1, 1); // Flip right
         }
 
+        //跳跃
         if (Input.GetAxis("Jump") > 0 && isGrounded)
         {
             jumpClicked = true;
             isGrounded = false;
-            if(convertedAngleZ == 270 )
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            angleWhenMove = float.NaN;
+            if (convertedAngleZ == 270)
             {
                 rb.linearVelocity = new Vector2(jumpForce, jumpForce);
             }
-            else if(convertedAngleZ >= 270)
+            else if (convertedAngleZ >= 270)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpForce);
             }
-            else if(convertedAngleZ == 90)
+            else if (convertedAngleZ == 90)
             {
                 rb.linearVelocity = new Vector2(-jumpForce, jumpForce);
             }
             else if (convertedAngleZ >= 180)
             {
-                rb.linearVelocity = new Vector2 (rb.linearVelocityX, -jumpForce);
+                rb.linearVelocity = new Vector2(rb.linearVelocityX, -jumpForce);
             }
-            else if(convertedAngleZ >= 90)
+            else if (convertedAngleZ >= 90)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, -jumpForce);
             }
-            else if(convertedAngleZ >= 0)
+            else if (convertedAngleZ >= 0)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpForce);
             }
             StartCoroutine(freezeMovement());
-            isGrounded = false; 
         }
     }
 
@@ -179,19 +204,20 @@ public class PlayerMovementCA : NetworkBehaviour
             SpawnBulletServerRpc(transform.localScale.x);
         }
     }
-    
-    //改一下 現在離鼠標越遠跑越長
+
+    //冲刺-朝着朝向
     private IEnumerator DashA()
     {
         canDash = false;
         isDashing = true;
         rb.gravityScale = 0;
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 playerToMouseVector = (mousePosition - transform.position).normalized;
-        playerToMouseVector.z = 0;
-        rb.linearVelocity = playerToMouseVector * dashForce;
-        //Debug.Log(rb.linearVelocity);
-
+        //Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Vector3 playerToMouseVector = (mousePosition - transform.position).normalized;
+        //playerToMouseVector.z = 0;
+        //rb.linearVelocity = playerToMouseVector * dashForce;
+        //方向鍵衝刺 rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal") * dashForce, Input.GetAxis("Vertical") * dashForce);
+        //左右衝刺
+        rb.linearVelocity = new Vector2 (transform.localScale.x * dashForce, 0);
         yield return new WaitForSeconds(dashDuration);
         rb.gravityScale = originalGravityScale;
         isDashing = false;
@@ -206,7 +232,7 @@ public class PlayerMovementCA : NetworkBehaviour
         yield return new WaitForSeconds(0.1f);
         allowToMove = true;
     }
-    
+
     [ServerRpc]
     private void SpawnBulletServerRpc(float direction)
     {
@@ -218,17 +244,21 @@ public class PlayerMovementCA : NetworkBehaviour
     //落地
     private void HandleCollision(Collision2D collision)
     {
-        foreach (ContactPoint2D contact in collision.contacts)
+        if (collision.gameObject.layer == 3)
         {
-            surfaceNormal = contact.normal; // Get the surface normal
-            rb.gravityScale = 0;
+            isGrounded = true;
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                surfaceNormal = contact.normal; // Get the surface normal
+                rb.gravityScale = 0;
+            }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        isGrounded = true;  // Set grounded status to true
         jumpClicked = false;
+        unintentionalLeftWall = false;
         HandleCollision(collision);
     }
 
@@ -239,74 +269,28 @@ public class PlayerMovementCA : NetworkBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(jumpClicked)
+        RaycastHit2D hit;
+        if (jumpClicked || isDashing)
         {
             isGrounded = false;
             rb.gravityScale = originalGravityScale;
+            releaseMove = true;
+            return;
         }
-        else
+        else //根据角色角度来看打开哪个raycast 
         {
-            if(ConvertTo360Base(transform.eulerAngles.z)<=180)
+            Vector2 rayDirection = -transform.up * raycastDistance;
+            hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
+            if (hit.collider != null)
             {
-                if(transform.localScale.x == -1)
-                {
-                    Vector2 rayDirection = -transform.up * raycastDistance;
-                    RaycastHit2D hit = Physics2D.Raycast(rightDetect.position, rayDirection.normalized, 1f, groundLayer);
-                    if (hit.collider != null)
-                    {
-                        surfaceNormal = hit.normal;
-                    }
-                }
-                else if (transform.localScale.x == 1)
-                {
-                    Vector2 rayDirection = -transform.up * raycastDistance;
-                    RaycastHit2D hit = Physics2D.Raycast(rightDetect.position, rayDirection.normalized, 1f, groundLayer);
-                    if (hit.collider != null)
-                    {
-                        surfaceNormal = hit.normal;
-                    }
-                }
-            }
-            else
-            {
-                if(transform.localScale.x == 1)
-                {
-                    Vector2 rayDirection = -transform.up * raycastDistance;
-                    RaycastHit2D hit = Physics2D.Raycast(rightDetect.position, rayDirection.normalized, 1f, groundLayer);
-                    if (hit.collider != null)
-                    {
-                        surfaceNormal = hit.normal;
-                    }
-                }
-                else if (transform.localScale.x == -1)
-                {
-                    Vector2 rayDirection = -transform.up * raycastDistance;
-                    RaycastHit2D hit = Physics2D.Raycast(rightDetect.position, rayDirection.normalized, 1f, groundLayer);
-                    if (hit.collider != null)
-                    {
-                        surfaceNormal = hit.normal;
-                    }
-                }
+                surfaceNormal = hit.normal;
             }
         }
+
+        unintentionalLeftWall = true;
     }
 
-    private IEnumerator AppliedGravity()
-    {
-        Debug.Log("離開");
-        yield return new WaitForSeconds(0.5f);
-
-        // Define a gravity velocity based on the character's current rotation
-        Vector2 gravityDirection = -transform.up; // Local downward direction
-        float gravitySpeed = 5f; // Customize this to control the gravity speed
-
-        // Apply velocity towards the local down direction to simulate gravity
-        Debug.Log(gravityDirection);
-        rb.linearVelocity += gravityDirection * gravitySpeed ;
-
-        Debug.Log("gravity applied");
-    }
-
+    //helper换算角度
     private float ConvertTo360Base(float angle)
     {
         float convertedAngle = angle % 360;
