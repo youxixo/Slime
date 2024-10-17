@@ -1,16 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Unity.Netcode;
-using UnityEngine.UIElements;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 
-public class PlayerMovementCA : NetworkBehaviour
+public class PlayerMovementNormal : MonoBehaviour
 {
     [SerializeField] float movementSpeedBase = 5; //移动速度
     [SerializeField] float jumpForce = 5; //跳跃强度
-    [SerializeField] GameObject bulletPrefab;
-    [SerializeField] Transform firePos;
     private float originalGravityScale; //存正常的gravity力
 
     private Rigidbody2D rb;
@@ -29,7 +23,6 @@ public class PlayerMovementCA : NetworkBehaviour
     Vector2 movementAxis = new Vector2();
     private bool releaseMove = true;
     private float angleWhenMove;
-    [SerializeField] GameObject contactPoint; //角色碰撞题接触到的点
 
 
     [Header("Dash")]
@@ -44,14 +37,6 @@ public class PlayerMovementCA : NetworkBehaviour
         originalGravityScale = rb.gravityScale;
     }
 
-    public override void OnNetworkSpawn()
-    {
-        if (!IsOwner)
-        {
-            enabled = false;
-            return;
-        }
-    }
 
     void Update()
     {
@@ -200,7 +185,6 @@ public class PlayerMovementCA : NetworkBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            SpawnBulletServerRpc(transform.localScale.x);
         }
     }
 
@@ -230,14 +214,6 @@ public class PlayerMovementCA : NetworkBehaviour
         allowToMove = false;
         yield return new WaitForSeconds(0.1f);
         allowToMove = true;
-    }
-
-    [ServerRpc]
-    private void SpawnBulletServerRpc(float direction)
-    {
-        GameObject bulletInstance = Instantiate(bulletPrefab, firePos.position, Quaternion.identity);
-        bulletInstance.GetComponent<Bullet>().direction = direction;
-        bulletInstance.GetComponent<NetworkObject>().Spawn();
     }
 
     //落地
