@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerMovementNormal : MonoBehaviour
+public class PlayerMovementCA1: MonoBehaviour
 {
     [SerializeField] float movementSpeedBase = 5; //移动速度
     [SerializeField] float jumpForce = 5; //跳跃强度
     private float originalGravityScale; //存正常的gravity力
 
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     Vector2 movementDirection = new Vector2(); //移动方向
 
     private bool jumpClicked = false; //按下跳跃
@@ -31,6 +31,7 @@ public class PlayerMovementNormal : MonoBehaviour
     [SerializeField] private float dashForce = 25;
     [SerializeField] private float dashDuration = 0.1f;
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -42,24 +43,15 @@ public class PlayerMovementNormal : MonoBehaviour
     {
         Vector2 rayDirection = -transform.up * raycastDistance;
 
-        Debug.DrawRay(wallDetect.position, -transform.up * raycastDistance, Color.yellow);
+        Debug.DrawRay(wallDetect.position, -transform.up * raycastDistance, Color.red);
         //Debug.Log(rb.linearVelocity);
         if (!isDashing && allowToMove)
         {
             Move();
         }
-        Attack();
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             StartCoroutine(DashA());
-        }
-
-        //想个办法不要放在update里
-        if (!jumpClicked && !isDashing && rb.gravityScale == 0)
-        {
-            Vector2 gravityDirection = -transform.up;
-            float gravitySpeed = 5f;
-            rb.AddForce(gravityDirection * gravitySpeed, ForceMode2D.Impulse);
         }
     }
     //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
@@ -181,12 +173,6 @@ public class PlayerMovementNormal : MonoBehaviour
         }
     }
 
-    private void Attack()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-        }
-    }
 
     //冲刺-朝着朝向
     private IEnumerator DashA()
@@ -194,12 +180,6 @@ public class PlayerMovementNormal : MonoBehaviour
         canDash = false;
         isDashing = true;
         rb.gravityScale = 0;
-        //Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //Vector3 playerToMouseVector = (mousePosition - transform.position).normalized;
-        //playerToMouseVector.z = 0;
-        //rb.linearVelocity = playerToMouseVector * dashForce;
-        //方向鍵衝刺 rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal") * dashForce, Input.GetAxis("Vertical") * dashForce);
-        //左右衝刺
         rb.linearVelocity = new Vector2 (transform.localScale.x * dashForce, 0);
         yield return new WaitForSeconds(dashDuration);
         rb.gravityScale = originalGravityScale;
@@ -238,26 +218,39 @@ public class PlayerMovementNormal : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        HandleCollision(collision);
+        //HandleCollision(collision);
     }
-
+    public GameObject debugObject;
+    public int gravityForce = 10;
     private void OnCollisionExit2D(Collision2D collision)
     {
-        RaycastHit2D hit;
-        isGrounded = false;
-        if (jumpClicked || isDashing)
+        if (collision.gameObject.layer == 3)
         {
-            rb.gravityScale = originalGravityScale;
-            releaseMove = true;
-            return;
-        }
-        else 
-        {
-            Vector2 rayDirection = -transform.up * raycastDistance;
-            hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
-            if (hit.collider != null)
+            RaycastHit2D hit;
+            isGrounded = false;
+            if (jumpClicked || isDashing)
             {
-                surfaceNormal = hit.normal;
+                rb.gravityScale = originalGravityScale;
+                releaseMove = true;
+                return;
+            }
+            else
+            {
+                Vector2 rayDirection = -transform.up * raycastDistance;
+                hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
+                if (hit.collider != null)
+                {
+                    surfaceNormal = hit.normal;
+                    rb.MovePosition(hit.point);
+                    Debug.Log("吸住");
+                }
+                else
+                {
+                    Debug.Log("調出去");
+                    rb.gravityScale = originalGravityScale;
+                    releaseMove = true;
+                    return;
+                }
             }
         }
     }
