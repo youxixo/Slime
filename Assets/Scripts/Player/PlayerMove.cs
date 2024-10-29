@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.Events;
 
 /// <summary>
 /// 此腳本為角色控制
 /// 截止到10/22 以下為待加的功能
 /// 角色畫面上的轉向 (要根據移動的方向)
 /// 衝刺方向(目前只有左右衝刺)
+/// 跳躍會被吸回去
 /// </summary>
 
 public class PlayerMove : MonoBehaviour
@@ -38,8 +41,20 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float dashForce = 25;
     [SerializeField] private float dashDuration = 0.1f;
 
+    [Header("Input")]
+    [SerializeField] private InputActionAsset inputActions;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+    private InputAction pauseAction;
+    private InputAction dashAction;
+
+    [Header("Events")]
+    public static UnityEvent pauseGame = new UnityEvent();
+
     void Start()
     {
+        InitInput();
+
         rb = GetComponent<Rigidbody2D>();
         originalGravityScale = rb.gravityScale;
     }
@@ -54,11 +69,26 @@ public class PlayerMove : MonoBehaviour
         {
             Move();
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        if (dashAction.IsPressed() && canDash)//Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             StartCoroutine(DashA());
         }
         Jump();
+
+        if(pauseAction.IsPressed())
+        {
+            pauseGame.Invoke();
+        }
+    }
+
+    private void InitInput()
+    {
+        var playerActionMap = inputActions.FindActionMap("Player");
+
+        moveAction = playerActionMap.FindAction("Move");
+        jumpAction = playerActionMap.FindAction("Jump");
+        pauseAction = playerActionMap.FindAction("Pause");
+        dashAction = playerActionMap.FindAction("Sprint");
     }
 
     //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
@@ -101,7 +131,8 @@ public class PlayerMove : MonoBehaviour
     //移动
     private void Move()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
+        //float horizontalInput = Input.GetAxis("Horizontal");
+        float horizontalInput = moveAction.ReadValue<Vector2>().x;
 
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
@@ -113,13 +144,13 @@ public class PlayerMove : MonoBehaviour
             //角度小的話緩慢旋轉
             if (Mathf.Abs(convertedAngleZ - ConvertTo360Base((angle - 90f))) < 60)
             {
-                Debug.Log("smol");
+                //Debug.Log("smol");
                 float rotateAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, angle - 90f, ref r, 0.1f);
                 transform.localRotation = Quaternion.Euler(0, 0, rotateAngle);
             }
             else //角度大的話直接旋轉
             {
-                Debug.Log("big");
+                //Debug.Log("big");
                 transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
             }
 
@@ -153,7 +184,7 @@ public class PlayerMove : MonoBehaviour
     //跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (jumpAction.triggered && isGrounded && jumpClicked == false)// Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
             jumpClicked = true;
@@ -192,7 +223,6 @@ public class PlayerMove : MonoBehaviour
         canDash = false;
         isDashing = true;
         rb.gravityScale = 0;
-        Debug.Log(Input.GetAxis("Vertical"));
         rb.linearVelocity = new Vector2 (Mathf.RoundToInt(Input.GetAxis("Horizontal")) * dashForce, Mathf.RoundToInt(Input.GetAxis("Vertical")) * dashForce*0.5f);
         yield return new WaitForSeconds(dashDuration);
         rb.gravityScale = originalGravityScale;
@@ -254,6 +284,7 @@ public class PlayerMove : MonoBehaviour
             //反之吸回地面
             else
             {
+                Debug.Log("西西");
                 Vector2 rayDirection = -transform.up * raycastDistance;
                 hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
                 if (hit.collider != null)
