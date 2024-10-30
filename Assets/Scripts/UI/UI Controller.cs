@@ -16,12 +16,13 @@ public class UIController : MonoBehaviour
 
     [Header("Input")]
     [SerializeField] private InputActionAsset inputActions;
-    private InputAction leftRightAction;
+    private InputAction navigateAction;
     private InputAction exitAction;
 
     [Header("Panel")]
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject settingPage;
+    [SerializeField] private GameObject keybindPage;
 
     [Header("Pause Menu Buttons")]
     [SerializeField] private Button continueButton;
@@ -35,6 +36,7 @@ public class UIController : MonoBehaviour
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private TMP_Dropdown screenModeDropdown;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
+    [SerializeField] private Button keybindButton;
     [SerializeField] private GameObject selectedButtonOnSetting;
 
     [Header("Confirm Setting Menu")]
@@ -64,28 +66,38 @@ public class UIController : MonoBehaviour
         settingButton.onClick.AddListener(OpenSetting);
         exitGameButton.onClick.AddListener(() => Application.Quit());
 
+        keybindButton.onClick.AddListener(KeybindPress);
         confirmSetting.onClick.AddListener(ApplyChange);
         cancelSetting.onClick.AddListener(DoNotApplyChange);
     }
 
     void Update()
     {
-        if (leftRightAction.triggered)
+        if (navigateAction.triggered && currentOpenMenu == Menus.SettingMenu)
         {
             ChangeSetting();
         }
-        if(exitAction.triggered && currentOpenMenu == Menus.SettingMenu)
+        if(exitAction.triggered)
         {
-            ExitSetting();
+            if(currentOpenMenu == Menus.SettingMenu)
+            {
+                ExitSetting();
+            }
+            else if(currentOpenMenu == Menus.KeybindMenu)
+            {
+                ExitKeybind();
+            }
         }
     }
 
+    //不同的UI介面
     private enum Menus
     {
         None,
         PauseMenu,
         SettingMenu,
-        ConfirmSettingMenu
+        ConfirmSettingMenu,
+        KeybindMenu
     }
 
     private void InitInput()
@@ -93,20 +105,24 @@ public class UIController : MonoBehaviour
         var UIActionMap = inputActions.FindActionMap("UI");
 
         exitAction = UIActionMap.FindAction("Exit");
-        leftRightAction = UIActionMap.FindAction("NavigateLeftRight");
+        navigateAction = UIActionMap.FindAction("Navigate");
     }
 
+    //關閉所有介面
     private void DisableAllPanel()
     {
         pauseMenu.SetActive(false);
         settingPage.SetActive(false);
         confirmMenu.SetActive(false);
+        keybindPage.SetActive(false);
     }
 
+    //關閉所有設置介面
     private void DisableSettingMenu()
     {
         settingPage.SetActive(false);
         confirmMenu.SetActive(false);
+        keybindPage.SetActive(false);
     }
 
     #region 暫停
@@ -149,7 +165,7 @@ public class UIController : MonoBehaviour
             return;
         }
 
-        if (leftRightAction.ReadValue<Vector2>().x == 1)
+        if (navigateAction.ReadValue<Vector2>().x == 1)
         {
             if (selectedSettingChild.TryGetComponent<Slider>(out Slider slideComponent))
             {
@@ -160,7 +176,7 @@ public class UIController : MonoBehaviour
                 dropdownComponent.value = (dropdownComponent.value + 1) % dropdownComponent.options.Count;
             }
         }
-        else if (leftRightAction.ReadValue<Vector2>().x == -1)
+        else if (navigateAction.ReadValue<Vector2>().x == -1)
         {
             if (selectedSettingChild.TryGetComponent<Slider>(out Slider slideComponent))
             {
@@ -178,6 +194,21 @@ public class UIController : MonoBehaviour
         confirmMenu.SetActive(true);
         currentOpenMenu = Menus.ConfirmSettingMenu;
         EventSystem.current.SetSelectedGameObject(selectedButtonOnConfirm);
+    }
+
+    private void ExitKeybind()
+    {
+        keybindPage.SetActive(false);
+        settingPage.SetActive(true);
+        currentOpenMenu = Menus.SettingMenu;
+        EventSystem.current.SetSelectedGameObject(selectedButtonOnSetting);
+    }
+
+    private void KeybindPress()
+    {
+        DisableAllPanel();
+        currentOpenMenu = Menus.KeybindMenu;
+        keybindPage.SetActive(true);
     }
 
     private void ApplyChange()

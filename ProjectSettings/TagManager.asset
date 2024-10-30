@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - UIChild
+  - Keybind
   layers:
   - Default
   - TransparentFX
