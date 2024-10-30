@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 
     private InputActionMap playerActionMap;
     private InputActionMap uiActionMap;
+    //private static InputActionMap keybindMap;
 
     private void Awake()
     {
@@ -14,6 +15,7 @@ public class GameManager : MonoBehaviour
         // Get references to action maps
         playerActionMap = inputActions.FindActionMap("Player");
         uiActionMap = inputActions.FindActionMap("UI");
+        //keybindMap = inputActions.FindActionMap("Keybind");
 
         PlayerMove.pauseGame.AddListener(PauseGame);
         UIController.resumeGameEvent.AddListener(ResumeGame);
@@ -24,6 +26,7 @@ public class GameManager : MonoBehaviour
         ResumeGame(); //開局先換成Player Input Action Map
     }
 
+    //暫停遊戲
     private void PauseGame()
     {
         // 切換input action map來限制玩家輸入
@@ -33,6 +36,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
+    //繼續遊戲
     private void ResumeGame()
     {
         // 切換input action map來限制玩家輸入
