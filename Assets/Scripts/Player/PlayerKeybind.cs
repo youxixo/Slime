@@ -54,6 +54,7 @@ public class PlayerKeybind : MonoBehaviour
         }
     }
 
+    //更新顯示 - 還可以優化 只更新剛剛更改的鍵位
     private void UpdateKeyVisual()
     {
         jump.text = playerActionMap.FindAction("jump").GetBindingDisplayString(0); 
@@ -90,6 +91,9 @@ public class PlayerKeybind : MonoBehaviour
     }
 
     //移動的keybind
+    //可優化: instead of 一個一個改(上下左右分開改) 變成一次改四個
+    //可參考: Change key bind, ChangeCoposite Binding
+    //https://docs.unity3d.com/Packages/com.unity.inputsystem@1.3/manual/ActionBindings.html#changing-bindings
     public void MoveKeyRebind(string direction)
     {
         int bindingIndex = FindMoveBindingIndex(direction.ToLower());
@@ -108,4 +112,14 @@ public class PlayerKeybind : MonoBehaviour
         _rebindingOperation.Dispose();
         UpdateKeyVisual();
     }
+}
+
+public struct Keybind
+{
+    public string up;
+    public string down;
+    public string left;
+    public string right;
+    public string jump;
+    public string dash;
 }

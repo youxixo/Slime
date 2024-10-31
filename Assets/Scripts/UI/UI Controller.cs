@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static UnityEngine.LightProbeProxyVolume;
 
+/// <summary>
+/// UI控制腳本 - 控制大部分的面板開關
+/// 有些可能可以拿出來分開寫
+/// </summary>
 public class UIController : MonoBehaviour
 {
     private bool settingChanged; // 用戶是否更改了設置
@@ -66,7 +70,7 @@ public class UIController : MonoBehaviour
         settingButton.onClick.AddListener(OpenSetting);
         exitGameButton.onClick.AddListener(() => Application.Quit());
 
-        keybindButton.onClick.AddListener(KeybindPress);
+        keybindButton.onClick.AddListener(OpenKeybind);
         confirmSetting.onClick.AddListener(ApplyChange);
         cancelSetting.onClick.AddListener(DoNotApplyChange);
     }
@@ -100,12 +104,61 @@ public class UIController : MonoBehaviour
         KeybindMenu
     }
 
+    //加載設置中的面板數值 
+    private void UpdateSettingVisual()
+    {
+        masterAudioSlider.value = playerSettings.masterVolume;
+        musicSlider.value = playerSettings.musicVolume;
+        sfxSlider.value = playerSettings.sfxVolume;
+
+        resolutionDropdown.value = playerSettings.resolutionMode;
+        screenModeDropdown.value = screenModeDropdown.value;
+    }
+
+    //存Input Action
     private void InitInput()
     {
         var UIActionMap = inputActions.FindActionMap("UI");
 
         exitAction = UIActionMap.FindAction("Exit");
         navigateAction = UIActionMap.FindAction("Navigate");
+    }
+
+    #region 介面開關
+    //打開設置介面
+    private void OpenSetting()
+    {
+        DisableAllPanel();
+        settingPage.SetActive(true);
+        LoadSettings();
+        UpdateSettingVisual();
+        currentOpenMenu = Menus.SettingMenu;
+        EventSystem.current.SetSelectedGameObject(selectedButtonOnSetting);
+    }
+
+    //關閉設置介面
+    private void ExitSetting()
+    {
+        confirmMenu.SetActive(true);
+        currentOpenMenu = Menus.ConfirmSettingMenu;
+        EventSystem.current.SetSelectedGameObject(selectedButtonOnConfirm);
+    }
+
+    //關閉鍵位設置介面
+    private void ExitKeybind()
+    {
+        keybindPage.SetActive(false);
+        settingPage.SetActive(true);
+        currentOpenMenu = Menus.SettingMenu;
+        EventSystem.current.SetSelectedGameObject(selectedButtonOnSetting);
+    }
+
+    //打開鍵位設置
+    private void OpenKeybind()
+    {
+        DisableAllPanel();
+        currentOpenMenu = Menus.KeybindMenu;
+        keybindPage.SetActive(true);
     }
 
     //關閉所有介面
@@ -116,14 +169,7 @@ public class UIController : MonoBehaviour
         confirmMenu.SetActive(false);
         keybindPage.SetActive(false);
     }
-
-    //關閉所有設置介面
-    private void DisableSettingMenu()
-    {
-        settingPage.SetActive(false);
-        confirmMenu.SetActive(false);
-        keybindPage.SetActive(false);
-    }
+    #endregion
 
     #region 暫停
     private void OnPause()
@@ -141,18 +187,9 @@ public class UIController : MonoBehaviour
     }
     #endregion
 
-    #region 設置介面Navigate
-    //打開設置介面
-    private void OpenSetting()
-    {
-        DisableAllPanel();
-        settingPage.SetActive(true);
-        currentOpenMenu = Menus.SettingMenu;
-        EventSystem.current.SetSelectedGameObject(selectedButtonOnSetting);
-        LoadSettings();
-    }
+    #region 設置介面的東西
 
-    //左右修改設置
+    //左右修改設置數值
     private void ChangeSetting()
     {
         GameObject selectedSettingChild;
@@ -189,39 +226,43 @@ public class UIController : MonoBehaviour
         }
     }
 
-    private void ExitSetting()
-    {
-        confirmMenu.SetActive(true);
-        currentOpenMenu = Menus.ConfirmSettingMenu;
-        EventSystem.current.SetSelectedGameObject(selectedButtonOnConfirm);
-    }
-
-    private void ExitKeybind()
-    {
-        keybindPage.SetActive(false);
-        settingPage.SetActive(true);
-        currentOpenMenu = Menus.SettingMenu;
-        EventSystem.current.SetSelectedGameObject(selectedButtonOnSetting);
-    }
-
-    private void KeybindPress()
-    {
-        DisableAllPanel();
-        currentOpenMenu = Menus.KeybindMenu;
-        keybindPage.SetActive(true);
-    }
-
+    //應用並保存數據
     private void ApplyChange()
     {
+        string[] resolutionList = resolutionDropdown.options[resolutionDropdown.value].text.Split("x");
+        Screen.SetResolution(int.Parse(resolutionList[0].Trim()), int.Parse(resolutionList[1].Trim()), GetScreenMode());
+
         SaveSetting();
-        DisableSettingMenu();
+        DisableAllPanel();
+        //DisableSettingMenu();
         pauseMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(selectedButtonOnPause);
     }
 
+    //玩家畫面模式設置
+    private FullScreenMode GetScreenMode()
+    {
+        string screenModeText = screenModeDropdown.options[screenModeDropdown.value].text;
+        if (screenModeText == "Fullscreen")
+        {
+            return FullScreenMode.FullScreenWindow;
+        }
+        else if(screenModeText == "Windowed")
+        {
+            return FullScreenMode.Windowed;
+        }
+        else if(screenModeText == "Borderless Windowed")
+        {
+            return FullScreenMode.MaximizedWindow;
+        }
+        Debug.LogWarning("Screen Mode有問題, 默認全屏");
+        return FullScreenMode.FullScreenWindow;
+    }
+
+    //退出設置 不應用數據
     private void DoNotApplyChange()
     {
-        DisableSettingMenu();
+        DisableAllPanel();
         pauseMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(selectedButtonOnPause);
     }
