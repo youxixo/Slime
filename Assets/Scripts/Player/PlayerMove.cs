@@ -284,7 +284,6 @@ public class PlayerMove : MonoBehaviour
             //反之吸回地面
             else
             {
-                Debug.Log("西西");
                 Vector2 rayDirection = -transform.up * raycastDistance;
                 hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
                 if (hit.collider != null)

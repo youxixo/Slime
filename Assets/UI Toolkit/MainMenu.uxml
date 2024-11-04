@@ -1,0 +1,13 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Stylesheet/buttonSS.uss?fileID=7433441132597879392&amp;guid=cafd200ae0dc4fd43b552b7c6e1a068f&amp;type=3#buttonSS" />
+    <engine:VisualElement style="flex-grow: 1; background-color: rgb(153, 153, 153); height: 695px; flex-direction: column; transform-origin: center; opacity: 1; display: flex; visibility: visible; overflow: visible; flex-basis: auto; flex-wrap: nowrap; align-items: stretch; justify-content: flex-start; align-content: flex-start; align-self: stretch;">
+        <engine:VisualElement name="Title" style="flex-grow: 0; height: 20%; margin-top: 20px; margin-right: 20px; margin-bottom: 20px; margin-left: 20px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;">
+            <engine:Label text="Slimey" enable-rich-text="true" style="flex-shrink: 1; flex-grow: 1; font-size: 100%; -unity-text-align: upper-center; margin-top: 4px; top: 50%;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Buttons" style="flex-grow: 0; height: 80%; flex-direction: column; position: relative; align-items: center; justify-content: center;">
+            <engine:Button text="Start Game" selectable="true" double-click-selects-word="false" triple-click-selects-line="false" display-tooltip-when-elided="true" name="Start" class="button" style="height: 15%; width: 30%; font-size: 50%; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; justify-content: space-between; align-self: auto; align-items: flex-start; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px; color: rgb(0, 0, 0);" />
+            <engine:Button text="Setting" name="Setting" class="button" style="height: 15%; width: 30%; font-size: 50%; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px;" />
+            <engine:Button text="Quit" name="Quit" class="button" style="height: 15%; width: 30%; font-size: 50%; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

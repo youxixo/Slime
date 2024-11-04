@@ -10,6 +10,8 @@ using UnityEngine.UI;
 /// <summary>
 /// UI控制腳本 - 控制大部分的面板開關
 /// 有些可能可以拿出來分開寫
+/// 
+/// 把操控聲音的直接掛到slider組件上 on Value change讓玩家可以邊調邊聽
 /// </summary>
 public class UIController : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class UIController : MonoBehaviour
     private Menus currentOpenMenu;
     private PlayerSettings playerSettings;
     private PlayerSettings defaultSettings;
+
+    public static UnityEvent finishSetting = new UnityEvent();
 
     [Header("Input")]
     [SerializeField] private InputActionAsset inputActions;
@@ -54,6 +58,8 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
+        DontDestroyOnLoad(this);
+
         defaultSettings = new PlayerSettings
         {
             masterVolume = 60,
@@ -73,6 +79,8 @@ public class UIController : MonoBehaviour
         keybindButton.onClick.AddListener(OpenKeybind);
         confirmSetting.onClick.AddListener(ApplyChange);
         cancelSetting.onClick.AddListener(DoNotApplyChange);
+
+        MainMenuButtons.settingClick.AddListener(OpenSetting);
     }
 
     void Update()
@@ -128,7 +136,7 @@ public class UIController : MonoBehaviour
     //打開設置介面
     private void OpenSetting()
     {
-        DisableAllPanel();
+        DisableSettingPanel();
         settingPage.SetActive(true);
         LoadSettings();
         UpdateSettingVisual();
@@ -156,15 +164,15 @@ public class UIController : MonoBehaviour
     //打開鍵位設置
     private void OpenKeybind()
     {
-        DisableAllPanel();
+        DisableSettingPanel();
         currentOpenMenu = Menus.KeybindMenu;
         keybindPage.SetActive(true);
     }
 
-    //關閉所有介面
-    private void DisableAllPanel()
+    //關閉所有設置介面
+    private void DisableSettingPanel()
     {
-        pauseMenu.SetActive(false);
+        //pauseMenu.SetActive(false);
         settingPage.SetActive(false);
         confirmMenu.SetActive(false);
         keybindPage.SetActive(false);
@@ -233,10 +241,11 @@ public class UIController : MonoBehaviour
         Screen.SetResolution(int.Parse(resolutionList[0].Trim()), int.Parse(resolutionList[1].Trim()), GetScreenMode());
 
         SaveSetting();
-        DisableAllPanel();
+        DisableSettingPanel();
         //DisableSettingMenu();
-        pauseMenu.SetActive(true);
+        //pauseMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(selectedButtonOnPause);
+        finishSetting.Invoke();
     }
 
     //玩家畫面模式設置
@@ -262,9 +271,9 @@ public class UIController : MonoBehaviour
     //退出設置 不應用數據
     private void DoNotApplyChange()
     {
-        DisableAllPanel();
-        pauseMenu.SetActive(true);
+        DisableSettingPanel();
         EventSystem.current.SetSelectedGameObject(selectedButtonOnPause);
+        finishSetting.Invoke();
     }
     #endregion
 
