@@ -132,6 +132,8 @@ public class UIController : MonoBehaviour
         navigateAction = UIActionMap.FindAction("Navigate");
     }
 
+
+    //改一下:pause menu不需要disable
     #region 介面開關
     //打開設置介面
     private void OpenSetting()
@@ -164,6 +166,7 @@ public class UIController : MonoBehaviour
     //打開鍵位設置
     private void OpenKeybind()
     {
+        //inputActions.FindActionMap("Player").Disable(); //禁用來確保可以rebind
         DisableSettingPanel();
         currentOpenMenu = Menus.KeybindMenu;
         keybindPage.SetActive(true);
@@ -242,8 +245,6 @@ public class UIController : MonoBehaviour
 
         SaveSetting();
         DisableSettingPanel();
-        //DisableSettingMenu();
-        //pauseMenu.SetActive(true);
         EventSystem.current.SetSelectedGameObject(selectedButtonOnPause);
         finishSetting.Invoke();
     }
