@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public InputActionAsset inputActions; // Reference to the InputActionAsset
 
+    //這些action map可以移到UImanager統一管理?
     private InputActionMap playerActionMap;
     private InputActionMap uiActionMap;
     //private static InputActionMap keybindMap;
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour
         // 切換input action map來限制玩家輸入
         playerActionMap.Enable();
         uiActionMap.Disable();
-
+        Debug.Log("resume");
         Time.timeScale = 1.0f;
     }
 }
