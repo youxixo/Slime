@@ -1,20 +1,26 @@
-﻿using TMPro;
+﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-
+using UnityEngine.UI;
+/// <summary>
+/// 鍵位設置
+/// 目前還要加 退出時保存用戶設置道playerKetset
+/// Bug: 使用enter點進keybind page 會被判定為按下enter所以一進來就會開始rebind (已完成 修復辦法是一進場的一小段時間不判定rebind防止誤觸)
+/// </summary>
 public class PlayerKeybind : MonoBehaviour
 {
-    public InputActionAsset inputActions;
-    private InputActionMap playerActionMap;
-    private InputActionMap uiActionMap;
-    InputAction moveAction;
+    public InputActionAsset inputActions; 
+    private InputActionMap playerActionMap; //player的action map
+    private InputActionMap uiActionMap; //ui的action map
+    private InputAction moveAction; //移動的action
 
-    [SerializeField] private TMP_Text keybindDescription;
-    [SerializeField] private GameObject firstButton;
-    private InputActionRebindingExtensions.RebindingOperation _rebindingOperation;
+    [SerializeField] private TMP_Text keybindDescription; //顯示一些說明的文字
+    [SerializeField] private GameObject firstButton; //進場時第一個focus的按鈕
+    private InputActionRebindingExtensions.RebindingOperation _rebindingOperation; //rebind
 
-    [Header("Keybind Display")]
+    [Header("Keybind Display")] //每個按鈕的字
     [SerializeField] private TMP_Text up;
     [SerializeField] private TMP_Text down;
     [SerializeField] private TMP_Text left;
@@ -22,18 +28,79 @@ public class PlayerKeybind : MonoBehaviour
     [SerializeField] private TMP_Text jump;
     [SerializeField] private TMP_Text dash;
 
+    [Header("Default Keybind")]
+    [SerializeField] private Button defaultWASDButton; //預設按鈕1
+    [SerializeField] private Button defaultArrowButton; //預設按鈕2
+    private float firstCooldown = 0.2f; //防止剛入場的enter誤觸
+    private bool cooldownPast = false;
+    private Keybind defaultArrow = new Keybind
+    {
+        up = "<Keyboard>/upArrow",
+        down = "<Keyboard>/downArrow",
+        left = "<Keyboard>/leftArrow",
+        right = "<Keyboard>/rightArrow",
+        jump = "<Keyboard>/space",
+        dash = "<Keyboard>/leftShift"
+    };
+    private Keybind defaultWASD = new Keybind
+    {
+        up = "<Keyboard>/w",
+        down = "<Keyboard>/s",
+        left = "<Keyboard>/a",
+        right = "<Keyboard>/d",
+        jump = "<Keyboard>/j",
+        dash = "<Keyboard>/k"
+    };
+    private Keybind playerKeyset; //存玩家的鍵位
+
+    private void Start()
+    {
+        defaultWASDButton.onClick.AddListener(() => LoadDefault(defaultWASD));
+        defaultArrowButton.onClick.AddListener(() => LoadDefault(defaultArrow));
+    }
+
+    //加載預設鍵位
+    private void LoadDefault(Keybind key)
+    {
+        playerActionMap.FindAction("move").ApplyBindingOverride(FindMoveBindingIndex("left"), key.left);
+        playerActionMap.FindAction("move").ApplyBindingOverride(FindMoveBindingIndex("right"), key.right);
+        playerActionMap.FindAction("move").ApplyBindingOverride(FindMoveBindingIndex("up"), key.up);
+        playerActionMap.FindAction("move").ApplyBindingOverride(FindMoveBindingIndex("down"), key.down);
+        playerActionMap.FindAction("jump").ApplyBindingOverride(key.jump);
+        playerActionMap.FindAction("sprint").ApplyBindingOverride(key.dash);
+        Debug.Log("change key bind");
+        UpdateKeyVisual();
+    }
+
     private void OnEnable()
     {
         keybindDescription.text = "Press enter on the selected key to rebind.";
         playerActionMap = inputActions.FindActionMap("Player");
+        playerActionMap.Disable();
         moveAction = playerActionMap.FindAction("Move");
-        uiActionMap = inputActions.FindActionMap("UI");
+        inputActions.FindActionMap("UI").Enable();
         EventSystem.current.SetSelectedGameObject(firstButton);
         UpdateKeyVisual();
+        StartCoroutine(EnableSubmitAfterCooldown());
+    }
+
+    private void OnDisable()
+    {
+        cooldownPast = false;
+    }
+
+    private IEnumerator EnableSubmitAfterCooldown()
+    {
+        yield return new WaitForSeconds(firstCooldown);
+        cooldownPast = true;
     }
 
     private void Update()
     {
+        if(!cooldownPast)
+        {
+            return;
+        }
         GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
         if (selectedObject != null && selectedObject.tag == "Keybind")
         {

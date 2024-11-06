@@ -8,7 +8,11 @@ using UnityEngine.Events;
 /// 截止到10/22 以下為待加的功能
 /// 角色畫面上的轉向 (要根據移動的方向)
 /// 衝刺方向(目前只有左右衝刺)
-/// 跳躍會被吸回去
+/// 跳躍會被吸回去(已修復, rather then movePosition back to hit point everytime it goes out of collision, use raycast to determine surface nomrmal in update and move along that, only move back when to far or contacting new obj)
+/// 
+/// 11/5
+/// 修復跳躍吸具體看上面
+/// 目前出現新bug, 從天上掉到圓弧角的編編時可能會angle有問題 大概是raycast沒檢測好
 /// </summary>
 
 public class PlayerMove : MonoBehaviour
@@ -127,12 +131,27 @@ public class PlayerMove : MonoBehaviour
         }
         return _movementAxis;
     }
-
+    private GameObject contactingObj;
     //移动
     private void Move()
     {
-        //float horizontalInput = Input.GetAxis("Horizontal");
         float horizontalInput = moveAction.ReadValue<Vector2>().x;
+        if (!collisionEnter) //如果移動過程碰到新表面, 優先沿著新表面走
+        {
+            //用raycast得到法線 計算移動方向
+            Vector2 rayDirection = -transform.up * raycastDistance;
+            var hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 0.5f, groundLayer);
+            if (hit.collider != null)
+            {
+                surfaceNormal = hit.normal;
+                isGrounded = true;
+                if (contactingObj != hit.collider.gameObject)
+                {
+                    rb.MovePosition(hit.point);
+                }
+                contactingObj = hit.collider.gameObject;
+            }
+        } 
 
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
@@ -178,6 +197,11 @@ public class PlayerMove : MonoBehaviour
                 rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
             }
         }
+
+        if(collisionEnter)
+        {
+            collisionEnter = false;
+        }
     }
 
     //***待調整
@@ -186,6 +210,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (jumpAction.triggered && isGrounded && jumpClicked == false)// Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            contactingObj = null;
             float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
             jumpClicked = true;
             isGrounded = false;
@@ -220,6 +245,7 @@ public class PlayerMove : MonoBehaviour
     //冲刺-朝着朝向
     private IEnumerator DashA()
     {
+        contactingObj = null;
         canDash = false;
         isDashing = true;
         rb.gravityScale = 0;
@@ -244,6 +270,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.layer == 3)
         {
+            collisionEnter = true;
             isGrounded = true;
             foreach (ContactPoint2D contact in collision.contacts)
             {
@@ -253,6 +280,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private bool collisionEnter;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         jumpClicked = false;
@@ -284,19 +312,21 @@ public class PlayerMove : MonoBehaviour
             //反之吸回地面
             else
             {
+                /*
                 Vector2 rayDirection = -transform.up * raycastDistance;
                 hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
                 if (hit.collider != null)
                 {
+                    //Instantiate(debug, hit.point + hit.normal * 0.5f, Quaternion.identity); //這裡之後改移下
                     surfaceNormal = hit.normal;
-                    rb.MovePosition(hit.point);
+                    //rb.MovePosition(hit.point + hit.normal * 0.1f);
                     isGrounded = true;
                 }
                 else
                 {
                     rb.gravityScale = originalGravityScale;
                     releaseMove = true;
-                }
+                }*/
             }
         }
     }
