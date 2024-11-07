@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-enum SlimeType
+public enum SlimeType
 {
     None,
     Water,
@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private SlimeType slimeType = SlimeType.None;
     private Dictionary<SlimeType, Color> colorDict;
-    [SerializeField] private Transform trans;
+    private Transform trans;
     [SerializeField] private SpriteRenderer sprd;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -25,6 +25,22 @@ public class PlayerController : MonoBehaviour
     {
         colorDict = new Dictionary<SlimeType, Color> { { SlimeType.None, Color.white }, { SlimeType.Water, Color.cyan }, 
                                                            { SlimeType.Fire, Color.red }, { SlimeType.Grass, Color.green }, };
+        trans = gameObject.GetComponent<Transform>();
+        //sprd = gameObject.GetComponent<SpriteRenderer>();
+
+    }
+
+    private void OnEnable()
+    {
+        EventHandler.SlimeTypeEnterEvent += OnSlimeTypeEnter;
+        EventHandler.SlimeTypeLeaveEvent += OnSlimeTypeLeave;
+
+    }
+    private void OnDisable()
+    {
+        EventHandler.SlimeTypeEnterEvent -= OnSlimeTypeEnter;
+        EventHandler.SlimeTypeLeaveEvent += OnSlimeTypeLeave;
+
     }
 
     // Update is called once per frame
@@ -32,16 +48,19 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            OnSlimeTypeLeave(slimeType);
-            OnSlimeTypeEnter(slimeType = (int)++slimeType <= 3 ? slimeType : 0);
+            SlimeType targetType = (int)slimeType + 1 <= 3 ? slimeType + 1 : 0;
+            EventHandler.CallSlimeTypeEnterEvent(targetType);
+
         }
 
     }
 
     private void OnSlimeTypeEnter(SlimeType type)
     {
-        Debug.Log("switch slime type to " + type);
+        EventHandler.CallSlimeTypeLeaveEvent();
 
+        Debug.Log("switch slime type to " + type);
+        slimeType = type;
         sprd.color = colorDict[type];
         switch (type)
         {
@@ -61,10 +80,10 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void OnSlimeTypeLeave(SlimeType type)
+    private void OnSlimeTypeLeave()
     {
-        Debug.Log("leave slime type to " + type);
-        switch (type)
+        Debug.Log("leave slime type to " + slimeType);
+        switch (slimeType)
         {
             case SlimeType.None:
                 break;
