@@ -13,6 +13,7 @@ using UnityEngine.Events;
 /// 11/5
 /// 修復跳躍吸具體看上面
 /// 目前出現新bug, 從天上掉到圓弧角的編編時可能會angle有問題 大概是raycast沒檢測好
+/// 離開牆體應該加回gravity
 /// </summary>
 
 public class PlayerMove : MonoBehaviour
@@ -324,9 +325,9 @@ public class PlayerMove : MonoBehaviour
                 }
                 else
                 {
-                    rb.gravityScale = originalGravityScale;
-                    releaseMove = true;
                 }*/
+                rb.gravityScale = originalGravityScale;
+                releaseMove = true;
             }
         }
     }
