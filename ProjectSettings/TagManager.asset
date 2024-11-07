@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UIChild
   - Keybind
+  - Enemy
   layers:
   - Default
   - TransparentFX

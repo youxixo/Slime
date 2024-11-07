@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 4017754777141087354}
   m_Layer: 0
   m_Name: CloseCombat
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -390,7 +390,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftPoint: {fileID: 5906699282822919594}
   RightPoint: {fileID: 2790864841721814545}
-  MoveSpeed: 50
+  MoveSpeed: 15
   isAttack: 0
 --- !u!1 &9175625053753700360
 GameObject:

@@ -1220,10 +1220,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 672894221}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faf70dc30023a0c4db8871a8df77790d, type: 3}
+  m_Script: {fileID: 11500000, guid: d097481cc2f83f84bbc98803e8a7534c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   slimeType: 0
+  trans: {fileID: 672894225}
+  sprd: {fileID: 1452632650}
 --- !u!114 &681926103 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4888885853564140280, guid: 00d29023b372681409afc1a773a32605, type: 3}
