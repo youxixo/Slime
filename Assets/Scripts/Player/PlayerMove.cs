@@ -76,7 +76,7 @@ public class PlayerMove : MonoBehaviour
         }
         if (dashAction.IsPressed() && canDash)//Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
-            StartCoroutine(DashA());
+            //StartCoroutine(DashA());
         }
         Jump();
 
