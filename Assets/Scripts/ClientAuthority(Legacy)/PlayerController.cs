@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 
-public class PlayerMovement : NetworkBehaviour
+public class PlayerMovementLegacy : NetworkBehaviour
 {
     public float moveSpeed = 1f;
     [SerializeField] float jumpForce = 5f;
@@ -123,7 +123,7 @@ public class PlayerMovement : NetworkBehaviour
     private void SpawnBullet(int direction)
     {
         GameObject bulletInstance = Instantiate(bulletPrefab, rb.transform.position, Quaternion.identity);
-        bulletInstance.GetComponent<Bullet>().direction = direction;
+        bulletInstance.GetComponent<BulletLegacy>().direction = direction;
         bulletInstance.GetComponent<NetworkObject>().Spawn(true); // Spawn with ownership of server
     }
     #endregion
