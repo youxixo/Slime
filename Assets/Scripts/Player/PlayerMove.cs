@@ -117,12 +117,11 @@ public class PlayerMove : MonoBehaviour
             moveType = -1;
         }
 
-
         if (angleWhenMove != float.NaN || !releaseMove)
         {
+            Debug.Log(angleWhenMove);
             if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove >= 270) && moveType != 0)
             {
-                //Debug.Log("reversing move");
                 _movementAxis = -_movementAxis;
             }
             else if ((angleWhenMove > 90 && angleWhenMove < 270) && moveType != 1)
@@ -188,6 +187,7 @@ public class PlayerMove : MonoBehaviour
             convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
 
             velocity = horizontalInput * movementSpeedBase * movementAxis;
+
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
         }
         else
@@ -303,6 +303,7 @@ public class PlayerMove : MonoBehaviour
         {
             RaycastHit2D hit;
             isGrounded = false;
+            contactingObj = null;
             //由用戶控制導致地離開地板 不吸回地面
             if (jumpClicked || isDashing)
             {
@@ -327,7 +328,6 @@ public class PlayerMove : MonoBehaviour
                 {
                 }*/
                 rb.gravityScale = originalGravityScale;
-                releaseMove = true;
             }
         }
     }
