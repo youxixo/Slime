@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
 
-public class Bullet : NetworkBehaviour
+public class BulletLegacy : NetworkBehaviour
 {
     private Rigidbody2D rb;
     [SerializeField] private int speed = 5;
