@@ -1257,6 +1257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slimeType: 0
+  sprd: {fileID: 0}
 --- !u!114 &681926103 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4888885853564140280, guid: 00d29023b372681409afc1a773a32605, type: 3}
@@ -1295,7 +1296,7 @@ Transform:
   m_GameObject: {fileID: 709627964}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -8.77, y: 2.94, z: 0.04230561}
+  m_LocalPosition: {x: -8.49, y: 3.36, z: 0.04230561}
   m_LocalScale: {x: 9.468606, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1440,7 +1441,7 @@ Transform:
   m_GameObject: {fileID: 752295698}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 10.17, y: 3.38, z: 0.04230561}
+  m_LocalPosition: {x: 9.94, y: 3.33, z: 0.04230561}
   m_LocalScale: {x: 9.468606, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
