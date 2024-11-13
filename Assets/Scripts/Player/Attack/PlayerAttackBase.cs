@@ -8,9 +8,27 @@ public class PlayerAttackBase : MonoBehaviour
     [SerializeField] protected Animation anim;
     [SerializeField] protected SlimeType slimeType;
 
+    [SerializeField] protected float attackCD = 2f;
+    protected float timer = 0;
+    protected bool canAttack = true;
+
+
     virtual public SlimeType GetSlimeType()
     {
         return slimeType;
+    }
+
+    virtual public bool CanAttack()
+    {
+        Debug.Log("can attck : " + canAttack.ToString()+ timer);
+
+        if(Time.realtimeSinceStartup - timer > attackCD)
+        {
+            timer = Time.realtimeSinceStartup;
+            return true;
+        }
+        return false;
+
     }
 
 
@@ -23,7 +41,6 @@ public class PlayerAttackBase : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     virtual protected void Init()

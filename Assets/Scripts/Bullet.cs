@@ -40,6 +40,7 @@ public class Bullet : MonoBehaviour
         }
         else if (other.tag == "Enemy")
         {
+            Destroy(other.gameObject);
             EventHandler.CallBulletHitEnemyEvent(tag);
             Destroy(gameObject);
         }

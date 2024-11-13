@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class PlayerBasicFireAttack : PlayerBasicAttack
 {
     private bool inAttackFrames;
-
+    [SerializeField] private SpriteRenderer sprd;
 
 
     private void OnEnable()
@@ -13,6 +14,7 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         EventHandler.AttackCheckStartEvent += OnAttackCheckStartEvent;
         EventHandler.AttackCheckEndEvent += OnAttackCheckEndEvent;
         slimeType = SlimeType.Fire;
+        attackCD = 0;
         Init();
     }
 
@@ -55,10 +57,20 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
 
         Debug.Log("fire attack" + Time.realtimeSinceStartup);
 
-        anim.Play();
+        sprd.enabled = true;
+
+        //anim.Play();
+        StopAllCoroutines();
+        StartCoroutine(StopPlayAnim());
+ 
     }
 
+    IEnumerator StopPlayAnim()
+    {
+        yield return new WaitForSeconds(0.5f);
 
+        sprd.enabled = false;
+    }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
