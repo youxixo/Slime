@@ -119,7 +119,6 @@ public class PlayerMove : MonoBehaviour
 
         if (angleWhenMove != float.NaN || !releaseMove)
         {
-            Debug.Log(angleWhenMove);
             if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove >= 270) && moveType != 0)
             {
                 _movementAxis = -_movementAxis;
@@ -131,6 +130,7 @@ public class PlayerMove : MonoBehaviour
         }
         return _movementAxis;
     }
+
     private GameObject contactingObj;
     //移动
     private void Move()
@@ -169,7 +169,7 @@ public class PlayerMove : MonoBehaviour
             }
             else //角度大的話直接旋轉
             {
-                //Debug.Log("big");
+                Debug.Log("big");
                 transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
             }
 
