@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
             }
 
-            // TODO: ¹¥»÷½áÊøºó×Ô¼ºdisenable
+            // TODO: Â¹Â¥Â»Ã·Â½Ã¡ÃŠÃ¸ÂºÃ³Ã—Ã”Â¼Âºdisenable
 
         }
 
