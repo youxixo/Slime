@@ -58,8 +58,8 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
     {
         base.Attack();
 
-        Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, Quaternion.identity, bulletParent).GetComponent<Bullet>();
-        bullet.Init(InTagName: "Player");
+        Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, transform.rotation, bulletParent).GetComponent<Bullet>();
+        bullet.Init(InTagName: "Player", InDir : controller.FacingToRightDirection() ? Vector2.right :Vector2.left);
     }
 
 

@@ -162,6 +162,15 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+    
+    public bool FacingToRightDirection()
+    {
+        if (transform.localScale.x >= 0)
+            return true;
+        else
+            return false;
+
+    }
 
 
 }
