@@ -88,16 +88,19 @@ public class PlayerController : MonoBehaviour
 
         if (attackAction.ReadValue<float>() > 0)
         {
-            foreach (KeyValuePair<SlimeType, PlayerBasicAttack> pair in attackDict)
-            { 
-                pair.Value.gameObject.SetActive(false);
-                Debug.Log(pair);
-            }
             //EventHandler.CallAttackEvent();
 
+            if (attackDict[currentSlimeType].CanAttack())
+            {
+                foreach (KeyValuePair<SlimeType, PlayerBasicAttack> pair in attackDict)
+                { 
+                    pair.Value.gameObject.SetActive(false);
+                    Debug.Log(pair);
+                }
+                attackDict[currentSlimeType].gameObject.SetActive(true);
+                attackDict[currentSlimeType].Attack();
 
-            attackDict[currentSlimeType].gameObject.SetActive(true);
-            attackDict[currentSlimeType].Attack();
+            }
 
             // TODO: 攻击结束后自己disenable
 
