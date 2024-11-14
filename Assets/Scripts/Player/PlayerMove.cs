@@ -131,6 +131,44 @@ public class PlayerMove : MonoBehaviour
         return _movementAxis;
     }
 
+    //change direction facing base on standing angle and input
+    private void ChangeFaceDir(float angle, float input)
+    {
+        Debug.Log("changing dir");
+        int moveType = -1;
+        if ((angle >= 0 && angle <= 90) || angle >= 270)
+        {
+            moveType = 0;
+        }
+        else if ((angle > 90 && angle < 270))
+        {
+            moveType = 1;
+        }
+
+        if (moveType == 0)
+        {
+            if(input > 0)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+            else if(input < 0)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+        }
+        else
+        {
+            if (input > 0)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+            else if (input < 0)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+        }
+    }
+
     private GameObject contactingObj;
     //移动
     private void Move()
@@ -151,7 +189,7 @@ public class PlayerMove : MonoBehaviour
                 }
                 contactingObj = hit.collider.gameObject;
             }
-        } 
+        }
 
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
@@ -169,12 +207,13 @@ public class PlayerMove : MonoBehaviour
             }
             else //角度大的話直接旋轉
             {
-                Debug.Log("big");
                 transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
             }
 
+            //just start moving
             if (horizontalInput != 0 && releaseMove == true)
             {
+                ChangeFaceDir(convertedAngleZ, horizontalInput);
                 releaseMove = false;
                 angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
             }
@@ -195,6 +234,7 @@ public class PlayerMove : MonoBehaviour
             // 在空中也可以控制方向
             if (horizontalInput != 0)
             {
+                ChangeFaceDir(convertedAngleZ, horizontalInput);
                 rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
             }
         }

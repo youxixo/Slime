@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
             attackDict[currentSlimeType].gameObject.SetActive(true);
             attackDict[currentSlimeType].Attack();
 
-            // TODO: ¹¥»÷½áÊøºó×Ô¼ºdisenable
+            // TODO: Â¹Â¥Â»Ã·Â½Ã¡ÃŠÃ¸ÂºÃ³Ã—Ã”Â¼Âºdisenable
 
         }
 
