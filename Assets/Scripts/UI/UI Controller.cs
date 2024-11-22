@@ -278,6 +278,22 @@ public class UIController : MonoBehaviour
     }
     #endregion
 
+    public static void ActivateActionMap(InputActionAsset asset, string targetMapName)
+    {
+        // 停用所有的 ActionMap
+        foreach (var map in asset.actionMaps)
+        {
+            if (map.name == targetMapName)
+            {
+                map.Enable(); // 啟用目標 ActionMap
+            }
+            else
+            {
+                map.Disable(); // 停用其他 ActionMap
+            }
+        }
+    }
+
     //加載玩家數據
     private void LoadSettings()
     {

@@ -76,9 +76,10 @@ public class PlayerKeybind : MonoBehaviour
     {
         keybindDescription.text = "Press enter on the selected key to rebind.";
         playerActionMap = inputActions.FindActionMap("Player");
-        playerActionMap.Disable();
+        //playerActionMap.Disable();
         moveAction = playerActionMap.FindAction("Move");
-        inputActions.FindActionMap("UI").Enable();
+        //inputActions.FindActionMap("UI").Enable();
+        UIController.ActivateActionMap(inputActions, "UI");
         EventSystem.current.SetSelectedGameObject(firstButton);
         UpdateKeyVisual();
         StartCoroutine(EnableSubmitAfterCooldown());
