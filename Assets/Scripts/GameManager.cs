@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
         // Get references to action maps
         playerActionMap = inputActions.FindActionMap("Player");
         uiActionMap = inputActions.FindActionMap("UI");
+        inputActions.FindActionMap("Map").Disable();
         //keybindMap = inputActions.FindActionMap("Keybind");
 
         PlayerMove.pauseGame.AddListener(PauseGame);

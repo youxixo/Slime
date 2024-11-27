@@ -2,6 +2,7 @@
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Events;
+using Unity.VisualScripting;
 
 /// <summary>
 /// 此腳本為角色控制
@@ -31,10 +32,13 @@ public class PlayerMove : MonoBehaviour
     private Vector2 velocity; //角色目前移动速度&方向
 
     [Header("贴墙移动")]
+    [SerializeField] private float stickPower; //吸牆力
+    [SerializeField] private float stickDownPower;
+    [SerializeField] private float stickRestorePower;
     private Vector2 surfaceNormal; //角色目前所在地板的法线（用于贴墙移动）
     float r;
     [SerializeField] LayerMask groundLayer; //地板的layerMask
-    [SerializeField] float raycastDistance = 0.5f; //檢測地面的raycast長度
+    [SerializeField] float raycastDistance = 100f; //檢測地面的raycast長度
     [SerializeField] Transform wallDetect; //檢測地面的raycast位置
     Vector2 movementAxis = new Vector2();
     private bool releaseMove = true; //是否鬆開移動鍵
@@ -69,12 +73,11 @@ public class PlayerMove : MonoBehaviour
         Vector2 rayDirection = -transform.up * raycastDistance;
 
         Debug.DrawRay(wallDetect.position, -transform.up * raycastDistance, Color.red);
-        //Debug.Log(rb.linearVelocity);
         if (!isDashing && allowToMove)
         {
             Move();
         }
-        if (dashAction.IsPressed() && canDash)//Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        if (dashAction.IsPressed() && canDash)
         {
             //StartCoroutine(DashA());
         }
@@ -131,10 +134,24 @@ public class PlayerMove : MonoBehaviour
         return _movementAxis;
     }
 
+    private Vector2 DetermineMovementAxisVertical(float angle)
+    {
+        //265 275 85 95
+        Vector2 _movementAxis = new Vector2();
+        if ((angle >= 85 && angle <= 95))
+        {
+            _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+        }
+        else if ((angle >= 265 && angle <= 275))
+        {
+            _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
+        }
+        return _movementAxis;
+    }
+
     //change direction facing base on standing angle and input
     private void ChangeFaceDir(float angle, float input)
     {
-        Debug.Log("changing dir");
         int moveType = -1;
         if ((angle >= 0 && angle <= 90) || angle >= 270)
         {
@@ -173,8 +190,11 @@ public class PlayerMove : MonoBehaviour
     //移动
     private void Move()
     {
+        velocity = Vector2.zero;
         float horizontalInput = moveAction.ReadValue<Vector2>().x;
-        if (!collisionEnter) //如果移動過程碰到新表面, 優先沿著新表面走
+        float verticalInput = moveAction.ReadValue<Vector2>().y;
+
+        if (!collisionEnter && stickPower > 0) //如果移動過程碰到新表面, 優先沿著新表面走
         {
             //用raycast得到法線 計算移動方向
             Vector2 rayDirection = -transform.up * raycastDistance;
@@ -185,6 +205,7 @@ public class PlayerMove : MonoBehaviour
                 isGrounded = true;
                 if (contactingObj != hit.collider.gameObject)
                 {
+                    Debug.Log("1234");
                     rb.MovePosition(hit.point);
                 }
                 contactingObj = hit.collider.gameObject;
@@ -210,23 +231,45 @@ public class PlayerMove : MonoBehaviour
                 transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
             }
 
-            //just start moving
-            if (horizontalInput != 0 && releaseMove == true)
+            if (stickPower > 0)
             {
-                ChangeFaceDir(convertedAngleZ, horizontalInput);
-                releaseMove = false;
-                angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                //just start moving
+                if (horizontalInput != 0 && releaseMove == true)
+                {
+                    releaseMove = false;
+                    angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                }
+                else if (horizontalInput == 0 && releaseMove == false)
+                {
+                    releaseMove = true;
+                    angleWhenMove = float.NaN;
+                }
+                convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+                if(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295)
+                {
+                    stickPower -= stickDownPower * Time.deltaTime;
+                }
             }
-            else if (horizontalInput == 0 && releaseMove == false)
+            else
             {
-                releaseMove = true;
-                angleWhenMove = float.NaN;
+                rb.gravityScale = originalGravityScale;
+                movementAxis = new Vector2(1, 0);
             }
-            movementAxis = DetermineMovementAxis(convertedAngleZ); //決定移動方向
-            convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-
-            velocity = horizontalInput * movementSpeedBase * movementAxis;
-
+            if (!(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295) && stickPower <= 100)
+            {
+                stickPower += stickRestorePower * Time.deltaTime;
+            }
+            ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
+            if (convertedAngleZ != 90 && convertedAngleZ != 270 && horizontalInput!=0)
+            {
+                movementAxis = DetermineMovementAxis(convertedAngleZ); //決定移動方向
+                velocity = horizontalInput * movementSpeedBase * movementAxis;
+            }
+            else if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
+            {
+                movementAxis = DetermineMovementAxisVertical(convertedAngleZ); //決定移動方向
+                velocity = verticalInput * movementSpeedBase * movementAxis;
+            }
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
         }
         else
@@ -311,11 +354,14 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.layer == 3)
         {
-            collisionEnter = true;
             isGrounded = true;
+            collisionEnter = true;
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 surfaceNormal = contact.normal; // Get the surface normal
+            }
+            if(stickPower > 0)
+            {
                 rb.gravityScale = 0;
             }
         }
@@ -332,7 +378,14 @@ public class PlayerMove : MonoBehaviour
     {
         if(collision.gameObject.layer == 3)
         {
-            rb.gravityScale = 0;
+            if (stickPower > 0)
+            {
+                rb.gravityScale = 0;
+            }
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                surfaceNormal = contact.normal; // Get the surface normal
+            }
             isGrounded = true;
         }
     }
@@ -343,31 +396,14 @@ public class PlayerMove : MonoBehaviour
         {
             RaycastHit2D hit;
             isGrounded = false;
+            Debug.Log("left collider");
             contactingObj = null;
+            rb.gravityScale = originalGravityScale;
             //由用戶控制導致地離開地板 不吸回地面
             if (jumpClicked || isDashing)
             {
-                rb.gravityScale = originalGravityScale;
                 releaseMove = true;
                 return;
-            }
-            //反之吸回地面
-            else
-            {
-                /*
-                Vector2 rayDirection = -transform.up * raycastDistance;
-                hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 1f, groundLayer);
-                if (hit.collider != null)
-                {
-                    //Instantiate(debug, hit.point + hit.normal * 0.5f, Quaternion.identity); //這裡之後改移下
-                    surfaceNormal = hit.normal;
-                    //rb.MovePosition(hit.point + hit.normal * 0.1f);
-                    isGrounded = true;
-                }
-                else
-                {
-                }*/
-                rb.gravityScale = originalGravityScale;
             }
         }
     }

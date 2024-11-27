@@ -1,0 +1,9 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="Bakcground" style="background-color: rgb(153, 109, 109); flex-grow: 1;">
+        <engine:VisualElement style="flex-grow: initial; height: 10%; flex-direction: row; align-items: center; align-content: auto; justify-content: flex-start;">
+            <engine:Label text="Abilities" style="height: auto; -unity-text-align: middle-center; font-size: 80%; white-space: nowrap; position: absolute; left: 0;" />
+            <engine:Label text="Items" style="font-size: 80%; -unity-text-align: middle-center; left: 0; align-items: center; align-self: center; align-content: auto; justify-content: center; position: absolute; top: 0; right: 0; bottom: 0;" />
+            <engine:Label text="Collection" name="Label" style="font-size: 80%; -unity-text-align: middle-center; right: 0; position: absolute;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

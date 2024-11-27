@@ -21,7 +21,6 @@ public class MapController : MonoBehaviour
     private List<GameObject> markers = new List<GameObject>(); //標記數組, 存所有標記
     private const int maxSigns = 100;
 
-
     private void InitializedCamera()
     {
         mapCamera.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, -3);
