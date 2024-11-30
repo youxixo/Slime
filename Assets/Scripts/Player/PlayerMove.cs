@@ -70,9 +70,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        Vector2 rayDirection = -transform.up * raycastDistance;
-
-        Debug.DrawRay(wallDetect.position, -transform.up * raycastDistance, Color.red);
+        Jump();
         if (!isDashing && allowToMove)
         {
             Move();
@@ -81,7 +79,6 @@ public class PlayerMove : MonoBehaviour
         {
             //StartCoroutine(DashA());
         }
-        Jump();
 
         if(pauseAction.IsPressed())
         {
@@ -119,7 +116,35 @@ public class PlayerMove : MonoBehaviour
             Debug.LogWarning("Error: " + angle);
             moveType = -1;
         }
+        _movementAxis = ConsistentMovement(_movementAxis, moveType);
+        return _movementAxis;
+    }
 
+    private Vector2 DetermineMovementAxisVertical(float angle)
+    {
+        int moveType;
+        Vector2 _movementAxis = new Vector2();
+        if ((angle >= 85 && angle <= 95))
+        {
+            _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
+            moveType = 0;
+        }
+        else if ((angle >= 265 && angle <= 275))
+        {
+            _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
+            moveType = 1;
+        }
+        else
+        {
+            Debug.LogWarning("Error: " + angle);
+            moveType = -1;
+        }
+        _movementAxis = ConsistentMovement(_movementAxis, moveType);
+        return _movementAxis;
+    }
+
+    private Vector2 ConsistentMovement(Vector2 _movementAxis, int moveType)
+    {
         if (angleWhenMove != float.NaN || !releaseMove)
         {
             if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove >= 270) && moveType != 0)
@@ -130,21 +155,6 @@ public class PlayerMove : MonoBehaviour
             {
                 _movementAxis = -_movementAxis;
             }
-        }
-        return _movementAxis;
-    }
-
-    private Vector2 DetermineMovementAxisVertical(float angle)
-    {
-        //265 275 85 95
-        Vector2 _movementAxis = new Vector2();
-        if ((angle >= 85 && angle <= 95))
-        {
-            _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
-        }
-        else if ((angle >= 265 && angle <= 275))
-        {
-            _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
         }
         return _movementAxis;
     }
@@ -186,6 +196,50 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    public float speed = 20f; // Movement speed
+    public float minDistance = 0.01f; // Stopping threshold
+
+    private Vector2 targetPosition;
+    private bool isMoving = false;
+
+    private void TranslateToPos()
+    {
+        //用raycast得到法線 計算移動方向
+        Vector2 rayDirection = -transform.up * raycastDistance;
+        //***change later too long
+        var hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, raycastDistance, groundLayer);
+        if (hit.collider != null)
+        {
+            surfaceNormal = hit.normal;
+            isGrounded = true;
+            if (contactingObj != hit.collider.gameObject)
+            {
+                targetPosition = hit.point;
+                isMoving = true;
+                if (isMoving)
+                {
+                    Vector2 currentPosition = transform.position;
+                    Vector2 direction = (targetPosition - currentPosition).normalized; // Direction to target
+                    float distance = Vector2.Distance(currentPosition, targetPosition); // Distance to target
+                    float step = speed * Time.deltaTime;
+
+                    if (distance <= minDistance)
+                    {
+                        isMoving = false;
+                        return;
+                    }
+                    rb.transform.Translate(direction * step, Space.World);
+                    //rb.MovePosition(hit.point);
+                }
+            }
+            contactingObj = hit.collider.gameObject;
+        }
+        else
+        {
+            rb.gravityScale = originalGravityScale;
+        }
+    }
+
     private GameObject contactingObj;
     //移动
     private void Move()
@@ -194,22 +248,10 @@ public class PlayerMove : MonoBehaviour
         float horizontalInput = moveAction.ReadValue<Vector2>().x;
         float verticalInput = moveAction.ReadValue<Vector2>().y;
 
-        if (!collisionEnter && stickPower > 0) //如果移動過程碰到新表面, 優先沿著新表面走
+        if (stickPower > 0)
         {
-            //用raycast得到法線 計算移動方向
-            Vector2 rayDirection = -transform.up * raycastDistance;
-            var hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, 0.5f, groundLayer);
-            if (hit.collider != null)
-            {
-                surfaceNormal = hit.normal;
-                isGrounded = true;
-                if (contactingObj != hit.collider.gameObject)
-                {
-                    Debug.Log("1234");
-                    rb.MovePosition(hit.point);
-                }
-                contactingObj = hit.collider.gameObject;
-            }
+            //Debug.Log("left collider, sucking back");
+            //TranslateToPos();
         }
 
         // 根據地面朝向決定移動方向
@@ -260,7 +302,7 @@ public class PlayerMove : MonoBehaviour
                 stickPower += stickRestorePower * Time.deltaTime;
             }
             ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
-            if (convertedAngleZ != 90 && convertedAngleZ != 270 && horizontalInput!=0)
+            if ((convertedAngleZ != 90 && convertedAngleZ != 270) || horizontalInput!=0)
             {
                 movementAxis = DetermineMovementAxis(convertedAngleZ); //決定移動方向
                 velocity = horizontalInput * movementSpeedBase * movementAxis;
@@ -290,10 +332,13 @@ public class PlayerMove : MonoBehaviour
 
     //***待調整
     //跳跃 - 根據當前角度朝不同方向跳
+    
     private void Jump()
     {
-        if (jumpAction.triggered && isGrounded && jumpClicked == false)// Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (jumpAction.triggered && isGrounded)
         {
+            Debug.Log("jump");
+            rb.gravityScale = originalGravityScale;
             contactingObj = null;
             float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
             jumpClicked = true;
@@ -356,13 +401,14 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = true;
             collisionEnter = true;
+            jumpClicked = false;
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 surfaceNormal = contact.normal; // Get the surface normal
             }
             if(stickPower > 0)
             {
-                rb.gravityScale = 0;
+                //rb.gravityScale = 0;
             }
         }
     }
@@ -370,8 +416,10 @@ public class PlayerMove : MonoBehaviour
     private bool collisionEnter;
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        jumpClicked = false;
-        HandleCollision(collision);
+        if (collision.gameObject.layer == 3)
+        {
+            HandleCollision(collision);
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -381,6 +429,7 @@ public class PlayerMove : MonoBehaviour
             if (stickPower > 0)
             {
                 rb.gravityScale = 0;
+                
             }
             foreach (ContactPoint2D contact in collision.contacts)
             {
@@ -394,16 +443,18 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.layer == 3)
         {
-            RaycastHit2D hit;
             isGrounded = false;
-            Debug.Log("left collider");
             contactingObj = null;
-            rb.gravityScale = originalGravityScale;
             //由用戶控制導致地離開地板 不吸回地面
             if (jumpClicked || isDashing)
             {
+                rb.gravityScale = originalGravityScale;
                 releaseMove = true;
                 return;
+            }
+            else
+            {
+                TranslateToPos();
             }
         }
     }

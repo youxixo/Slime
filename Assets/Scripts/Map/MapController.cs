@@ -87,7 +87,6 @@ public class MapController : MonoBehaviour
         if (context.started)
         {
             GameObject existingMarker = FindMarkerAtPosition(sight.position);
-            Debug.Log("puttin sign");
             if (existingMarker != null)
             {
                 // 如果該位置上已有標記 刪除它
