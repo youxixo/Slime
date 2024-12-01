@@ -15,6 +15,11 @@ using Unity.VisualScripting;
 /// 修復跳躍吸具體看上面
 /// 目前出現新bug, 從天上掉到圓弧角的編編時可能會angle有問題 大概是raycast沒檢測好
 /// 離開牆體應該加回gravity
+/// 
+/// 11/30
+/// 加入了吸牆力 - 當在不符合重力的角度時會消耗吸牆力 消耗完掉落, 在平地回復
+/// 在垂直牆時只有ws移動 ad無法移動
+/// 跳躍變得更加合理
 /// </summary>
 
 public class PlayerMove : MonoBehaviour
@@ -70,6 +75,10 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if(stickPower < 0)
+        {
+            rb.gravityScale = originalGravityScale;
+        }
         Jump();
         if (!isDashing && allowToMove)
         {
@@ -248,35 +257,18 @@ public class PlayerMove : MonoBehaviour
         float horizontalInput = moveAction.ReadValue<Vector2>().x;
         float verticalInput = moveAction.ReadValue<Vector2>().y;
 
-        if (stickPower > 0)
-        {
-            //Debug.Log("left collider, sucking back");
-            //TranslateToPos();
-        }
-
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
 
         if (isGrounded)
         {
-            //如再出問題改成visual跟rb分開
-            //角度小的話緩慢旋轉
-            if (Mathf.Abs(convertedAngleZ - ConvertTo360Base((angle - 90f))) < 60)
-            {
-                //Debug.Log("smol");
-                float rotateAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, angle - 90f, ref r, 0.1f);
-                transform.localRotation = Quaternion.Euler(0, 0, rotateAngle);
-            }
-            else //角度大的話直接旋轉
-            {
-                transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
-            }
+            HandleRotation(angle, convertedAngleZ);
 
             if (stickPower > 0)
             {
                 //just start moving
-                if (horizontalInput != 0 && releaseMove == true)
+                if (horizontalInput != 0  && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
                 {
                     releaseMove = false;
                     angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
@@ -297,12 +289,15 @@ public class PlayerMove : MonoBehaviour
                 rb.gravityScale = originalGravityScale;
                 movementAxis = new Vector2(1, 0);
             }
+
             if (!(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295) && stickPower <= 100)
             {
                 stickPower += stickRestorePower * Time.deltaTime;
             }
+
             ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
-            if ((convertedAngleZ != 90 && convertedAngleZ != 270) || horizontalInput!=0)
+
+            if ((convertedAngleZ != 90 && convertedAngleZ != 270) || (horizontalInput!=0 && releaseMove != true))
             {
                 movementAxis = DetermineMovementAxis(convertedAngleZ); //決定移動方向
                 velocity = horizontalInput * movementSpeedBase * movementAxis;
@@ -312,6 +307,7 @@ public class PlayerMove : MonoBehaviour
                 movementAxis = DetermineMovementAxisVertical(convertedAngleZ); //決定移動方向
                 velocity = verticalInput * movementSpeedBase * movementAxis;
             }
+
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
         }
         else
@@ -330,14 +326,26 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    //***待調整
-    //跳跃 - 根據當前角度朝不同方向跳
-    
+    private void HandleRotation(float angle, float convertedAngleZ)
+    {
+        if (Mathf.Abs(convertedAngleZ - ConvertTo360Base(angle - 90f)) < 60)
+        {
+            // 當角度差較小時，使用平滑旋轉
+            float rotateAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, angle - 90f, ref r, 0.1f);
+            transform.localRotation = Quaternion.Euler(0, 0, rotateAngle);
+        }
+        else
+        {
+            // 當角度差較大時，直接調整角度
+            transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
+        }
+    }
+
+    // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
         if (jumpAction.triggered && isGrounded)
         {
-            Debug.Log("jump");
             rb.gravityScale = originalGravityScale;
             contactingObj = null;
             float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
@@ -345,30 +353,43 @@ public class PlayerMove : MonoBehaviour
             isGrounded = false;
             transform.localRotation = Quaternion.Euler(0, 0, 0);
             angleWhenMove = float.NaN;
+            releaseMove = true;
+
+            // 重置水平速度，防止跳得過遠
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+
+            // 根據角度設置跳躍方向
+            Vector2 jumpDirection = Vector2.zero;
 
             if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
             {
-                rb.linearVelocity = new Vector2(jumpForce, jumpForce);
+                jumpDirection = new Vector2(1, 1.5f); // 右上方跳
             }
             else if (convertedAngleZ >= 270)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpForce);
+                jumpDirection = new Vector2(0, 1); // 垂直向上跳
             }
             else if (Mathf.Abs(convertedAngleZ - 90) < 0.2f)
             {
-                rb.linearVelocity = new Vector2(-jumpForce, jumpForce);
+                jumpDirection = new Vector2(-1, 1.5f); // 左上方跳
             }
             else if (convertedAngleZ >= 90)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocityX, -jumpForce);
+                jumpDirection = new Vector2(0, -0.5f); // 垂直向下跳
             }
             else if (convertedAngleZ >= 0)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpForce);
+                jumpDirection = new Vector2(0, 1); // 垂直向上跳
             }
+
+            // 應用跳躍方向和力度
+            rb.linearVelocity += jumpDirection.normalized * jumpForce;
+
+            // 冷凍短暫的移動行為以避免連續輸入
             StartCoroutine(freezeMovement());
         }
     }
+
 
     //*需優化
     //冲刺-朝着朝向
@@ -449,10 +470,9 @@ public class PlayerMove : MonoBehaviour
             if (jumpClicked || isDashing)
             {
                 rb.gravityScale = originalGravityScale;
-                releaseMove = true;
                 return;
             }
-            else
+            else if(stickPower > 0)
             {
                 TranslateToPos();
             }
@@ -470,6 +490,5 @@ public class PlayerMove : MonoBehaviour
         }
         return angle;
     }
-
 }
 
