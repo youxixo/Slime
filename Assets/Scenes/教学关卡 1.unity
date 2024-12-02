@@ -719,7 +719,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: raycastDistance
-      value: 0.25
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: movementSpeedBase
@@ -3562,13 +3562,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1349179673}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.61909384, w: 0.785317}
-  m_LocalPosition: {x: 7.8427677, y: -1.028749, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 124.7, y: -1, z: 0}
   m_LocalScale: {x: 39.52259, y: -1.1401404, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1541124117}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 76.5}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!61 &1349179675
 BoxCollider2D:
   m_ObjectHideFlags: 0

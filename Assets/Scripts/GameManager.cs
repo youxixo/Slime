@@ -51,9 +51,6 @@ public class GameManager : MonoBehaviour
             //好像很容易有問題 因為player input component會在一開始 active所有 action map很煩
             ActivateActionMap("Player");
         }
-        Debug.Log(inputActions.FindActionMap("Map").enabled);
-        Debug.Log(inputActions.FindActionMap("Player").enabled);
-        Debug.Log(inputActions.FindActionMap("UI").enabled);
     }
 
 
@@ -88,12 +85,10 @@ public class GameManager : MonoBehaviour
         {
             if (map.name == targetMapName)
             {
-                Debug.Log(map.name + " activing");
                 map.Enable(); // 啟用目標 ActionMap
             }
             else
             {
-                Debug.Log(map.name + "de activing");
                 map.Disable(); // 停用其他 ActionMap
             }
         }

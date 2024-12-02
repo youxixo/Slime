@@ -61,6 +61,7 @@ public class PlayerMove : MonoBehaviour
     private InputAction jumpAction;
     private InputAction pauseAction;
     private InputAction dashAction;
+    private bool jumpPressed;
 
     [Header("Events")]
     public static UnityEvent pauseGame = new UnityEvent();
@@ -80,23 +81,33 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if(stickPower < 0)
         {
             rb.gravityScale = originalGravityScale;
         }
-        Jump();
+        if (jumpPressed)
+        {
+            Jump();
+            jumpPressed = false;
+        }
         if (!isDashing && allowToMove)
         {
             Move();
         }
+    }
+    private void Update()
+    {
         if (dashAction.IsPressed() && canDash)
         {
             //StartCoroutine(DashA());
         }
-
-        if(pauseAction.IsPressed())
+        if (jumpAction.triggered && isGrounded)
+        {
+            jumpPressed = true;
+        }
+        if (pauseAction.IsPressed())
         {
             pauseGame.Invoke();
         }
@@ -338,7 +349,7 @@ public class PlayerMove : MonoBehaviour
         if (Mathf.Abs(convertedAngleZ - ConvertTo360Base(angle - 90f)) < 60)
         {
             // 當角度差較小時，使用平滑旋轉
-            float rotateAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, angle - 90f, ref r, 0.1f);
+            float rotateAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, angle - 90f, ref r, 0.01f);
             transform.localRotation = Quaternion.Euler(0, 0, rotateAngle);
         }
         else
@@ -351,8 +362,6 @@ public class PlayerMove : MonoBehaviour
     // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
-        if (jumpAction.triggered && isGrounded)
-        {
             rb.gravityScale = originalGravityScale;
             contactingObj = null;
             float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
@@ -394,7 +403,6 @@ public class PlayerMove : MonoBehaviour
 
             // 冷凍短暫的移動行為以避免連續輸入
             StartCoroutine(freezeMovement());
-        }
     }
 
 
