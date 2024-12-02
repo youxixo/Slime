@@ -58,7 +58,6 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("UI con");
         DontDestroyOnLoad(this);
 
         defaultSettings = new PlayerSettings
@@ -140,6 +139,7 @@ public class UIController : MonoBehaviour
     private void OpenSetting()
     {
         DisableSettingPanel();
+        GameManager.ActivateActionMap("UI");
         settingPage.SetActive(true);
         LoadSettings();
         UpdateSettingVisual();

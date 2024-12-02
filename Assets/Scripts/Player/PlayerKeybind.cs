@@ -27,6 +27,7 @@ public class PlayerKeybind : MonoBehaviour
     [SerializeField] private TMP_Text right;
     [SerializeField] private TMP_Text jump;
     [SerializeField] private TMP_Text dash;
+    [SerializeField] private TMP_Text map;
 
     [Header("Default Keybind")]
     [SerializeField] private Button defaultWASDButton; //預設按鈕1
@@ -40,7 +41,8 @@ public class PlayerKeybind : MonoBehaviour
         left = "<Keyboard>/leftArrow",
         right = "<Keyboard>/rightArrow",
         jump = "<Keyboard>/space",
-        dash = "<Keyboard>/leftShift"
+        dash = "<Keyboard>/leftShift",
+        map = "<Keyboard>/m"
     };
     private Keybind defaultWASD = new Keybind
     {
@@ -49,7 +51,8 @@ public class PlayerKeybind : MonoBehaviour
         left = "<Keyboard>/a",
         right = "<Keyboard>/d",
         jump = "<Keyboard>/j",
-        dash = "<Keyboard>/k"
+        dash = "<Keyboard>/k",
+        map = "<Keyboard>/m"
     };
     private Keybind playerKeyset; //存玩家的鍵位
 
@@ -68,6 +71,7 @@ public class PlayerKeybind : MonoBehaviour
         playerActionMap.FindAction("move").ApplyBindingOverride(FindMoveBindingIndex("down"), key.down);
         playerActionMap.FindAction("jump").ApplyBindingOverride(key.jump);
         playerActionMap.FindAction("sprint").ApplyBindingOverride(key.dash);
+        playerActionMap.FindAction("map").ApplyBindingOverride(key.map);
         Debug.Log("change key bind");
         UpdateKeyVisual();
     }
@@ -76,9 +80,7 @@ public class PlayerKeybind : MonoBehaviour
     {
         keybindDescription.text = "Press enter on the selected key to rebind.";
         playerActionMap = inputActions.FindActionMap("Player");
-        //playerActionMap.Disable();
         moveAction = playerActionMap.FindAction("Move");
-        //inputActions.FindActionMap("UI").Enable();
         GameManager.ActivateActionMap("UI");
         EventSystem.current.SetSelectedGameObject(firstButton);
         UpdateKeyVisual();
@@ -131,6 +133,7 @@ public class PlayerKeybind : MonoBehaviour
         down.text = moveAction.GetBindingDisplayString(FindMoveBindingIndex("down"));
         left.text = moveAction.GetBindingDisplayString(FindMoveBindingIndex("left"));
         right.text = moveAction.GetBindingDisplayString(FindMoveBindingIndex("right"));
+        map.text = playerActionMap.FindAction("map").GetBindingDisplayString(0);
     }
 
     //各移動的binding index
@@ -190,4 +193,5 @@ public struct Keybind
     public string right;
     public string jump;
     public string dash;
+    public string map;
 }
