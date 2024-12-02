@@ -64,13 +64,20 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Events")]
     public static UnityEvent pauseGame = new UnityEvent();
+    private bool actionsDisabled = false;
+
+
 
     void Start()
     {
         InitInput();
-
         rb = GetComponent<Rigidbody2D>();
         originalGravityScale = rb.gravityScale;
+        var playerInput = GetComponent<PlayerInput>();
+        if (playerInput != null)
+        {
+            playerInput.actions.Disable(); // Disable the entire InputActionAsset
+        }
     }
 
     void Update()

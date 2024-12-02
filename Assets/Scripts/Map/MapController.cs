@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class MapController : MonoBehaviour
 {
-    private bool isOpened;
+    private bool isOpened = false;
     [SerializeField] private Transform sight; //準心
     [SerializeField] private float sightBaseSize = 1; //準心size
     [SerializeField] private Camera mapCamera; //渲染小地圖的相機
@@ -43,21 +43,24 @@ public class MapController : MonoBehaviour
         sight.localScale = new Vector3(scale, scale, 1.0f);
     }
 
-    public void ToggleMap()
+    public void ToggleMap(InputAction.CallbackContext context)
     {
-        Debug.Log("called");
-        if(!isOpened) //open map
+        if (context.started)
         {
-            InitializedCamera();
-            UIController.ActivateActionMap(inputActions, "Map");
-            isOpened = true;
-            map.SetActive(true);
-        }
-        else //close map
-        {
-            UIController.ActivateActionMap(inputActions, "Player");
-            isOpened = false;
-            map.SetActive(false);
+            if (!isOpened) //open map
+            {
+                Debug.Log("called");
+                InitializedCamera();
+                GameManager.ActivateActionMap("Map");
+                isOpened = true;
+                map.SetActive(true);
+            }
+            else //close map
+            {
+                GameManager.ActivateActionMap("Player");
+                isOpened = false;
+                map.SetActive(false);
+            }
         }
     }
 

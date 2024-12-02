@@ -79,7 +79,7 @@ public class PlayerKeybind : MonoBehaviour
         //playerActionMap.Disable();
         moveAction = playerActionMap.FindAction("Move");
         //inputActions.FindActionMap("UI").Enable();
-        UIController.ActivateActionMap(inputActions, "UI");
+        GameManager.ActivateActionMap("UI");
         EventSystem.current.SetSelectedGameObject(firstButton);
         UpdateKeyVisual();
         StartCoroutine(EnableSubmitAfterCooldown());
