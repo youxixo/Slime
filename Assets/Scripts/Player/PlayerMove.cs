@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine.Events;
 using Unity.VisualScripting;
 using TMPro;
+using UnityEngine.UI;
 
 /// <summary>
 /// 此腳本為角色控制
@@ -21,6 +22,9 @@ using TMPro;
 /// 加入了吸牆力 - 當在不符合重力的角度時會消耗吸牆力 消耗完掉落, 在平地回復
 /// 在垂直牆時只有ws移動 ad無法移動
 /// 跳躍變得更加合理
+/// 
+/// 12/4
+/// 90度登強跳會相反
 /// </summary>
 
 public class PlayerMove : MonoBehaviour
@@ -39,16 +43,26 @@ public class PlayerMove : MonoBehaviour
 
     [Header("贴墙移动")]
     [SerializeField] private float stickPower; //吸牆力
+    [SerializeField] private float maxStickPower = 100; //max stick power
     [SerializeField] private float stickDownPower;
     [SerializeField] private float stickRestorePower;
     private Vector2 surfaceNormal; //角色目前所在地板的法线（用于贴墙移动）
     float r;
+    private bool collisionEnter; //collide with new object?
     [SerializeField] LayerMask groundLayer; //地板的layerMask
     [SerializeField] float raycastDistance = 100f; //檢測地面的raycast長度
     [SerializeField] Transform wallDetect; //檢測地面的raycast位置
+    private float maxVelocity = 50;
     Vector2 movementAxis = new Vector2();
     private bool releaseMove = true; //是否鬆開移動鍵
     private float angleWhenMove; //開始移動的角度
+
+    [Header("吸回牆")]
+    public float stickSpeed = 3f; // Sitck back to wall speed
+    public float minDistance = 0.05f; // Stopping threshold for stick back
+    private Vector2 stickTargetPosition; //吸牆目標地點
+    private bool isMovingToStickTarget = false; //is sticking to wall
+
 
     [Header("Dash")]
     private bool canDash = true;
@@ -64,9 +78,12 @@ public class PlayerMove : MonoBehaviour
     private InputAction dashAction;
     private bool jumpPressed;
 
+    //以後移到其他地方 如player stats來保持腳本整潔
+    [Header("StickPowerUI")]
+    [SerializeField] private Image stickPowerBar;
+
     [Header("Events")]
     public static UnityEvent pauseGame = new UnityEvent();
-    private bool actionsDisabled = false;
 
 
 
@@ -84,7 +101,7 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(stickPower < 0)
+        if (stickPower < 0)
         {
             rb.gravityScale = originalGravityScale;
         }
@@ -96,6 +113,10 @@ public class PlayerMove : MonoBehaviour
         if (!isDashing && allowToMove)
         {
             Move();
+        }
+        if (rb.linearVelocity.magnitude > maxVelocity)
+        {
+            rb.linearVelocity = rb.linearVelocity.normalized * maxVelocity;
         }
     }
     private void Update()
@@ -112,6 +133,7 @@ public class PlayerMove : MonoBehaviour
         {
             pauseGame.Invoke();
         }
+        StickPowerUIUpdate();
     }
 
     private void InitInput()
@@ -122,6 +144,11 @@ public class PlayerMove : MonoBehaviour
         jumpAction = playerActionMap.FindAction("Jump");
         pauseAction = playerActionMap.FindAction("Pause");
         dashAction = playerActionMap.FindAction("Sprint");
+    }
+
+    private void StickPowerUIUpdate()
+    {
+        stickPowerBar.fillAmount = stickPower / maxStickPower;
     }
 
     //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
@@ -167,6 +194,7 @@ public class PlayerMove : MonoBehaviour
             Debug.LogWarning("Error: " + angle);
             moveType = -1;
         }
+        Debug.Log(_movementAxis);
         _movementAxis = ConsistentMovement(_movementAxis, moveType);
         return _movementAxis;
     }
@@ -202,11 +230,11 @@ public class PlayerMove : MonoBehaviour
 
         if (moveType == 0)
         {
-            if(input > 0)
+            if (input > 0)
             {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
-            else if(input < 0)
+            else if (input < 0)
             {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
@@ -224,12 +252,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    public float speed = 20f; // Movement speed
-    public float minDistance = 0.01f; // Stopping threshold
-
-    private Vector2 targetPosition;
-    private bool isMoving = false;
-
     private void TranslateToPos()
     {
         //用raycast得到法線 計算移動方向
@@ -242,18 +264,18 @@ public class PlayerMove : MonoBehaviour
             isGrounded = true;
             if (contactingObj != hit.collider.gameObject)
             {
-                targetPosition = hit.point;
-                isMoving = true;
-                if (isMoving)
+                stickTargetPosition = hit.point;
+                isMovingToStickTarget = true;
+                if (isMovingToStickTarget)
                 {
                     Vector2 currentPosition = transform.position;
-                    Vector2 direction = (targetPosition - currentPosition).normalized; // Direction to target
-                    float distance = Vector2.Distance(currentPosition, targetPosition); // Distance to target
-                    float step = speed * Time.deltaTime;
+                    Vector2 direction = (stickTargetPosition - currentPosition).normalized; // Direction to target
+                    float distance = Vector2.Distance(currentPosition, stickTargetPosition); // Distance to target
+                    float step = stickSpeed * Time.deltaTime;
 
                     if (distance <= minDistance)
                     {
-                        isMoving = false;
+                        isMovingToStickTarget = false;
                         return;
                     }
                     rb.transform.Translate(direction * step, Space.World);
@@ -287,7 +309,7 @@ public class PlayerMove : MonoBehaviour
             if (stickPower > 0)
             {
                 //just start moving
-                if (horizontalInput != 0  && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
+                if (horizontalInput != 0 && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
                 {
                     releaseMove = false;
                     angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
@@ -298,7 +320,7 @@ public class PlayerMove : MonoBehaviour
                     angleWhenMove = float.NaN;
                 }
                 convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-                if(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295)
+                if (ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295)
                 {
                     stickPower -= stickDownPower * Time.deltaTime;
                 }
@@ -309,22 +331,23 @@ public class PlayerMove : MonoBehaviour
                 movementAxis = new Vector2(1, 0);
             }
 
-            if (!(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295) && stickPower <= 100)
+            if (!(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295) && stickPower <= maxStickPower)
             {
                 stickPower += stickRestorePower * Time.deltaTime;
             }
 
             ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
 
-            if ((convertedAngleZ != 90 && convertedAngleZ != 270) || (horizontalInput!=0 && releaseMove != true))
+            if ((convertedAngleZ != 90 && convertedAngleZ != 270) || (horizontalInput != 0 && releaseMove != true))
             {
                 movementAxis = DetermineMovementAxis(convertedAngleZ); //決定移動方向
                 velocity = horizontalInput * movementSpeedBase * movementAxis;
             }
-            else if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
+            if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
             {
                 movementAxis = DetermineMovementAxisVertical(convertedAngleZ); //決定移動方向
                 velocity = verticalInput * movementSpeedBase * movementAxis;
+                Debug.Log(velocity);
             }
 
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
@@ -339,7 +362,7 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        if(collisionEnter)
+        if (collisionEnter)
         {
             collisionEnter = false;
         }
@@ -363,47 +386,51 @@ public class PlayerMove : MonoBehaviour
     // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
-            rb.gravityScale = originalGravityScale;
-            contactingObj = null;
-            float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-            jumpClicked = true;
-            isGrounded = false;
-            transform.localRotation = Quaternion.Euler(0, 0, 0);
-            angleWhenMove = float.NaN;
-            releaseMove = true;
+        rb.gravityScale = originalGravityScale;
+        contactingObj = null;
+        float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+        jumpClicked = true;
+        isGrounded = false;
+        transform.localRotation = Quaternion.Euler(0, 0, 0);
+        angleWhenMove = float.NaN;
+        releaseMove = true;
 
-            // 重置水平速度，防止跳得過遠
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+        // 重置水平速度，防止跳得過遠
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
 
-            // 根據角度設置跳躍方向
-            Vector2 jumpDirection = Vector2.zero;
+        // 根據角度設置跳躍方向
+        Vector2 jumpDirection = Vector2.zero;
+        Debug.Log(convertedAngleZ);
+        if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
+        {
+            jumpDirection = new Vector2(1, 1.5f); // 右上方跳
+        }
+        else if (convertedAngleZ >= 270)
+        {
+            jumpDirection = new Vector2(0, 1); // 垂直向上跳
+        }
+        else if (Mathf.Abs(convertedAngleZ - 90) < 0.2f)
+        {
+            jumpDirection = new Vector2(-1, 1.5f); // 左上方跳
+        }
+        else if (convertedAngleZ >= 250 && convertedAngleZ < 270)
+        {
+            jumpDirection = new Vector2(1, 1); // 右上方跳
+        }
+        else if (convertedAngleZ >= 90)
+        {
+            jumpDirection = new Vector2(0, -0.25f); // 垂直向下跳
+        }
+        else if (convertedAngleZ >= 0)
+        {
+            jumpDirection = new Vector2(0, 1); // 垂直向上跳
+        }
 
-            if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
-            {
-                jumpDirection = new Vector2(1, 1.5f); // 右上方跳
-            }
-            else if (convertedAngleZ >= 270)
-            {
-                jumpDirection = new Vector2(0, 1); // 垂直向上跳
-            }
-            else if (Mathf.Abs(convertedAngleZ - 90) < 0.2f)
-            {
-                jumpDirection = new Vector2(-1, 1.5f); // 左上方跳
-            }
-            else if (convertedAngleZ >= 90)
-            {
-                jumpDirection = new Vector2(0, -0.5f); // 垂直向下跳
-            }
-            else if (convertedAngleZ >= 0)
-            {
-                jumpDirection = new Vector2(0, 1); // 垂直向上跳
-            }
+        // 應用跳躍方向和力度
+        rb.linearVelocity += jumpDirection.normalized * jumpForce;
 
-            // 應用跳躍方向和力度
-            rb.linearVelocity += jumpDirection.normalized * jumpForce;
-
-            // 冷凍短暫的移動行為以避免連續輸入
-            StartCoroutine(freezeMovement());
+        // 冷凍短暫的移動行為以避免連續輸入
+        StartCoroutine(freezeMovement());
     }
 
     public static void StopMovement()
@@ -419,7 +446,7 @@ public class PlayerMove : MonoBehaviour
         canDash = false;
         isDashing = true;
         rb.gravityScale = 0;
-        rb.linearVelocity = new Vector2 (Mathf.RoundToInt(Input.GetAxis("Horizontal")) * dashForce, Mathf.RoundToInt(Input.GetAxis("Vertical")) * dashForce*0.5f);
+        rb.linearVelocity = new Vector2(Mathf.RoundToInt(Input.GetAxis("Horizontal")) * dashForce, Mathf.RoundToInt(Input.GetAxis("Vertical")) * dashForce * 0.5f);
         yield return new WaitForSeconds(dashDuration);
         rb.gravityScale = originalGravityScale;
         isDashing = false;
@@ -447,14 +474,13 @@ public class PlayerMove : MonoBehaviour
             {
                 surfaceNormal = contact.normal; // Get the surface normal
             }
-            if(stickPower > 0)
+            if (stickPower > 0)
             {
                 //rb.gravityScale = 0;
             }
         }
     }
 
-    private bool collisionEnter;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == 3)
@@ -465,12 +491,12 @@ public class PlayerMove : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if(collision.gameObject.layer == 3)
+        if (collision.gameObject.layer == 3)
         {
             if (stickPower > 0)
             {
                 rb.gravityScale = 0;
-                
+
             }
             foreach (ContactPoint2D contact in collision.contacts)
             {
@@ -492,9 +518,15 @@ public class PlayerMove : MonoBehaviour
                 rb.gravityScale = originalGravityScale;
                 return;
             }
-            else if(stickPower > 0)
+            else if (stickPower > 0)
             {
                 TranslateToPos();
+            }
+
+            if(!isGrounded)
+            {
+                angleWhenMove = float.NaN;
+                releaseMove = true;
             }
         }
     }
@@ -502,16 +534,16 @@ public class PlayerMove : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //interactable layer
-        if(collision.gameObject.layer == 11)
+        if (collision.gameObject.layer == 11)
         {
             collision.gameObject.transform.Find("UI").gameObject.SetActive(true);
             //可以創一個string var 在playerkeybind那邊在設置時再修改這邊的string才不用每次調用
-            collision.gameObject.transform.Find("UI/Key Text").GetComponent<TMP_Text>().text = inputActions.FindActionMap("Player").FindAction("Interact").GetBindingDisplayString(0);
+            collision.gameObject.transform.Find("UI/KeyHint/Key Text").GetComponent<TMP_Text>().text = inputActions.FindActionMap("Player").FindAction("Interact").GetBindingDisplayString(0);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
-    {   
+    {
         //interactable layer
         if (collision.gameObject.layer == 11)
         {
