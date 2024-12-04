@@ -1,9 +1,12 @@
-using System.IO;
+ï»¿using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerSave : MonoBehaviour
 {
+    private bool inSaveZone;
+    private GameObject savePoint;
+
     private JsonData testData;
 
     public class JsonData
@@ -16,17 +19,35 @@ public class PlayerSave : MonoBehaviour
         public Vector2 position;
     }
 
+    //control in player input component
+    public void Save()
+    {
+        if(inSaveZone)
+        {
+            InitJsonData();
+            PlayerDataSave(savePoint);
+            JsonSave();
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("SavePoint"))
         {
-            InitJsonData();
-            PlayerDataSave(collision.gameObject);
-            JsonSave();
+            inSaveZone = true;
+            savePoint = collision.gameObject;
         }
         if (collision.gameObject.CompareTag("DeathPoint"))
         {
             PlayerDataLoad();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("SavePoint"))
+        {
+            inSaveZone = false;
         }
     }
 
@@ -46,23 +67,23 @@ public class PlayerSave : MonoBehaviour
     {
         string path = JsonPath();
 
-        // Èç¹û™n°¸²»´æÔÚ£¬½¨Á¢™n°¸KêPé]Á÷
+        // å¦‚æœæª”æ¡ˆä¸å­˜åœ¨ï¼Œå»ºç«‹æª”æ¡ˆå¾Œç¹¼çºŒè™•ç†
         if (!File.Exists(path))
         {
-            Debug.Log("File does not exist, creating...");
+            Debug.Log("æª”æ¡ˆä¸å­˜åœ¨ï¼Œæ­£åœ¨å»ºç«‹...");
             using (File.Create(path))
             {
-                // ™n°¸Á÷•şÔÚ using …^‰K½YÊø•r×Ô„ÓêPé]
+                // æª”æ¡ˆæµæœƒåœ¨ using çµæŸæ™‚è‡ªå‹•é‡‹æ”¾è³‡æº
             }
         }
 
-        // Œ¢ÙYÁÏŞD“Q³É JSON
+        // å°‡è³‡æ–™è½‰æ›ç‚º JSON
         string json = JsonUtility.ToJson(testData, true);
 
-        // Œ‘Èë™n°¸
+        // å¯«å…¥æª”æ¡ˆ
         File.WriteAllText(path, json);
 
-        Debug.Log("Finished save at: " + path);
+        Debug.Log("å·²å®Œæˆå„²å­˜æ–¼: " + path);
     }
 
     private void PlayerDataSave(GameObject savePoint)
@@ -72,6 +93,7 @@ public class PlayerSave : MonoBehaviour
 
     private void PlayerDataLoad()
     {
+        PlayerMove.StopMovement();
         this.transform.position = testData.playerData.position;
         Debug.Log("Data load successful, player at position: " + testData.playerData.position);
     }

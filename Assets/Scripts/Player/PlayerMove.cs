@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Events;
 using Unity.VisualScripting;
+using TMPro;
 
 /// <summary>
 /// 此腳本為角色控制
@@ -28,7 +29,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float jumpForce = 5; //跳跃强度
     private float originalGravityScale; //存正常的gravity力
 
-    public Rigidbody2D rb;
+    public static Rigidbody2D rb;
     //Vector2 movementDirection = new Vector2(); //移动方向
 
     private bool jumpClicked = false; //按下跳跃
@@ -405,6 +406,10 @@ public class PlayerMove : MonoBehaviour
             StartCoroutine(freezeMovement());
     }
 
+    public static void StopMovement()
+    {
+        rb.linearVelocity = Vector2.zero;
+    }
 
     //*需優化
     //冲刺-朝着朝向
@@ -491,6 +496,26 @@ public class PlayerMove : MonoBehaviour
             {
                 TranslateToPos();
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //interactable layer
+        if(collision.gameObject.layer == 11)
+        {
+            collision.gameObject.transform.Find("UI").gameObject.SetActive(true);
+            //可以創一個string var 在playerkeybind那邊在設置時再修改這邊的string才不用每次調用
+            collision.gameObject.transform.Find("UI/Key Text").GetComponent<TMP_Text>().text = inputActions.FindActionMap("Player").FindAction("Interact").GetBindingDisplayString(0);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {   
+        //interactable layer
+        if (collision.gameObject.layer == 11)
+        {
+            collision.gameObject.transform.Find("UI").gameObject.SetActive(false);
         }
     }
 

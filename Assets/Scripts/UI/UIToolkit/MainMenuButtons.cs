@@ -43,7 +43,7 @@ public class MainMenuButtons : MonoBehaviour
     //可以換成New Game / Load Game
     private void StartGame()
     {
-        SceneManager.LoadScene("教学关卡");
+        SceneManager.LoadScene("教学关卡 1");
     }
 
     private void Setting()

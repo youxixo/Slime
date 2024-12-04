@@ -137,8 +137,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1882927965
+  m_SortingLayer: 2
   m_SortingOrder: 6
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -224,9 +224,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1882927965
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -353,6 +353,9 @@ MonoBehaviour:
   movementSpeedBase: 5
   jumpForce: 15
   rb: {fileID: 0}
+  stickPower: 0
+  stickDownPower: 0
+  stickRestorePower: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -361,6 +364,8 @@ MonoBehaviour:
   dashForce: 25
   dashDuration: 0.1
   inputActions: {fileID: -944628639613478452, guid: ac2a8e22ff7af5f4a8c66a11669cc29e, type: 3}
+  speed: 20
+  minDistance: 0.01
 --- !u!114 &4118448683333123735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,8 +548,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d097481cc2f83f84bbc98803e8a7534c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slimeType: 0
+  currentSlimeType: 0
   sprd: {fileID: 7009499732049091772}
+  inputActions: {fileID: 0}
 --- !u!1 &7778393466565659735
 GameObject:
   m_ObjectHideFlags: 0
