@@ -2829,6 +2829,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Npc",
+            "id": "c19e0b7b-1c20-4adf-bd66-7dd1ea6ea412",
+            "actions": [
+                {
+                    "name": "Next",
+                    "type": "Button",
+                    "id": "a93240c0-e5e0-48ba-b49b-a016fd4dd46c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4d187e8d-89f1-4758-8470-b7adce465066",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

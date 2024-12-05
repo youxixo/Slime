@@ -2851,6 +2851,34 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Npc"",
+            ""id"": ""c19e0b7b-1c20-4adf-bd66-7dd1ea6ea412"",
+            ""actions"": [
+                {
+                    ""name"": ""Next"",
+                    ""type"": ""Button"",
+                    ""id"": ""a93240c0-e5e0-48ba-b49b-a016fd4dd46c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4d187e8d-89f1-4758-8470-b7adce465066"",
+                    ""path"": ""<Keyboard>/anyKey"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Next"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -2978,6 +3006,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Map_Move = m_Map.FindAction("Move", throwIfNotFound: true);
         m_Map_Zoom = m_Map.FindAction("Zoom", throwIfNotFound: true);
         m_Map_Sign = m_Map.FindAction("Sign", throwIfNotFound: true);
+        // Npc
+        m_Npc = asset.FindActionMap("Npc", throwIfNotFound: true);
+        m_Npc_Next = m_Npc.FindAction("Next", throwIfNotFound: true);
     }
 
     ~@InputActions()
@@ -2987,6 +3018,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputActions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Keybind.enabled, "This will cause a leak and performance issues, InputActions.Keybind.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Map.enabled, "This will cause a leak and performance issues, InputActions.Map.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Npc.enabled, "This will cause a leak and performance issues, InputActions.Npc.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -3650,6 +3682,52 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         }
     }
     public MapActions @Map => new MapActions(this);
+
+    // Npc
+    private readonly InputActionMap m_Npc;
+    private List<INpcActions> m_NpcActionsCallbackInterfaces = new List<INpcActions>();
+    private readonly InputAction m_Npc_Next;
+    public struct NpcActions
+    {
+        private @InputActions m_Wrapper;
+        public NpcActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Next => m_Wrapper.m_Npc_Next;
+        public InputActionMap Get() { return m_Wrapper.m_Npc; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(NpcActions set) { return set.Get(); }
+        public void AddCallbacks(INpcActions instance)
+        {
+            if (instance == null || m_Wrapper.m_NpcActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_NpcActionsCallbackInterfaces.Add(instance);
+            @Next.started += instance.OnNext;
+            @Next.performed += instance.OnNext;
+            @Next.canceled += instance.OnNext;
+        }
+
+        private void UnregisterCallbacks(INpcActions instance)
+        {
+            @Next.started -= instance.OnNext;
+            @Next.performed -= instance.OnNext;
+            @Next.canceled -= instance.OnNext;
+        }
+
+        public void RemoveCallbacks(INpcActions instance)
+        {
+            if (m_Wrapper.m_NpcActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(INpcActions instance)
+        {
+            foreach (var item in m_Wrapper.m_NpcActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_NpcActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public NpcActions @Npc => new NpcActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -3761,5 +3839,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnSign(InputAction.CallbackContext context);
+    }
+    public interface INpcActions
+    {
+        void OnNext(InputAction.CallbackContext context);
     }
 }

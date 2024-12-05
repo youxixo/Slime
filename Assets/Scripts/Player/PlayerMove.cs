@@ -400,7 +400,6 @@ public class PlayerMove : MonoBehaviour
 
         // 根據角度設置跳躍方向
         Vector2 jumpDirection = Vector2.zero;
-        Debug.Log(convertedAngleZ);
         if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
         {
             jumpDirection = new Vector2(1, 1.5f); // 右上方跳
@@ -531,6 +530,17 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private Npc npc;
+    public void TalkToNpc(InputAction.CallbackContext context)
+    {
+        if (inNpc && context.started)
+        {
+            GameManager.ActivateActionMap("Npc");
+            npc.StartDialogue();
+        }
+    }
+
+    private bool inNpc = false;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //interactable layer
@@ -540,6 +550,15 @@ public class PlayerMove : MonoBehaviour
             //可以創一個string var 在playerkeybind那邊在設置時再修改這邊的string才不用每次調用
             collision.gameObject.transform.Find("UI/KeyHint/Key Text").GetComponent<TMP_Text>().text = inputActions.FindActionMap("Player").FindAction("Interact").GetBindingDisplayString(0);
         }
+        if(collision.CompareTag("Npc"))
+        {
+            inNpc =true;
+            collision.TryGetComponent<Npc>(out npc);
+            if(npc == null)
+            {
+                Debug.LogWarning("no npc script");
+            }
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -548,6 +567,10 @@ public class PlayerMove : MonoBehaviour
         if (collision.gameObject.layer == 11)
         {
             collision.gameObject.transform.Find("UI").gameObject.SetActive(false);
+        }
+        if (collision.CompareTag("Npc"))
+        {
+            inNpc = false;
         }
     }
 
