@@ -76,7 +76,7 @@ public class PlayerMove : MonoBehaviour
     private InputAction jumpAction;
     private InputAction pauseAction;
     private InputAction dashAction;
-    private bool jumpPressed;
+    //private bool jumpPressed;
 
     //以後移到其他地方 如player stats來保持腳本整潔
     [Header("StickPowerUI")]
@@ -84,8 +84,6 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Events")]
     public static UnityEvent pauseGame = new UnityEvent();
-
-
 
     void Start()
     {
@@ -105,10 +103,10 @@ public class PlayerMove : MonoBehaviour
         {
             rb.gravityScale = originalGravityScale;
         }
-        if (jumpPressed)
+        if (jumpClicked)
         {
             Jump();
-            jumpPressed = false;
+            jumpClicked = false;
         }
         if (!isDashing && allowToMove)
         {
@@ -118,6 +116,7 @@ public class PlayerMove : MonoBehaviour
         {
             rb.linearVelocity = rb.linearVelocity.normalized * maxVelocity;
         }
+        DetectNotOnGround();
     }
     private void Update()
     {
@@ -127,7 +126,7 @@ public class PlayerMove : MonoBehaviour
         }
         if (jumpAction.triggered && isGrounded)
         {
-            jumpPressed = true;
+            jumpClicked = true;
         }
         if (pauseAction.IsPressed())
         {
@@ -156,22 +155,32 @@ public class PlayerMove : MonoBehaviour
     {
         int moveType;
         Vector2 _movementAxis = new Vector2();
+        Debug.Log(angle);
+        angle = Mathf.RoundToInt(angle);
         if ((angle >= 0 && angle <= 90) || angle >= 270)
         {
             _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
-            moveType = 0;
+            moveType = 0; //正向運動
         }
         else if ((angle > 90 && angle < 270))
         {
             _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
-            moveType = 1;
+            moveType = 1; //反向運動
         }
         else
         {
             Debug.LogWarning("Error: " + angle);
             moveType = -1;
         }
-        _movementAxis = ConsistentMovement(_movementAxis, moveType);
+        //***kono sekai no bye bye bye bye
+        if (!jumpClicked)
+        {
+            _movementAxis = ConsistentMovement(_movementAxis, moveType);
+        }
+        else
+        {
+            Debug.Log("mmsd");
+        }
         return _movementAxis;
     }
 
@@ -194,27 +203,31 @@ public class PlayerMove : MonoBehaviour
             Debug.LogWarning("Error: " + angle);
             moveType = -1;
         }
-        Debug.Log(_movementAxis);
-        _movementAxis = ConsistentMovement(_movementAxis, moveType);
+        //_movementAxis = ConsistentMovement(_movementAxis, moveType);
         return _movementAxis;
     }
 
+    //***待調整 90度角互相跳不會consistent
+    //move type目前movement
     private Vector2 ConsistentMovement(Vector2 _movementAxis, int moveType)
     {
         if (angleWhenMove != float.NaN || !releaseMove)
         {
-            if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove >= 270) && moveType != 0)
+            if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove > 270) && moveType == 1)
             {
+                Debug.Log("angle move: " + angleWhenMove + " move type: " + moveType);
                 _movementAxis = -_movementAxis;
             }
-            else if ((angleWhenMove > 90 && angleWhenMove < 270) && moveType != 1)
+            else if ((angleWhenMove > 90 && angleWhenMove <= 270) && moveType == 0)
             {
+                Debug.Log("angle move: " + angleWhenMove + " move type: " + moveType);
                 _movementAxis = -_movementAxis;
             }
         }
         return _movementAxis;
     }
 
+    //***待調整
     //change direction facing base on standing angle and input
     private void ChangeFaceDir(float angle, float input)
     {
@@ -249,6 +262,16 @@ public class PlayerMove : MonoBehaviour
             {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
+        }
+    }
+
+    private void DetectNotOnGround()
+    {
+        var hit = Physics2D.Raycast(wallDetect.position, -transform.up.normalized, raycastDistance/2, groundLayer);
+        if (hit.collider == null)
+        {
+            rb.gravityScale = originalGravityScale;
+            isGrounded = false;
         }
     }
 
@@ -289,6 +312,8 @@ public class PlayerMove : MonoBehaviour
             rb.gravityScale = originalGravityScale;
         }
     }
+
+    
 
     private GameObject contactingObj;
     //移动
@@ -338,16 +363,15 @@ public class PlayerMove : MonoBehaviour
 
             ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
 
-            if ((convertedAngleZ != 90 && convertedAngleZ != 270) || (horizontalInput != 0 && releaseMove != true))
+            if ((Mathf.RoundToInt(convertedAngleZ) != 90 && Mathf.RoundToInt(convertedAngleZ) != 270) || (horizontalInput != 0 && releaseMove != true))
             {
-                movementAxis = DetermineMovementAxis(convertedAngleZ); //決定移動方向
+                movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
                 velocity = horizontalInput * movementSpeedBase * movementAxis;
             }
             if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
             {
-                movementAxis = DetermineMovementAxisVertical(convertedAngleZ); //決定移動方向
+                movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
                 velocity = verticalInput * movementSpeedBase * movementAxis;
-                Debug.Log(velocity);
             }
 
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
@@ -561,6 +585,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+
     private void OnTriggerExit2D(Collider2D collision)
     {
         //interactable layer
@@ -583,7 +608,7 @@ public class PlayerMove : MonoBehaviour
             convertedAngle = angle + 360;
             angle += 360;
         }
-        return angle;
+        return Mathf.RoundToInt(angle);
     }
 }
 

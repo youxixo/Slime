@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerSave : MonoBehaviour
 {
@@ -20,9 +21,9 @@ public class PlayerSave : MonoBehaviour
     }
 
     //control in player input component
-    public void Save()
+    public void Save(InputAction.CallbackContext context)
     {
-        if(inSaveZone)
+        if(inSaveZone && context.started)
         {
             InitJsonData();
             PlayerDataSave(savePoint);
