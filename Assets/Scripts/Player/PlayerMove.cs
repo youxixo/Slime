@@ -155,7 +155,6 @@ public class PlayerMove : MonoBehaviour
     {
         int moveType;
         Vector2 _movementAxis = new Vector2();
-        Debug.Log(angle);
         angle = Mathf.RoundToInt(angle);
         if ((angle >= 0 && angle <= 90) || angle >= 270)
         {
@@ -417,7 +416,7 @@ public class PlayerMove : MonoBehaviour
         isGrounded = false;
         transform.localRotation = Quaternion.Euler(0, 0, 0);
         angleWhenMove = float.NaN;
-        releaseMove = true;
+        //releaseMove = true;
 
         // 重置水平速度，防止跳得過遠
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
@@ -549,7 +548,7 @@ public class PlayerMove : MonoBehaviour
             if(!isGrounded)
             {
                 angleWhenMove = float.NaN;
-                releaseMove = true;
+                //releaseMove = true;
             }
         }
     }
