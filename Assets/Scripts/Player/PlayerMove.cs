@@ -97,17 +97,19 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+
     void FixedUpdate()
     {
         if (stickPower < 0)
         {
             rb.gravityScale = originalGravityScale;
         }
+        /*
         if (jumpClicked)
         {
             Jump();
             jumpClicked = false;
-        }
+        }*/
         if (!isDashing && allowToMove)
         {
             Move();
@@ -126,7 +128,7 @@ public class PlayerMove : MonoBehaviour
         }
         if (jumpAction.triggered && isGrounded)
         {
-            jumpClicked = true;
+            Jump();
         }
         if (pauseAction.IsPressed())
         {
@@ -150,18 +152,24 @@ public class PlayerMove : MonoBehaviour
         stickPowerBar.fillAmount = stickPower / maxStickPower;
     }
 
+    private void JumpLandConsistentMove()
+    {
+
+    }     
+
+    //再加上對initial horizontal input 的判斷? 假設如果一開始在 0 度角按下左鍵 (正向運動的反向移動) 當碰到270度角 ()
     //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
     private Vector2 DetermineMovementAxis(float angle)
     {
         int moveType;
         Vector2 _movementAxis = new Vector2();
         angle = Mathf.RoundToInt(angle);
-        if ((angle >= 0 && angle <= 90) || angle >= 270)
+        if ((angle >= 0 && angle <= 90) || angle > 270)
         {
             _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
             moveType = 0; //正向運動
         }
-        else if ((angle > 90 && angle < 270))
+        else if ((angle > 90 && angle <= 270))
         {
             _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
             moveType = 1; //反向運動
@@ -172,13 +180,14 @@ public class PlayerMove : MonoBehaviour
             moveType = -1;
         }
         //***kono sekai no bye bye bye bye
-        if (!jumpClicked)
+        if (jumpClicked)
         {
-            _movementAxis = ConsistentMovement(_movementAxis, moveType);
+            Debug.Log("跳了");
+            jumpClicked = false;
         }
         else
         {
-            Debug.Log("mmsd");
+            _movementAxis = ConsistentMovement(_movementAxis, moveType);
         }
         return _movementAxis;
     }
@@ -223,6 +232,7 @@ public class PlayerMove : MonoBehaviour
                 _movementAxis = -_movementAxis;
             }
         }
+        //Debug.Log(_movementAxis);
         return _movementAxis;
     }
 
@@ -312,8 +322,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    
-
     private GameObject contactingObj;
     //移动
     private void Move()
@@ -325,7 +333,6 @@ public class PlayerMove : MonoBehaviour
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-
         if (isGrounded)
         {
             HandleRotation(angle, convertedAngleZ);
@@ -372,7 +379,7 @@ public class PlayerMove : MonoBehaviour
                 movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
                 velocity = verticalInput * movementSpeedBase * movementAxis;
             }
-
+            //Debug.Log(velocity);
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
         }
         else
@@ -407,19 +414,18 @@ public class PlayerMove : MonoBehaviour
     }
 
     // 跳跃 - 根據當前角度朝不同方向跳
+    // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
         rb.gravityScale = originalGravityScale;
         contactingObj = null;
+
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
         jumpClicked = true;
         isGrounded = false;
         transform.localRotation = Quaternion.Euler(0, 0, 0);
-        angleWhenMove = float.NaN;
-        //releaseMove = true;
-
-        // 重置水平速度，防止跳得過遠
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+        //angleWhenMove = float.NaN;
+        releaseMove = true;
 
         // 根據角度設置跳躍方向
         Vector2 jumpDirection = Vector2.zero;
@@ -449,11 +455,12 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 應用跳躍方向和力度
-        rb.linearVelocity += jumpDirection.normalized * jumpForce;
+        rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
 
-        // 冷凍短暫的移動行為以避免連續輸入
+        // 冷卻跳躍輸入，避免連續觸發
         StartCoroutine(freezeMovement());
     }
+
 
     public static void StopMovement()
     {
@@ -491,7 +498,7 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = true;
             collisionEnter = true;
-            jumpClicked = false;
+            //jumpClicked = false;
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 surfaceNormal = contact.normal; // Get the surface normal
@@ -518,7 +525,6 @@ public class PlayerMove : MonoBehaviour
             if (stickPower > 0)
             {
                 rb.gravityScale = 0;
-
             }
             foreach (ContactPoint2D contact in collision.contacts)
             {
@@ -544,10 +550,14 @@ public class PlayerMove : MonoBehaviour
             {
                 TranslateToPos();
             }
+            else
+            {
+                angleWhenMove = float.NaN;
+            }
 
             if(!isGrounded)
             {
-                angleWhenMove = float.NaN;
+                //angleWhenMove = float.NaN;
                 //releaseMove = true;
             }
         }
