@@ -104,12 +104,6 @@ public class PlayerMove : MonoBehaviour
         {
             rb.gravityScale = originalGravityScale;
         }
-        /*
-        if (jumpClicked)
-        {
-            Jump();
-            jumpClicked = false;
-        }*/
         if (!isDashing && allowToMove)
         {
             Move();
@@ -182,7 +176,6 @@ public class PlayerMove : MonoBehaviour
         //***kono sekai no bye bye bye bye
         if (jumpClicked)
         {
-            Debug.Log("跳了");
             jumpClicked = false;
         }
         else
@@ -223,12 +216,10 @@ public class PlayerMove : MonoBehaviour
         {
             if (((angleWhenMove >= 0 && angleWhenMove <= 90) || angleWhenMove > 270) && moveType == 1)
             {
-                Debug.Log("angle move: " + angleWhenMove + " move type: " + moveType);
                 _movementAxis = -_movementAxis;
             }
             else if ((angleWhenMove > 90 && angleWhenMove <= 270) && moveType == 0)
             {
-                Debug.Log("angle move: " + angleWhenMove + " move type: " + moveType);
                 _movementAxis = -_movementAxis;
             }
         }
@@ -369,7 +360,7 @@ public class PlayerMove : MonoBehaviour
 
             ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
 
-            if ((Mathf.RoundToInt(convertedAngleZ) != 90 && Mathf.RoundToInt(convertedAngleZ) != 270) || (horizontalInput != 0 && releaseMove != true))
+            if ((Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f) == false)
             {
                 movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
                 velocity = horizontalInput * movementSpeedBase * movementAxis;
@@ -498,7 +489,6 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = true;
             collisionEnter = true;
-            //jumpClicked = false;
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 surfaceNormal = contact.normal; // Get the surface normal
@@ -549,16 +539,19 @@ public class PlayerMove : MonoBehaviour
             else if (stickPower > 0)
             {
                 TranslateToPos();
+                DetectNotOnGround();
             }
-            else
+            else //自然脫落
             {
+                Debug.Log("自然掉落");
+                releaseMove = true;
                 angleWhenMove = float.NaN;
             }
 
             if(!isGrounded)
             {
-                //angleWhenMove = float.NaN;
-                //releaseMove = true;
+                angleWhenMove = float.NaN;
+                releaseMove = true;
             }
         }
     }
@@ -617,7 +610,7 @@ public class PlayerMove : MonoBehaviour
             convertedAngle = angle + 360;
             angle += 360;
         }
-        return Mathf.RoundToInt(angle);
+        return angle;
     }
 }
 
