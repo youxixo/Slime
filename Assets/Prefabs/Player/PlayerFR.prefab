@@ -314,7 +314,7 @@ SpriteRenderer:
   m_SortingLayerID: 1882927965
   m_SortingLayer: 2
   m_SortingOrder: 1
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 677773412, guid: ba22d4e7f65fb674bb6bec81a733da78, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -325,6 +325,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &7250925025079922713
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5698818402797012901}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 110be40bc2943a849b7e1cf11e522da4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6414684366762424267
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,8 +800,8 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: a93240c0-e5e0-48ba-b49b-a016fd4dd46c
     m_ActionName: 'Npc/Next[/Keyboard/anyKey]'
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: Keyboard&Mouse
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -863,6 +885,5 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2703787148599158543}
-  - {fileID: 2978623306889925943}
   m_Father: {fileID: 2392258064301447212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
