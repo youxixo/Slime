@@ -64,93 +64,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2392258064301447212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5095234112536630059
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2978623306889925943}
-  - component: {fileID: 6287293368103915081}
-  m_Layer: 0
-  m_Name: Eye
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2978623306889925943
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5095234112536630059}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.22000003, y: 0.25, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 5820867500285481770}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6287293368103915081
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5095234112536630059}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1882927965
-  m_SortingLayer: 2
-  m_SortingOrder: 6
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &5698818402797012901
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,6 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2703787148599158543}
   - component: {fileID: 7009499732049091772}
+  - component: {fileID: 7250925025079922713}
   m_Layer: 0
   m_Name: Body
   m_TagString: Player
@@ -227,7 +141,7 @@ SpriteRenderer:
   m_SortingLayerID: 1882927965
   m_SortingLayer: 2
   m_SortingOrder: 1
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 677773412, guid: ba22d4e7f65fb674bb6bec81a733da78, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -238,6 +152,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &7250925025079922713
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5698818402797012901}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 110be40bc2943a849b7e1cf11e522da4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6414684366762424267
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,8 +288,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeedBase: 5
   jumpForce: 15
-  rb: {fileID: 0}
   stickPower: 0
+  maxStickPower: 100
   stickDownPower: 0
   stickRestorePower: 0
   groundLayer:
@@ -361,11 +297,12 @@ MonoBehaviour:
     m_Bits: 8
   raycastDistance: 0.5
   wallDetect: {fileID: 3952624176125372587}
+  stickSpeed: 3
+  minDistance: 0.01
   dashForce: 25
   dashDuration: 0.1
   inputActions: {fileID: -944628639613478452, guid: ac2a8e22ff7af5f4a8c66a11669cc29e, type: 3}
-  speed: 20
-  minDistance: 0.01
+  stickPowerBar: {fileID: 0}
 --- !u!114 &4118448683333123735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,6 +468,78 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: ace33ad3-0a34-475d-aecb-6b460ac3658c
     m_ActionName: 'Keybind/Exit[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9400ced5-5e52-4d7d-addf-d5ea74478be2
+    m_ActionName: 'Player/Map[/Keyboard/m]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8acb4ccf-08de-4dfe-be73-99cb3dddf956
+    m_ActionName: 'Player1/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6cc23899-56d5-4fd9-9442-b49e597650e1
+    m_ActionName: 'Player1/Move1[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 84684680-eb2a-4082-8199-498cbe16e297
+    m_ActionName: 'Player1/Look[/Mouse/delta,/Pen/delta]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e217d029-6084-4e66-bb73-a934ad2c20f3
+    m_ActionName: 'Player1/Attack[/Mouse/leftButton,/Keyboard/enter]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7b80bd67-4299-4769-88b5-460da717deb7
+    m_ActionName: 'Player1/Interact[/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 79d436eb-c0be-4c7a-8b41-4405134298df
+    m_ActionName: 'Player1/Crouch[/Keyboard/c]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ce39d090-d587-48d9-82c7-e3eaf308df90
+    m_ActionName: 'Player1/Jump[/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6654533d-60a9-4ab9-9d86-21cd96b7534e
+    m_ActionName: 'Player1/Previous[/Keyboard/1]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 05f510a6-7cbc-479a-addb-632d62a786c1
+    m_ActionName: 'Player1/Next[/Keyboard/2]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e90f09c8-8e34-4895-ac77-8b0315ee6c1a
+    m_ActionName: 'Player1/Sprint[/Keyboard/leftShift]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6c23253b-6893-4797-84e5-0382d7325883
+    m_ActionName: 'Player1/Pause[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 090a9097-9d89-4a35-b588-8cd3d3009070
+    m_ActionName: Player1/New action
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 75938e40-7076-45b8-9a43-1cbc4573e404
+    m_ActionName: 'Map/Close Map[/Keyboard/m,/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: be443a4f-ffac-4273-91a6-dff294336eb0
+    m_ActionName: 'Map/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c6ffb716-81f3-495a-b9f8-aef1370f1ece
+    m_ActionName: 'Map/Zoom[/Keyboard/j,/Keyboard/k]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5dfd9701-4f67-42ad-ab48-9de1902ac62b
+    m_ActionName: 'Map/Sign[/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a93240c0-e5e0-48ba-b49b-a016fd4dd46c
+    m_ActionName: 'Npc/Next[/Keyboard/anyKey]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -581,6 +590,5 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2703787148599158543}
-  - {fileID: 2978623306889925943}
   m_Father: {fileID: 2392258064301447212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
