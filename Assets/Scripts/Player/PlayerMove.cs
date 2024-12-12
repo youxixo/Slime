@@ -52,7 +52,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] LayerMask groundLayer; //地板的layerMask
     [SerializeField] float raycastDistance = 100f; //檢測地面的raycast長度
     [SerializeField] Transform wallDetect; //檢測地面的raycast位置
-    private float maxVelocity = 50;
+    private float maxVelocity = 40;
     Vector2 movementAxis = new Vector2();
     private bool releaseMove = true; //是否鬆開移動鍵
     private float angleWhenMove; //開始移動的角度

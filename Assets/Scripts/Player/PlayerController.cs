@@ -112,9 +112,8 @@ public class PlayerController : MonoBehaviour
     private void InitInput()
     {
         var playerActionMap = inputActions.FindActionMap("Player");
-
         attackAction = playerActionMap.FindAction("Attack");
-
+        Debug.Log("asd");
     }
 
     private void OnSlimeTypeEnter(SlimeType type)

@@ -57,7 +57,6 @@ public class DialogueManager : MonoBehaviour
         {
             if (!_typeWriter.IsComplete())
             {
-                Debug.Log("completing dialogue");
                 _typeWriter.Complete();
             }
             else if (currentIndex > maxDialogueIndex)
@@ -67,7 +66,6 @@ public class DialogueManager : MonoBehaviour
             }
             else if (_typeWriter.IsComplete())
             {
-                Debug.Log(currentIndex + " dialogue completed, loading: ");
                 LoadMessage(splitDialogue[currentIndex]);
                 currentIndex++;
             }
