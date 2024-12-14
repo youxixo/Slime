@@ -10,6 +10,7 @@ TagManager:
   - SavePoint
   - DeathPoint
   - Npc
+  - Prop
   layers:
   - Default
   - TransparentFX
@@ -55,6 +56,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1882927965
+    locked: 0
+  - name: UI
+    uniqueID: 745837151
     locked: 0
   m_RenderingLayers:
   - Default

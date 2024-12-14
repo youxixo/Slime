@@ -85,6 +85,9 @@ public class PlayerMove : MonoBehaviour
     [Header("Events")]
     public static UnityEvent pauseGame = new UnityEvent();
 
+    [Header("Animation")]
+    [SerializeField]private Animator player_animator;
+
     void Start()
     {
         InitInput();
@@ -129,6 +132,7 @@ public class PlayerMove : MonoBehaviour
             pauseGame.Invoke();
         }
         StickPowerUIUpdate();
+        JumpAnimation();
     }
 
     private void InitInput()
@@ -145,11 +149,6 @@ public class PlayerMove : MonoBehaviour
     {
         stickPowerBar.fillAmount = stickPower / maxStickPower;
     }
-
-    private void JumpLandConsistentMove()
-    {
-
-    }     
 
     //再加上對initial horizontal input 的判斷? 假設如果一開始在 0 度角按下左鍵 (正向運動的反向移動) 當碰到270度角 ()
     //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
@@ -208,7 +207,6 @@ public class PlayerMove : MonoBehaviour
         return _movementAxis;
     }
 
-    //***待調整 90度角互相跳不會consistent
     //move type目前movement
     private Vector2 ConsistentMovement(Vector2 _movementAxis, int moveType)
     {
@@ -320,12 +318,13 @@ public class PlayerMove : MonoBehaviour
         velocity = Vector2.zero;
         float horizontalInput = moveAction.ReadValue<Vector2>().x;
         float verticalInput = moveAction.ReadValue<Vector2>().y;
-
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
         if (isGrounded)
         {
+            player_animator.SetBool("Jump", false);
+            player_animator.SetBool("Fall", false);
             HandleRotation(angle, convertedAngleZ);
 
             if (stickPower > 0)
@@ -335,9 +334,12 @@ public class PlayerMove : MonoBehaviour
                 {
                     releaseMove = false;
                     angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                    player_animator.SetBool("Move", true);
                 }
                 else if (horizontalInput == 0 && releaseMove == false)
                 {
+
+                    player_animator.SetBool("Move", false);
                     releaseMove = true;
                     angleWhenMove = float.NaN;
                 }
@@ -369,6 +371,14 @@ public class PlayerMove : MonoBehaviour
             {
                 movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
                 velocity = verticalInput * movementSpeedBase * movementAxis;
+                if(verticalInput != 0)
+                {
+                    player_animator.SetBool("Move", true);
+                }
+                else
+                {
+                    player_animator.SetBool("Move", false);
+                }
             }
             //Debug.Log(velocity);
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
@@ -381,11 +391,34 @@ public class PlayerMove : MonoBehaviour
                 ChangeFaceDir(convertedAngleZ, horizontalInput);
                 rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
             }
+            player_animator.SetBool("Move", false);
         }
 
         if (collisionEnter)
         {
             collisionEnter = false;
+        }
+    }
+
+    private void JumpAnimation()
+    {
+        if (!isGrounded)
+        {
+            if (rb.linearVelocity.y < 0)
+            {
+                player_animator.SetBool("Jump", false);
+                player_animator.SetBool("Fall", true);
+            }
+            else if (rb.linearVelocity.y > 0)
+            {
+                player_animator.SetBool("Jump", true);
+                player_animator.SetBool("Fall", false);
+            }
+        }
+        else
+        {
+            player_animator.SetBool("Jump", false);
+            player_animator.SetBool("Fall", false);
         }
     }
 
@@ -489,6 +522,7 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = true;
             collisionEnter = true;
+            jumpClicked = false;
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 surfaceNormal = contact.normal; // Get the surface normal

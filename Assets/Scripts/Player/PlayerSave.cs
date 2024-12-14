@@ -7,6 +7,7 @@ public class PlayerSave : MonoBehaviour
 {
     private bool inSaveZone;
     private GameObject savePoint;
+    [SerializeField] GameObject initSavePoint;
 
     private JsonData testData;
 
@@ -20,13 +21,20 @@ public class PlayerSave : MonoBehaviour
         public Vector2 position;
     }
 
+    private void Start()
+    {
+        InitJsonData();
+        PlayerDataSave(initSavePoint.transform.position);
+        JsonSave();
+    }
+
     //control in player input component
     public void Save(InputAction.CallbackContext context)
     {
         if(inSaveZone && context.started)
         {
             InitJsonData();
-            PlayerDataSave(savePoint);
+            PlayerDataSave(savePoint.GetComponent<SavePoint>().savePos);
             JsonSave();
         }
     }
@@ -87,9 +95,9 @@ public class PlayerSave : MonoBehaviour
         Debug.Log("已完成儲存於: " + path);
     }
 
-    private void PlayerDataSave(GameObject savePoint)
+    private void PlayerDataSave(Vector2 savePointPos)//GameObject savePoint)
     {
-        testData.playerData.position = savePoint.transform.position;
+        testData.playerData.position = savePointPos;// savePoint.transform.position;
     }
 
     private void PlayerDataLoad()
