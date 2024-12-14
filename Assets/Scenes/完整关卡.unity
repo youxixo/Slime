@@ -9141,6 +9141,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 85632894066327289, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 597897620250342317, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: map
       value: 
@@ -9157,6 +9161,14 @@ PrefabInstance:
       propertyPath: mapCamera
       value: 
       objectReference: {fileID: 1910577731}
+    - target: {fileID: 982028273764689016, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_FlipX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 982028273764689016, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -6049351536555669885, guid: 3c9aae88a67ff1b4fb42d2075f07f2fc, type: 3}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: stickPowerBar
       value: 
@@ -9246,6 +9258,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6465695885522774198, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6921185365735070704, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6921185365735070704, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6921185365735070704, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6921185365735070704, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
