@@ -147,7 +147,10 @@ public class PlayerMove : MonoBehaviour
 
     private void StickPowerUIUpdate()
     {
-        stickPowerBar.fillAmount = stickPower / maxStickPower;
+        if (stickPowerBar != null)
+        {
+            stickPowerBar.fillAmount = stickPower / maxStickPower;
+        }
     }
 
     //再加上對initial horizontal input 的判斷? 假設如果一開始在 0 度角按下左鍵 (正向運動的反向移動) 當碰到270度角 ()
@@ -523,10 +526,12 @@ public class PlayerMove : MonoBehaviour
             isGrounded = true;
             collisionEnter = true;
             jumpClicked = false;
+            /*
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 surfaceNormal = contact.normal; // Get the surface normal
-            }
+            }*/
+            surfaceNormal = collision.contacts[collision.contactCount - 1].normal; // Get the surface normal
             if (stickPower > 0)
             {
                 //rb.gravityScale = 0;

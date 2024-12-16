@@ -51,7 +51,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6921185365735070704
 Transform:
   m_ObjectHideFlags: 0
@@ -62,7 +62,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6465695885522774198}
@@ -111,9 +111,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -6049351536555669885, guid: 3c9aae88a67ff1b4fb42d2075f07f2fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
@@ -608,7 +608,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5820867500285481770}
@@ -706,6 +706,7 @@ GameObject:
   - component: {fileID: 597897620250342317}
   - component: {fileID: 5192627986747141780}
   - component: {fileID: 9127748092651119099}
+  - component: {fileID: 402763556219450484}
   m_Layer: 6
   m_Name: PlayerFR
   m_TagString: Player
@@ -723,8 +724,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.22, y: 3.387, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2392258064301447212}
   - {fileID: 6921185365735070704}
@@ -765,8 +766,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: 0.049163222, y: 0.0020599365}
+  m_Radius: 0.71
 --- !u!50 &4218168285052887499
 Rigidbody2D:
   serializedVersion: 5
@@ -790,7 +791,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -823,6 +824,7 @@ MonoBehaviour:
   dashDuration: 0.1
   inputActions: {fileID: -944628639613478452, guid: ac2a8e22ff7af5f4a8c66a11669cc29e, type: 3}
   stickPowerBar: {fileID: 0}
+  player_animator: {fileID: 758788694363729559}
 --- !u!114 &4118448683333123735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1184,6 +1186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d9a6b5b9b8511a4ab4c9508fc2e7d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initSavePoint: {fileID: 0}
 --- !u!114 &9127748092651119099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1199,6 +1202,43 @@ MonoBehaviour:
   currentSlimeType: 0
   sprd: {fileID: 7009499732049091772}
   inputActions: {fileID: -944628639613478452, guid: ac2a8e22ff7af5f4a8c66a11669cc29e, type: 3}
+--- !u!70 &402763556219450484
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6414684366762424267}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: eb51b93d2ef038744a571325c4d6628e, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.035622127, y: 0.01780915}
+  m_Size: {x: 2.2745194, y: 1.3186712}
+  m_Direction: 1
 --- !u!1 &7374620600729111850
 GameObject:
   m_ObjectHideFlags: 0
