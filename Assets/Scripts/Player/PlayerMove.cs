@@ -57,6 +57,10 @@ public class PlayerMove : MonoBehaviour
     private bool releaseMove = true; //是否鬆開移動鍵
     private float angleWhenMove; //開始移動的角度
 
+    [Header("掉落到計時")]
+    [SerializeField] private float dropCD; //掉落時間
+    [SerializeField] private float dropCountDown; //掉落倒數
+
     [Header("吸回牆")]
     public float stickSpeed = 3f; // Sitck back to wall speed
     public float minDistance = 0.05f; // Stopping threshold for stick back
@@ -131,6 +135,7 @@ public class PlayerMove : MonoBehaviour
         {
             pauseGame.Invoke();
         }
+        CountDownDrop();
         StickPowerUIUpdate();
         JumpAnimation();
     }
@@ -368,6 +373,10 @@ public class PlayerMove : MonoBehaviour
             if ((Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f) == false)
             {
                 movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
+                if(horizontalInput != 0)
+                {
+                    dropCountDown = dropCD;
+                }
                 velocity = horizontalInput * movementSpeedBase * movementAxis;
             }
             if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
@@ -376,6 +385,7 @@ public class PlayerMove : MonoBehaviour
                 velocity = verticalInput * movementSpeedBase * movementAxis;
                 if(verticalInput != 0)
                 {
+                    dropCountDown = dropCD;
                     player_animator.SetBool("Move", true);
                 }
                 else
@@ -400,6 +410,19 @@ public class PlayerMove : MonoBehaviour
         if (collisionEnter)
         {
             collisionEnter = false;
+        }
+    }
+
+    private void CountDownDrop()
+    {
+        if(dropCountDown > 0)
+        {
+            dropCountDown -= Time.deltaTime;
+        }
+
+        if(isGrounded && dropCountDown < 0)
+        {
+            rb.gravityScale = originalGravityScale;
         }
     }
 

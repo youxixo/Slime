@@ -231,12 +231,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 152983870}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
-      propertyPath: jumpForce
-      value: 30
+      propertyPath: dropCD
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
-      propertyPath: stickDownPower
-      value: 0
+      propertyPath: jumpForce
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: stickDownPower
