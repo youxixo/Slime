@@ -480,8 +480,8 @@ public class PlayerMove : MonoBehaviour
         {
             jumpDirection = new Vector2(0, 1); // 垂直向上跳
         }
-
-        jumpDirection = new Vector2(moveAction.ReadValue<Vector2>().x, jumpDirection.y);
+        jumpDirection = new Vector2 (jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.5f, jumpDirection.y);
+        jumpDirection.Normalize();
         // 應用跳躍方向和力度
         rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
 
@@ -527,24 +527,18 @@ public class PlayerMove : MonoBehaviour
             isGrounded = true;
             collisionEnter = true;
             jumpClicked = false;
-            if (!contactingObj)
+            
+            foreach (ContactPoint2D contact in collision.contacts)
             {
-                contactingObj = collision.gameObject;
-            }
-            else
-            {
-                foreach (ContactPoint2D contact in collision.contacts)
+                Vector2 normal = collision.contacts[0].normal;
+                float angle = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
+                if(angleWhenMove != (ConvertTo360Base(angle - 90f)))
                 {
-                    if (contact.collider.gameObject != contactingObj)
-                    {
-                        surfaceNormal = contact.normal; // Get the surface normal
-                        contactingObj = contact.collider.gameObject;
-                        break;
-                    }
+                    Debug.Log("Surface Normal: " + normal + ", tangent Angle: " + (ConvertTo360Base(angle - 90f)));
+                    surfaceNormal = contact.normal; // Get the surface normal
+                    break;
                 }
             }
-            Debug.Log(surfaceNormal);
-            Debug.Log(contactingObj);
             //surfaceNormal = collision.contacts[collision.contactCount - 1].normal; // Get the surface normal
             if (stickPower > 0)
             {
@@ -557,6 +551,11 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.layer == 3)
         {
+            Debug.Log("new collision enter");
+            foreach (var c in collision.contacts)
+            {
+                Debug.Log(c.collider.gameObject);
+            }
             HandleCollision(collision);
         }
     }
@@ -571,7 +570,7 @@ public class PlayerMove : MonoBehaviour
             }
             foreach (ContactPoint2D contact in collision.contacts)
             {
-                surfaceNormal = contact.normal; // Get the surface normal
+                //surfaceNormal = contact.normal; // Get the surface normal
             }
             isGrounded = true;
         }
