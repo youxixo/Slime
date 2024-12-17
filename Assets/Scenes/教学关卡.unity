@@ -214,6 +214,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 25953999758404320, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 85632894066327289, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -229,6 +233,10 @@ PrefabInstance:
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: jumpForce
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: stickDownPower
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: movementSpeedBase
@@ -276,6 +284,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6465695885522774198, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

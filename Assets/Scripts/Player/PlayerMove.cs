@@ -481,6 +481,7 @@ public class PlayerMove : MonoBehaviour
             jumpDirection = new Vector2(0, 1); // 垂直向上跳
         }
 
+        jumpDirection = new Vector2(moveAction.ReadValue<Vector2>().x, jumpDirection.y);
         // 應用跳躍方向和力度
         rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
 
@@ -526,12 +527,25 @@ public class PlayerMove : MonoBehaviour
             isGrounded = true;
             collisionEnter = true;
             jumpClicked = false;
-            /*
-            foreach (ContactPoint2D contact in collision.contacts)
+            if (!contactingObj)
             {
-                surfaceNormal = contact.normal; // Get the surface normal
-            }*/
-            surfaceNormal = collision.contacts[collision.contactCount - 1].normal; // Get the surface normal
+                contactingObj = collision.gameObject;
+            }
+            else
+            {
+                foreach (ContactPoint2D contact in collision.contacts)
+                {
+                    if (contact.collider.gameObject != contactingObj)
+                    {
+                        surfaceNormal = contact.normal; // Get the surface normal
+                        contactingObj = contact.collider.gameObject;
+                        break;
+                    }
+                }
+            }
+            Debug.Log(surfaceNormal);
+            Debug.Log(contactingObj);
+            //surfaceNormal = collision.contacts[collision.contactCount - 1].normal; // Get the surface normal
             if (stickPower > 0)
             {
                 //rb.gravityScale = 0;
