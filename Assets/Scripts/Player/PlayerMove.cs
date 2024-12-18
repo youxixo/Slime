@@ -55,7 +55,7 @@ public class PlayerMove : MonoBehaviour
     private float maxVelocity = 40;
     Vector2 movementAxis = new Vector2();
     private bool releaseMove = true; //是否鬆開移動鍵
-    private float angleWhenMove; //開始移動的角度
+    private float angleWhenMove = float.NaN; //開始移動的角度
 
     [Header("掉落到計時")]
     [SerializeField] private float dropCD; //掉落時間
@@ -121,20 +121,25 @@ public class PlayerMove : MonoBehaviour
         }
         DetectNotOnGround();
     }
+
     private void Update()
     {
         if (dashAction.IsPressed() && canDash)
         {
             //StartCoroutine(DashA());
         }
-        if (jumpAction.triggered && isGrounded)
+        if (jumpBufferCountDown > 0 && coyoteTimeCountDown > 0)
         {
+            jumpBufferCountDown = 0;
+            coyoteTimeCountDown = 0;
             Jump();
         }
         if (pauseAction.IsPressed())
         {
             pauseGame.Invoke();
         }
+        JumpBufferCount();
+        CoyoteTimeCount();
         CountDownDrop();
         StickPowerUIUpdate();
         JumpAnimation();
@@ -273,7 +278,7 @@ public class PlayerMove : MonoBehaviour
 
     private void DetectNotOnGround()
     {
-        var hit = Physics2D.Raycast(wallDetect.position, -transform.up.normalized, raycastDistance/2, groundLayer);
+        var hit = Physics2D.Raycast(wallDetect.position, -transform.up.normalized, raycastDistance, groundLayer);
         if (hit.collider == null)
         {
             rb.gravityScale = originalGravityScale;
@@ -286,6 +291,7 @@ public class PlayerMove : MonoBehaviour
         //用raycast得到法線 計算移動方向
         Vector2 rayDirection = -transform.up * raycastDistance;
         //***change later too long
+        Debug.Log(transform.localRotation.eulerAngles);
         var hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, raycastDistance, groundLayer);
         if (hit.collider != null)
         {
@@ -315,6 +321,7 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
+            Debug.Log("xi fu shi bai");
             rb.gravityScale = originalGravityScale;
         }
     }
@@ -346,7 +353,6 @@ public class PlayerMove : MonoBehaviour
                 }
                 else if (horizontalInput == 0 && releaseMove == false)
                 {
-
                     player_animator.SetBool("Move", false);
                     releaseMove = true;
                     angleWhenMove = float.NaN;
@@ -387,6 +393,7 @@ public class PlayerMove : MonoBehaviour
                 {
                     dropCountDown = dropCD;
                     player_animator.SetBool("Move", true);
+                    angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
                 }
                 else
                 {
@@ -463,25 +470,57 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private void CoyoteTimeCount()
+    {
+        if(isGrounded && !jumpClicked)
+        {
+            coyoteTimeCountDown = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCountDown -= Time.deltaTime;
+        }
+    }
+
+    private void JumpBufferCount()
+    {
+        if(jumpAction.triggered)
+        {
+            jumpBufferCountDown = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCountDown -= Time.deltaTime;
+        }
+    }
+
+    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float coyoteTimeCountDown;
+
+    [SerializeField] private float jumpBufferTime = 0.2f;
+    [SerializeField] private float jumpBufferCountDown = 0.2f;
+
     // 跳跃 - 根據當前角度朝不同方向跳
     // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
         rb.gravityScale = originalGravityScale;
         contactingObj = null;
-
-        float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
         jumpClicked = true;
         isGrounded = false;
+
+
+        float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+        Vector2 jumpDirection = Vector2.zero;
+        rb.linearVelocity = new Vector2(rb.linearVelocityX, 0);
         transform.localRotation = Quaternion.Euler(0, 0, 0);
         //angleWhenMove = float.NaN;
         releaseMove = true;
 
         // 根據角度設置跳躍方向
-        Vector2 jumpDirection = Vector2.zero;
         if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
         {
-            jumpDirection = new Vector2(1, 1.5f); // 右上方跳
+            jumpDirection = new Vector2(1, 1.8f); // 右上方跳
         }
         else if (convertedAngleZ >= 270)
         {
@@ -489,7 +528,7 @@ public class PlayerMove : MonoBehaviour
         }
         else if (Mathf.Abs(convertedAngleZ - 90) < 0.2f)
         {
-            jumpDirection = new Vector2(-1, 1.5f); // 左上方跳
+            jumpDirection = new Vector2(-1, 1.8f); // 左上方跳
         }
         else if (convertedAngleZ >= 250 && convertedAngleZ < 270)
         {
@@ -503,7 +542,7 @@ public class PlayerMove : MonoBehaviour
         {
             jumpDirection = new Vector2(0, 1); // 垂直向上跳
         }
-        jumpDirection = new Vector2 (jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.5f, jumpDirection.y);
+        jumpDirection = new Vector2 (jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.3f, jumpDirection.y);
         jumpDirection.Normalize();
         // 應用跳躍方向和力度
         rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
@@ -547,26 +586,38 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.layer == 3)
         {
+            bool surfaceSet = false;
             isGrounded = true;
             collisionEnter = true;
-            jumpClicked = false;
             
             foreach (ContactPoint2D contact in collision.contacts)
             {
-                Vector2 normal = collision.contacts[0].normal;
+                Vector2 normal = contact.normal;
                 float angle = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
                 if(angleWhenMove != (ConvertTo360Base(angle - 90f)))
                 {
-                    Debug.Log("Surface Normal: " + normal + ", tangent Angle: " + (ConvertTo360Base(angle - 90f)));
+                    Debug.Log("Surface Normal: " + normal + ", tangent Angle: " + (ConvertTo360Base(angle - 90f) + "angle when move: " + angleWhenMove));
                     surfaceNormal = contact.normal; // Get the surface normal
+                    surfaceSet = true;
+                    break;
+                }
+                else if(angleWhenMove == float.NaN)
+                {
+                    surfaceNormal = contact.normal;
+                    surfaceSet = true;
                     break;
                 }
             }
-            //surfaceNormal = collision.contacts[collision.contactCount - 1].normal; // Get the surface normal
-            if (stickPower > 0)
+            if(jumpClicked && !surfaceSet)
             {
-                //rb.gravityScale = 0;
+                surfaceNormal = collision.contacts[0].normal;
+                Debug.Log("?");
             }
+
+            jumpClicked = false;
+            float groundAngle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
+            float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+            HandleRotation(groundAngle, convertedAngleZ);
         }
     }
 
@@ -574,11 +625,6 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.gameObject.layer == 3)
         {
-            Debug.Log("new collision enter");
-            foreach (var c in collision.contacts)
-            {
-                Debug.Log(c.collider.gameObject);
-            }
             HandleCollision(collision);
         }
     }
@@ -616,15 +662,10 @@ public class PlayerMove : MonoBehaviour
                 TranslateToPos();
                 DetectNotOnGround();
             }
-            else //自然脫落
-            {
-                Debug.Log("自然掉落");
-                releaseMove = true;
-                angleWhenMove = float.NaN;
-            }
 
             if(!isGrounded)
             {
+                Debug.Log("自然掉落");
                 angleWhenMove = float.NaN;
                 releaseMove = true;
             }
