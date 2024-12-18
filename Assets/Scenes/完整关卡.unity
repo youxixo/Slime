@@ -9110,6 +9110,14 @@ PrefabInstance:
       propertyPath: stickPowerBar
       value: 
       objectReference: {fileID: 122929089}
+    - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: stickDownPower
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: jumpBufferCountDown
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5192627986747141780, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: initSavePoint
       value: 

@@ -44,7 +44,7 @@ public class PlayerMove : MonoBehaviour
     [Header("贴墙移动")]
     [SerializeField] private float stickPower; //吸牆力
     [SerializeField] private float maxStickPower = 100; //max stick power
-    [SerializeField] private float stickDownPower;
+    [SerializeField] private float stickDownPower = 0;
     [SerializeField] private float stickRestorePower;
     private Vector2 surfaceNormal; //角色目前所在地板的法线（用于贴墙移动）
     float r;
@@ -58,7 +58,7 @@ public class PlayerMove : MonoBehaviour
     private float angleWhenMove = float.NaN; //開始移動的角度
 
     [Header("掉落到計時")]
-    [SerializeField] private float dropCD; //掉落時間
+    [SerializeField] private float dropCD = 3; //掉落時間
     [SerializeField] private float dropCountDown; //掉落倒數
 
     [Header("吸回牆")]
@@ -66,6 +66,12 @@ public class PlayerMove : MonoBehaviour
     public float minDistance = 0.05f; // Stopping threshold for stick back
     private Vector2 stickTargetPosition; //吸牆目標地點
     private bool isMovingToStickTarget = false; //is sticking to wall
+
+    [Header("跳躍")]
+    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float coyoteTimeCountDown;
+    [SerializeField] private float jumpBufferTime = 0.2f;
+    [SerializeField] private float jumpBufferCountDown = 0.2f;
 
 
     [Header("Dash")]
@@ -94,6 +100,7 @@ public class PlayerMove : MonoBehaviour
 
     void Start()
     {
+        stickDownPower = 0;
         InitInput();
         rb = GetComponent<Rigidbody2D>();
         originalGravityScale = rb.gravityScale;
@@ -494,11 +501,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    [SerializeField] private float coyoteTime = 0.2f;
-    [SerializeField] private float coyoteTimeCountDown;
-
-    [SerializeField] private float jumpBufferTime = 0.2f;
-    [SerializeField] private float jumpBufferCountDown = 0.2f;
 
     // 跳跃 - 根據當前角度朝不同方向跳
     // 跳跃 - 根據當前角度朝不同方向跳
