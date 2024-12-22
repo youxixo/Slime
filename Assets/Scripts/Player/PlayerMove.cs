@@ -96,6 +96,7 @@ public class PlayerMove : MonoBehaviour
     public static UnityEvent pauseGame = new UnityEvent();
 
     [Header("Animation")]
+    [SerializeField] private SpriteRenderer _sr;
     [SerializeField]private Animator player_animator;
 
     void Start()
@@ -245,40 +246,54 @@ public class PlayerMove : MonoBehaviour
         return _movementAxis;
     }
 
-    //***待調整
+
     //change direction facing base on standing angle and input
-    private void ChangeFaceDir(float angle, float input)
+    private void ChangeFaceDir(float angle, Vector2 velocity)
     {
-        int moveType = -1;
-        if ((angle >= 0 && angle <= 90) || angle >= 270)
+        if ((angle >= 0 && angle < 90) || angle > 270)
         {
-            moveType = 0;
+            if(velocity.x > 0)
+            {
+                //true
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            }
+            else if(velocity.x < 0)
+            {
+                //false
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            }
         }
         else if ((angle > 90 && angle < 270))
         {
-            moveType = 1;
-        }
-
-        if (moveType == 0)
-        {
-            if (input > 0)
+            if (velocity.x > 0)
             {
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
-            else if (input < 0)
+            else if (velocity.x < 0)
             {
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
         }
-        else
+        else if(angle == 90)
         {
-            if (input > 0)
+            if(velocity.y > 0)
             {
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
-            else if (input < 0)
+            else if(velocity.y < 0)
             {
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            }
+        }
+        else if (angle == 270)
+        {
+            if (velocity.y > 0)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            }
+            else if (velocity.y < 0)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
         }
     }
@@ -381,8 +396,6 @@ public class PlayerMove : MonoBehaviour
                 stickPower += stickRestorePower * Time.deltaTime;
             }
 
-            ChangeFaceDir(convertedAngleZ, horizontalInput); //改改
-
             if ((Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f) == false)
             {
                 movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
@@ -408,6 +421,7 @@ public class PlayerMove : MonoBehaviour
                 }
             }
             //Debug.Log(velocity);
+            ChangeFaceDir(convertedAngleZ, velocity);
             rb.linearVelocity = new Vector2(velocity.x, velocity.y);
         }
         else
@@ -415,8 +429,8 @@ public class PlayerMove : MonoBehaviour
             // 在空中也可以控制方向
             if (horizontalInput != 0)
             {
-                ChangeFaceDir(convertedAngleZ, horizontalInput);
                 rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
+                ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
             }
             player_animator.SetBool("Move", false);
         }
