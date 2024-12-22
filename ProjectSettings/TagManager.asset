@@ -11,6 +11,7 @@ TagManager:
   - DeathPoint
   - Npc
   - Prop
+  - Ground
   layers:
   - Default
   - TransparentFX

@@ -32,10 +32,9 @@ public class CloseCombat : MonoBehaviour
 
     void move()
     {
-        Attack();
         if (!isleft)
         {
-            rb.transform.rotation = Quaternion.Euler(0, 0, 0);//面朝向右
+            rb.transform.rotation = Quaternion.Euler(0, 180, 0);//面朝向右
             
             rb.MovePosition(rb.position + new Vector2(Speed * Time.deltaTime, 0));
             if(rb.position.x >= RightPointX)
@@ -46,7 +45,7 @@ public class CloseCombat : MonoBehaviour
         }
         else
         {
-            rb.transform.rotation = Quaternion.Euler(0, 180, 0);//面朝向左
+            rb.transform.rotation = Quaternion.Euler(0, 0, 0);//面朝向左
             
             rb.MovePosition(rb.position + new Vector2(-Speed * Time.deltaTime, 0));
            if(rb.position.x <= LeftPointX)
@@ -54,16 +53,5 @@ public class CloseCombat : MonoBehaviour
                isleft = false;
            }
         }
-    }
-    void Attack()
-    {
-       if (isAttack)
-       {
-           Speed = 0;
-       }
-       else
-       {
-           Speed = MoveSpeed;
-       }
     }
 }
