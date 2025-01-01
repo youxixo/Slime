@@ -258,6 +258,30 @@ PrefabInstance:
       propertyPath: m_LocalScale.x
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4118448683333123735, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4118448683333123735, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4118448683333123735, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1923879424}
+    - target: {fileID: 4118448683333123735, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ExecuteInteraction
+      objectReference: {fileID: 0}
+    - target: {fileID: 4118448683333123735, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: PlayerInteract, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4118448683333123735, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6414684366762424267, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_Name
       value: PlayerFR
@@ -313,7 +337,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6414684366762424267, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 1923879424}
   m_SourcePrefab: {fileID: 100100000, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
 --- !u!50 &152983870 stripped
 Rigidbody2D:
@@ -3608,6 +3635,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1923879416 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6414684366762424267, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+  m_PrefabInstance: {fileID: 152983869}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1923879424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1923879416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 499328dab17339a48b2223cddc11ad0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputActions: {fileID: -944628639613478452, guid: ac2a8e22ff7af5f4a8c66a11669cc29e, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
