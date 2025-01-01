@@ -1,7 +1,8 @@
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.InputSystem;
 
-public class PlayerBasicNormalAttack : PlayerBasicAttack
+public class PlayerSkillGrassAttack : PlayerSkillAttack
 {
     private bool inAttackFrames;
 
@@ -11,7 +12,6 @@ public class PlayerBasicNormalAttack : PlayerBasicAttack
     {
         EventHandler.AttackCheckStartEvent += OnAttackCheckStartEvent;
         EventHandler.AttackCheckEndEvent += OnAttackCheckEndEvent;
-        slimeType = SlimeType.None;
         Init();
     }
 
@@ -57,7 +57,7 @@ public class PlayerBasicNormalAttack : PlayerBasicAttack
 
 
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("check attack collision: hit an enemy");
         if (collision.tag == "Enemy" && inAttackFrames)
@@ -66,5 +66,4 @@ public class PlayerBasicNormalAttack : PlayerBasicAttack
             Destroy(collision.gameObject);
         }
     }
-
 }

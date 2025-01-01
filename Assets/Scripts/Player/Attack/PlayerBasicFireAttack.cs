@@ -5,7 +5,7 @@ using System.Collections;
 
 public class PlayerBasicFireAttack : PlayerBasicAttack
 {
-    private bool inAttackFrames;
+    [SerializeField] private bool inAttackFrames;
     [SerializeField] private SpriteRenderer sprd;
 
 
@@ -72,12 +72,12 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         sprd.enabled = false;
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-
-        if (collision.tag == "Enemy" && inAttackFrames)
+        Debug.LogWarning("fire hitting");
+        if (collision.tag == "Enemy")
         {
-            Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
+            Debug.LogWarning("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
         }
     }
