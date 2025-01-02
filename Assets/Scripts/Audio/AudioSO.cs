@@ -9,7 +9,7 @@ public class AudioDataConfig
 }
 
 [CreateAssetMenu(fileName = "AudioDataSO", menuName = "AudioDataSO", order = 0)]
-public class AudioDataSO : ScriptableObject
+public class AudioSO : ScriptableObject
 {
     public AudioDataConfig Conf;
 }

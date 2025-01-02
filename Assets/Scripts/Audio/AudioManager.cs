@@ -5,10 +5,11 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Pool;
 
-[DefaultExecutionOrder(-99)]
 public class AudioManager : MonoBehaviour
 {
-    public AudioDataSO audioDataSo;
+    private static AudioManager _instance = null;
+
+    public AudioSO audioDataSo;
     public AudioMixer audioMixer;
     private Transform _transform;
 
@@ -49,6 +50,11 @@ public class AudioManager : MonoBehaviour
             );
     }
 
+    public void ChangeMixerValue(string mixerName, int value)
+    {
+        audioMixer.SetFloat(mixerName, value);
+    }
+
     private void OnReturnedToPool(AudioPlayer audioData)
     {
         if(Counts.TryGetValue(audioData.Data, out var count))
@@ -75,14 +81,10 @@ public class AudioManager : MonoBehaviour
         audioDataPool.Release(audioData);
     }
 
-    private static AudioManager _instance = null;
-
-    private List<AudioSource> _playingAudioSources = new List<AudioSource>();
     public static AudioManager Instance
     {
         get { return _instance; }
     }
-    private ObjectPool<GameObject> pool;
 
     private void Awake()
     {

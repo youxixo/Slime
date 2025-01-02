@@ -62,9 +62,9 @@ public class UIController : MonoBehaviour
 
         defaultSettings = new PlayerSettings
         {
-            masterVolume = 60,
-            musicVolume = 60,
-            sfxVolume = 60,
+            masterVolume = 0,
+            musicVolume = 0,
+            sfxVolume = 0,
             screenSizeMode = 0,
             resolutionMode = 0
         };
@@ -243,6 +243,11 @@ public class UIController : MonoBehaviour
     {
         string[] resolutionList = resolutionDropdown.options[resolutionDropdown.value].text.Split("x");
         Screen.SetResolution(int.Parse(resolutionList[0].Trim()), int.Parse(resolutionList[1].Trim()), GetScreenMode());
+
+        //***改一下 - too hard code
+        AudioManager.Instance.ChangeMixerValue("MasterVolume", (int)masterAudioSlider.value);
+        AudioManager.Instance.ChangeMixerValue("BGMVolume", (int)musicSlider.value);
+        AudioManager.Instance.ChangeMixerValue("SFXVolume", (int)sfxSlider.value);
 
         SaveSetting();
         DisableSettingPanel();

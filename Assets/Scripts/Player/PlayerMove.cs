@@ -78,14 +78,18 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private Animator player_animator;
 
     [Header("Audio")]
-    [SerializeField] private AudioDataSO playerAudioDateSO;
+    [SerializeField] private AudioSO playerAudioSO;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     void Start()
     {
         stickDownPower = 0;
         InitInput();
         InitAudioDict();
-        rb = GetComponent<Rigidbody2D>();
         originalGravityScale = rb.gravityScale;
         var playerInput = GetComponent<PlayerInput>();
         if (playerInput != null)
@@ -475,7 +479,7 @@ public class PlayerMove : MonoBehaviour
 
     private void InitAudioDict()
     {
-        foreach(AudioData data in playerAudioDateSO.Conf.ConfList)
+        foreach(AudioData data in playerAudioSO.Conf.ConfList)
         {
             audioDict[data.name] = data;
         }
