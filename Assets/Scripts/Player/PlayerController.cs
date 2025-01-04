@@ -30,8 +30,8 @@ public class PlayerController : MonoBehaviour
     private InputAction attackAction;
     private InputAction skillAction;
 
-    [SerializeField] private Dictionary<SlimeType, PlayerBasicAttack> attackDict = new Dictionary<SlimeType, PlayerBasicAttack> { };
-    [SerializeField] private Dictionary<SlimeType, PlayerSkillAttack> skillDict = new Dictionary<SlimeType, PlayerSkillAttack> { };
+    private Dictionary<SlimeType, PlayerBasicAttack> attackDict = new Dictionary<SlimeType, PlayerBasicAttack> { };
+    private Dictionary<SlimeType, PlayerSkillAttack> skillDict = new Dictionary<SlimeType, PlayerSkillAttack> { };
 
 
     public InputAction GetAttackAction()

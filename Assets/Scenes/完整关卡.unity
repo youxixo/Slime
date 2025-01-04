@@ -2446,23 +2446,6 @@ Animation:
   m_CorrespondingSourceObject: {fileID: 2694350881424422330, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
   m_PrefabInstance: {fileID: 1512129239}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &500625021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 500625015}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f2f3ee48b30f1341808451d00701af0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 1323408144}
-  anim: {fileID: 500625020}
-  slimeType: 2
-  attackCD: 2
-  inAttackFrames: 0
 --- !u!61 &500625022
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2509,6 +2492,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.76, y: 1.2}
   m_EdgeRadius: 0
+--- !u!114 &500625024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500625015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87bf3ed23b0091347be9f0902d301937, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1323408144}
+  anim: {fileID: 500625020}
+  slimeType: 2
+  attackCD: 1
+  inAttackFrames: 0
 --- !u!1 &501133840
 GameObject:
   m_ObjectHideFlags: 0
@@ -6801,26 +6801,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugText: 0
-  ShowCameraFrustum: 0
-  IgnoreTimeScale: 0
-  WorldUpOverride: {fileID: 0}
-  ChannelMask: -1
-  UpdateMethod: 2
-  BlendUpdateMethod: 1
-  LensModeOverride:
-    Enabled: 0
-    DefaultMode: 2
-  DefaultBlend:
-    Style: 1
-    Time: 2
-    CustomCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  CustomBlends: {fileID: 0}
 --- !u!1 &1119925145
 GameObject:
   m_ObjectHideFlags: 0
@@ -6851,13 +6831,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackerSettings:
-    BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
-    AngularDampingMode: 0
-    RotationDamping: {x: 1, y: 1, z: 1}
-    QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 0, z: -10}
 --- !u!114 &1119925148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6870,37 +6843,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Priority:
-    Enabled: 0
-    m_Value: 0
-  OutputChannel: 1
-  StandbyUpdate: 2
-  m_StreamingVersion: 20241001
-  m_LegacyPriority: 0
-  Target:
-    TrackingTarget: {fileID: 1323408143}
-    LookAtTarget: {fileID: 0}
-    CustomLookAtTarget: 0
-  Lens:
-    FieldOfView: 60
-    OrthographicSize: 8.939246
-    NearClipPlane: 0.3
-    FarClipPlane: 1000
-    Dutch: 0
-    ModeOverride: 0
-    PhysicalProperties:
-      GateFit: 2
-      SensorSize: {x: 21.946, y: 16.002}
-      LensShift: {x: 0, y: 0}
-      FocusDistance: 10
-      Iso: 200
-      ShutterSpeed: 0.005
-      Aperture: 16
-      BladeCount: 5
-      Curvature: {x: 2, y: 11}
-      BarrelClipping: 0.25
-      Anamorphism: 0
-  BlendHint: 0
 --- !u!4 &1119925149
 Transform:
   m_ObjectHideFlags: 0
@@ -9605,10 +9547,10 @@ PrefabInstance:
     - target: {fileID: 2694350881424422330, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_Animation
       value: 
-      objectReference: {fileID: 7400000, guid: e68599b9240959c4aa9fe2608aae5f80, type: 2}
+      objectReference: {fileID: 7400000, guid: 7c57c9ae6b708d141a5ae16d7d9922b7, type: 2}
     - target: {fileID: 2694350881424422330, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_Animations.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2694350881424422330, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: 'm_Animations.Array.data[0]'
@@ -9617,14 +9559,14 @@ PrefabInstance:
     - target: {fileID: 2694350881424422330, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: 'm_Animations.Array.data[1]'
       value: 
-      objectReference: {fileID: 7400000, guid: e68599b9240959c4aa9fe2608aae5f80, type: 2}
+      objectReference: {fileID: 7400000, guid: 7c57c9ae6b708d141a5ae16d7d9922b7, type: 2}
     - target: {fileID: 2703787148599158543, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2956513107393030669, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5192627986747141780, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: initSavePoint
@@ -9731,10 +9673,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2956513107393030669, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 500625021}
+      addedObject: {fileID: 500625022}
     - targetCorrespondingSourceObject: {fileID: 2956513107393030669, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 500625022}
+      addedObject: {fileID: 500625024}
   m_SourcePrefab: {fileID: 100100000, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
 --- !u!1 &1512532514
 GameObject:
