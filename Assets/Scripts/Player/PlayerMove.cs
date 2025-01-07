@@ -475,11 +475,11 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private Dictionary<string, AudioData> audioDict = new ();
+    private Dictionary<string, AudioData> audioDict = new();
 
     private void InitAudioDict()
     {
-        foreach(AudioData data in playerAudioSO.Conf.ConfList)
+        foreach (AudioData data in playerAudioSO.Conf.ConfList)
         {
             audioDict[data.name] = data;
         }
@@ -489,7 +489,7 @@ public class PlayerMove : MonoBehaviour
     {
         AudioData data = null;
         audioDict.TryGetValue(action, out data);
-        if(data != null)
+        if (data != null)
             AudioManager.Instance.CreateSound().WithAudioData(data).Play();
     }
 
@@ -616,9 +616,9 @@ public class PlayerMove : MonoBehaviour
         {
             HandleCollision(collision);
         }
-        if(collision.gameObject.CompareTag("Moving Platform"))
+        if (collision.gameObject.CompareTag("Moving Platform"))
         {
-            this.transform.SetParent(collision.gameObject.transform);
+            this.transform.SetParent(collision.gameObject.transform.parent.transform, true);
         }
     }
 
@@ -636,11 +636,6 @@ public class PlayerMove : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Moving Platform"))
-        {
-            Debug.Log("asd");
-            this.transform.SetParent(null);
-        }
         if (collision.gameObject.layer == 3)
         {
             isGrounded = false;
@@ -648,6 +643,12 @@ public class PlayerMove : MonoBehaviour
             if (jumpClicked || isDashing)
             {
                 rb.gravityScale = originalGravityScale;
+                //Bug 由於
+                if (collision.gameObject.CompareTag("Moving Platform"))
+                {
+                    this.transform.SetParent(null);
+                    this.transform.localScale = Vector3.one;
+                }
                 return;
             }
             else if (stickPower > 0)
@@ -659,6 +660,11 @@ public class PlayerMove : MonoBehaviour
             if (!isGrounded)
             {
                 Debug.Log("自然掉落");
+                if (collision.gameObject.CompareTag("Moving Platform"))
+                {
+                    this.transform.SetParent(null);
+                    this.transform.localScale = Vector3.one;
+                }
                 angleWhenMove = float.NaN;
                 releaseMove = true;
             }
