@@ -616,6 +616,10 @@ public class PlayerMove : MonoBehaviour
         {
             HandleCollision(collision);
         }
+        if(collision.gameObject.CompareTag("Moving Platform"))
+        {
+            this.transform.SetParent(collision.gameObject.transform);
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -632,6 +636,11 @@ public class PlayerMove : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag("Moving Platform"))
+        {
+            Debug.Log("asd");
+            this.transform.SetParent(null);
+        }
         if (collision.gameObject.layer == 3)
         {
             isGrounded = false;
