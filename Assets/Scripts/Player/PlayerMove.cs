@@ -603,7 +603,7 @@ public class PlayerMove : MonoBehaviour
             if (jumpClicked && !surfaceSet)
             {
                 surfaceNormal = collision.contacts[0].normal;
-                Debug.Log("?");
+                //Debug.Log("?");
             }
 
             jumpClicked = false;
@@ -659,7 +659,7 @@ public class PlayerMove : MonoBehaviour
 
             if (!isGrounded)
             {
-                Debug.Log("自然掉落");
+                //Debug.Log("自然掉落");
                 if (collision.gameObject.CompareTag("Moving Platform"))
                 {
                     this.transform.SetParent(null);
