@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerSkillGrassAttack : PlayerSkillAttack
 {
-    private bool inAttackFrames;
+    [SerializeField] private bool inAttackFrames;
 
 
 
@@ -57,12 +57,12 @@ public class PlayerSkillGrassAttack : PlayerSkillAttack
 
 
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        Debug.Log("check attack collision: hit an enemy");
+        Debug.Log("grass check attack collision: hit an enemy");
         if (collision.tag == "Enemy" && inAttackFrames)
         {
-            Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
+            Debug.Log("grass check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
         }
     }

@@ -167,8 +167,6 @@ public class PlayerController : MonoBehaviour
         switch (type)
         {
             case SlimeType.Water:
-                transform.DOScale(new Vector3(2, 2, 2), 1)
-                    .SetEase(Ease.InOutQuart);
                 break;
             case SlimeType.Fire:
                 break;
@@ -186,8 +184,6 @@ public class PlayerController : MonoBehaviour
         switch (currentSlimeType)
         {
             case SlimeType.Water:
-                transform.DOScale(new Vector3(1, 1, 1), 1)
-                    .SetEase(Ease.InOutQuart);
                 break;
             case SlimeType.Fire:
                 break;
