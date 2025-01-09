@@ -1,10 +1,9 @@
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.InputSystem;
 
 public class PlayerBasicGrassAttack : PlayerBasicAttack
 {
-    private bool inAttackFrames;
+    [SerializeField] private bool inAttackFrames;
 
 
 
@@ -12,6 +11,7 @@ public class PlayerBasicGrassAttack : PlayerBasicAttack
     {
         EventHandler.AttackCheckStartEvent += OnAttackCheckStartEvent;
         EventHandler.AttackCheckEndEvent += OnAttackCheckEndEvent;
+        slimeType = SlimeType.Grass;
         Init();
     }
 
@@ -66,4 +66,5 @@ public class PlayerBasicGrassAttack : PlayerBasicAttack
             Destroy(collision.gameObject);
         }
     }
+
 }

@@ -5,7 +5,7 @@ using System.Collections;
 
 public class PlayerBasicFireAttack : PlayerBasicAttack
 {
-    private bool inAttackFrames;
+    [SerializeField] private bool inAttackFrames;
     [SerializeField] private SpriteRenderer sprd;
 
 
@@ -14,7 +14,7 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         EventHandler.AttackCheckStartEvent += OnAttackCheckStartEvent;
         EventHandler.AttackCheckEndEvent += OnAttackCheckEndEvent;
         slimeType = SlimeType.Fire;
-        attackCD = 0;
+        //attackCD = 0;
         Init();
     }
 
@@ -35,19 +35,18 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
     // Update is called once per frame
     void Update()
     {
-        InputAction attackAction = controller.GetAttackAction();
-
+        //InputAction attackAction = controller.GetAttackAction();
     }
 
 
     private void OnAttackCheckStartEvent()
     {
-        Debug.Log("start check attack collision" + Time.realtimeSinceStartup);
+        Debug.LogWarning("fire start check attack collision" + Time.realtimeSinceStartup);
         inAttackFrames = true;
     }
     private void OnAttackCheckEndEvent()
     {
-        Debug.Log("end check attack collision" + Time.realtimeSinceStartup);
+        Debug.LogWarning("fire end check attack collision" + Time.realtimeSinceStartup);
         inAttackFrames = false;
     }
 
@@ -58,26 +57,29 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         Debug.Log("fire attack" + Time.realtimeSinceStartup);
 
         sprd.enabled = true;
+        inAttackFrames = true;
 
         //anim.Play();
         StopAllCoroutines();
         StartCoroutine(StopPlayAnim());
- 
     }
 
     IEnumerator StopPlayAnim()
     {
         yield return new WaitForSeconds(0.5f);
-
+        inAttackFrames = false;
         sprd.enabled = false;
+        Debug.LogWarning("Fire in atacck end ");
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
-    {
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
         if (collision.tag == "Enemy" && inAttackFrames)
         {
-            Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
+            Debug.LogWarning("Fire check: Exit" + collision.gameObject.name);
+
+            Debug.LogWarning("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
         }
     }

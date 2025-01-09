@@ -1,19 +1,17 @@
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.InputSystem;
 
-public class PlayerBaiscWaterAttack : PlayerBasicAttack
+public class PlayerSkillGrassAttack : PlayerSkillAttack
 {
-    
-    private bool inAttackFrames;
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform bulletParent;
-    [SerializeField] private Transform bulletSpawnPos;
+    [SerializeField] private bool inAttackFrames;
+
+
 
     private void OnEnable()
     {
         EventHandler.AttackCheckStartEvent += OnAttackCheckStartEvent;
         EventHandler.AttackCheckEndEvent += OnAttackCheckEndEvent;
-        slimeType = SlimeType.Water;
         Init();
     }
 
@@ -23,23 +21,19 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
         EventHandler.AttackCheckEndEvent -= OnAttackCheckEndEvent;
     }
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
+
     }
 
-
+    // Update is called once per frame
     void Update()
     {
         InputAction attackAction = controller.GetAttackAction();
 
-        //if (attackAction.triggered)
-        //{
-        //    //anim.Play();
-        //    Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, Quaternion.identity, bulletParent).GetComponent<Bullet>();
-        //    bullet.Init(InTagName: "Player");
-        //}
     }
 
 
@@ -57,22 +51,19 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
     public override void Attack()
     {
         base.Attack();
-        Debug.LogWarning("start shooting");
-        Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, transform.rotation, bulletParent).GetComponent<Bullet>();
-        bullet.Init(10, InTagName: "Player", InDir : controller.FacingToRightDirection() ? Vector2.right :Vector2.left);
-    }
 
+        anim.Play();
+    }
 
 
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-
+        Debug.Log("grass check attack collision: hit an enemy");
         if (collision.tag == "Enemy" && inAttackFrames)
         {
-            Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
+            Debug.Log("grass check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
         }
     }
-
 }

@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class GrantAbilityProp : Prop
 {
-    [SerializeField] private SlimeType grantType = SlimeType.None;
+    [SerializeField] private SlimeType grantType = SlimeType.Water;
     private Dictionary<SlimeType, Color> colorDict;
     private SpriteRenderer sprd;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        colorDict = new Dictionary<SlimeType, Color> { { SlimeType.None, Color.white }, { SlimeType.Water, Color.cyan },
+        colorDict = new Dictionary<SlimeType, Color> { { SlimeType.Water, Color.cyan },
                                                            { SlimeType.Fire, Color.red }, { SlimeType.Grass, Color.green }, };
         sprd = gameObject.GetComponent<SpriteRenderer>();
         sprd.color = colorDict[grantType];
