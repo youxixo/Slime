@@ -227,6 +227,15 @@ public class PlayerMove : MonoBehaviour
         return _movementAxis;
     }
 
+    public void DisableWallStick()
+    {
+        stickPower = -1;
+    }
+
+    public void EnableWallStick()
+    {
+        stickPower = maxStickPower;
+    }
 
     //change direction facing base on standing angle and input
     private void ChangeFaceDir(float angle, Vector2 velocity)
@@ -494,7 +503,6 @@ public class PlayerMove : MonoBehaviour
     }
 
 
-    public AudioData jumpSound;
     // 跳跃 - 根據當前角度朝不同方向跳
     // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
@@ -576,8 +584,6 @@ public class PlayerMove : MonoBehaviour
     //落地時取得地板的法線
     private void HandleCollision(Collision2D collision)
     {
-        if (collision.gameObject.layer == 3)
-        {
             bool surfaceSet = false;
             isGrounded = true;
             collisionEnter = true;
@@ -607,7 +613,6 @@ public class PlayerMove : MonoBehaviour
             }
 
             jumpClicked = false;
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -5288,7 +5288,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 311.6265, y: -7.8628, z: 0.1401682}
-  m_LocalScale: {x: 6.2353287, y: 8.642199, z: 6.2353287}
+  m_LocalScale: {x: 6.235328, y: 8.642199, z: 6.2353287}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1376953740}
@@ -5341,7 +5341,7 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 43.46, y: 10.801337}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -7242,6 +7242,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6771811376653407655, guid: 2da6295fb8b059645a5d497181caa775, type: 3}
+      propertyPath: _audioPrefab
+      value: 
+      objectReference: {fileID: 7959118583412468467, guid: fd4b2395b5f507946aecabbbd9a97759, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
