@@ -12,6 +12,7 @@ TagManager:
   - Npc
   - Prop
   - Ground
+  - Moving Platform
   layers:
   - Default
   - TransparentFX

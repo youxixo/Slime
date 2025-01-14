@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerSave : MonoBehaviour
 {
     private bool inSaveZone;
-    private GameObject savePoint;
     [SerializeField] GameObject initSavePoint;
 
     private JsonData testData;
@@ -28,36 +27,11 @@ public class PlayerSave : MonoBehaviour
         JsonSave();
     }
 
-    //control in player input component
-    public void Save(InputAction.CallbackContext context)
+    public void Save(GameObject savePoint)
     {
-        if(inSaveZone && context.started)
-        {
-            InitJsonData();
-            PlayerDataSave(savePoint.GetComponent<SavePoint>().savePos);
-            JsonSave();
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("SavePoint"))
-        {
-            inSaveZone = true;
-            savePoint = collision.gameObject;
-        }
-        if (collision.gameObject.CompareTag("DeathPoint"))
-        {
-            PlayerDataLoad();
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("SavePoint"))
-        {
-            inSaveZone = false;
-        }
+        InitJsonData();
+        PlayerDataSave(savePoint.GetComponent<SavePoint>().savePos);
+        JsonSave();
     }
 
     private void InitJsonData()
@@ -100,7 +74,7 @@ public class PlayerSave : MonoBehaviour
         testData.playerData.position = savePointPos;// savePoint.transform.position;
     }
 
-    private void PlayerDataLoad()
+    public void PlayerDataLoad()
     {
         PlayerMove.StopMovement();
         this.transform.position = testData.playerData.position;

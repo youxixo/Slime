@@ -2,29 +2,11 @@
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Events;
-using Unity.VisualScripting;
 using TMPro;
-using UnityEngine.UI;
+using System.Collections.Generic;
 
 /// <summary>
 /// 此腳本為角色控制
-/// 截止到10/22 以下為待加的功能
-/// 角色畫面上的轉向 (要根據移動的方向)
-/// 衝刺方向(目前只有左右衝刺)
-/// 跳躍會被吸回去(已修復, rather then movePosition back to hit point everytime it goes out of collision, use raycast to determine surface nomrmal in update and move along that, only move back when to far or contacting new obj)
-/// 
-/// 11/5
-/// 修復跳躍吸具體看上面
-/// 目前出現新bug, 從天上掉到圓弧角的編編時可能會angle有問題 大概是raycast沒檢測好
-/// 離開牆體應該加回gravity
-/// 
-/// 11/30
-/// 加入了吸牆力 - 當在不符合重力的角度時會消耗吸牆力 消耗完掉落, 在平地回復
-/// 在垂直牆時只有ws移動 ad無法移動
-/// 跳躍變得更加合理
-/// 
-/// 12/4
-/// 90度登強跳會相反
 /// </summary>
 
 public class PlayerMove : MonoBehaviour
@@ -66,15 +48,12 @@ public class PlayerMove : MonoBehaviour
     [Header("吸回牆")]
     public float stickSpeed = 3f; // Sitck back to wall speed
     public float minDistance = 0.05f; // Stopping threshold for stick back
-    private Vector2 stickTargetPosition; //吸牆目標地點
-    private bool isMovingToStickTarget = false; //is sticking to wall
 
     [Header("跳躍")]
     [SerializeField] private float coyoteTime = 0.2f;
     [SerializeField] private float coyoteTimeCountDown;
     [SerializeField] private float jumpBufferTime = 0.2f;
     [SerializeField] private float jumpBufferCountDown = 0.2f;
-
 
     [Header("Dash")]
     private bool canDash = true;
@@ -88,24 +67,31 @@ public class PlayerMove : MonoBehaviour
     private InputAction jumpAction;
     private InputAction pauseAction;
     private InputAction dashAction;
-    //private bool jumpPressed;
 
     //以後移到其他地方 如player stats來保持腳本整潔
     [Header("StickPowerUI")]
-    [SerializeField] private Image stickPowerBar;
+    //[SerializeField] private Image stickPowerBar;
 
     [Header("Events")]
     public static UnityEvent pauseGame = new UnityEvent();
 
     [Header("Animation")]
     [SerializeField] private SpriteRenderer _sr;
-    [SerializeField]private Animator player_animator;
+    [SerializeField] private Animator player_animator;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSO playerAudioSO;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     void Start()
     {
         stickDownPower = 0;
         InitInput();
-        rb = GetComponent<Rigidbody2D>();
+        InitAudioDict();
         originalGravityScale = rb.gravityScale;
         var playerInput = GetComponent<PlayerInput>();
         if (playerInput != null)
@@ -163,7 +149,6 @@ public class PlayerMove : MonoBehaviour
         JumpBufferCount();
         CoyoteTimeCount();
         CountDownDrop();
-        StickPowerUIUpdate();
         JumpAnimation();
     }
 
@@ -177,6 +162,7 @@ public class PlayerMove : MonoBehaviour
         dashAction = playerActionMap.FindAction("Sprint");
     }
 
+    /*
     private void StickPowerUIUpdate()
     {
         if (stickPowerBar != null)
@@ -184,6 +170,7 @@ public class PlayerMove : MonoBehaviour
             stickPowerBar.fillAmount = stickPower / maxStickPower;
         }
     }
+    */
 
     //再加上對initial horizontal input 的判斷? 假設如果一開始在 0 度角按下左鍵 (正向運動的反向移動) 當碰到270度角 ()
     //按下a/d之後檢測所在地型角度 如果不松 變換角度將依照按下時的角度判斷前後
@@ -207,7 +194,6 @@ public class PlayerMove : MonoBehaviour
             Debug.LogWarning("Error: " + angle);
             moveType = -1;
         }
-        //***kono sekai no bye bye bye bye
         if (jumpClicked)
         {
             jumpClicked = false;
@@ -221,24 +207,19 @@ public class PlayerMove : MonoBehaviour
 
     private Vector2 DetermineMovementAxisVertical(float angle)
     {
-        int moveType;
         Vector2 _movementAxis = new Vector2();
         if ((angle >= 85 && angle <= 95))
         {
             _movementAxis = new Vector2(surfaceNormal.y, -surfaceNormal.x);
-            moveType = 0;
         }
         else if ((angle >= 265 && angle <= 275))
         {
             _movementAxis = new Vector2(-surfaceNormal.y, surfaceNormal.x);
-            moveType = 1;
         }
         else
         {
             Debug.LogWarning("Error: " + angle);
-            moveType = -1;
         }
-        //_movementAxis = ConsistentMovement(_movementAxis, moveType);
         return _movementAxis;
     }
 
@@ -266,12 +247,12 @@ public class PlayerMove : MonoBehaviour
     {
         if ((angle >= 0 && angle < 90) || angle > 270)
         {
-            if(velocity.x > 0)
+            if (velocity.x > 0)
             {
                 //true
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
-            else if(velocity.x < 0)
+            else if (velocity.x < 0)
             {
                 //false
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
@@ -288,13 +269,13 @@ public class PlayerMove : MonoBehaviour
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
         }
-        else if(angle == 90)
+        else if (angle == 90)
         {
-            if(velocity.y > 0)
+            if (velocity.y > 0)
             {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
-            else if(velocity.y < 0)
+            else if (velocity.y < 0)
             {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
             }
@@ -338,38 +319,33 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    //Move to the raycast position if possible
     private void TranslateToPos()
     {
         //用raycast得到法線 計算移動方向
         Vector2 rayDirection = -transform.up * raycastDistance;
         //***change later too long
-        Debug.Log(transform.localRotation.eulerAngles);
         var hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, raycastDistance, groundLayer);
         if (hit.collider != null)
         {
             surfaceNormal = hit.normal;
             isGrounded = true;
-            if (contactingObj != hit.collider.gameObject)
+            bool isMovingToStickTarget = true;
+            if (isMovingToStickTarget)
             {
-                stickTargetPosition = hit.point;
-                isMovingToStickTarget = true;
-                if (isMovingToStickTarget)
-                {
-                    Vector2 currentPosition = transform.position;
-                    Vector2 direction = (stickTargetPosition - currentPosition).normalized; // Direction to target
-                    float distance = Vector2.Distance(currentPosition, stickTargetPosition); // Distance to target
-                    float step = stickSpeed * Time.deltaTime;
+                Vector2 currentPosition = transform.position;
+                Vector2 direction = (hit.point - currentPosition).normalized; // Direction to target
+                float distance = Vector2.Distance(currentPosition, hit.point); // Distance to target
+                float step = stickSpeed * Time.deltaTime;
 
-                    if (distance <= minDistance)
-                    {
-                        isMovingToStickTarget = false;
-                        return;
-                    }
-                    rb.transform.Translate(direction * step, Space.World);
-                    //rb.MovePosition(hit.point);
+                if (distance <= minDistance)
+                {
+                    isMovingToStickTarget = false;
+                    return;
                 }
+                rb.transform.Translate(direction * step, Space.World);
+                //rb.MovePosition(hit.point);
             }
-            contactingObj = hit.collider.gameObject;
         }
         else
         {
@@ -378,13 +354,13 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private GameObject contactingObj;
     //移动
     private void Move()
     {
         velocity = Vector2.zero;
         float horizontalInput = moveAction.ReadValue<Vector2>().x;
         float verticalInput = moveAction.ReadValue<Vector2>().y;
+
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
@@ -394,52 +370,37 @@ public class PlayerMove : MonoBehaviour
             player_animator.SetBool("Fall", false);
             HandleRotation(angle, convertedAngleZ);
 
-            if (stickPower > 0)
-            {
-                //just start moving
-                if (horizontalInput != 0 && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
-                {
-                    releaseMove = false;
-                    angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
-                    player_animator.SetBool("Move", true);
-                }
-                else if (horizontalInput == 0 && releaseMove == false)
-                {
-                    player_animator.SetBool("Move", false);
-                    releaseMove = true;
-                    angleWhenMove = float.NaN;
-                }
-                convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-                if (ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295)
-                {
-                    stickPower -= stickDownPower * Time.deltaTime;
-                }
-            }
-            else
-            {
-                rb.gravityScale = originalGravityScale;
-                movementAxis = new Vector2(1, 0);
-            }
 
-            if (!(ConvertTo360Base(transform.localEulerAngles.z) >= 65 && ConvertTo360Base(transform.localEulerAngles.z) <= 295) && stickPower <= maxStickPower)
+            //just start moving
+            if (horizontalInput != 0 && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
             {
-                stickPower += stickRestorePower * Time.deltaTime;
+                releaseMove = false;
+                angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                player_animator.SetBool("Move", true);
             }
+            else if (horizontalInput == 0 && releaseMove == false)
+            {
+                player_animator.SetBool("Move", false);
+                releaseMove = true;
+                angleWhenMove = float.NaN;
+            }
+            convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
 
-            if ((Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f) == false)
+            if (!(Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f))
             {
                 movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
-                if(horizontalInput != 0)
+                if (horizontalInput != 0)
                 {
                     dropCountDown = dropCD;
                 }
-                velocity = horizontalInput * movementSpeedBase * movementAxis;
+                velocity = horizontalInput * movementAxis;
             }
+
             if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
             {
                 movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
-                velocity = verticalInput * movementSpeedBase * movementAxis;
-                if(verticalInput != 0)
+                velocity = verticalInput * movementAxis;
+                if (verticalInput != 0)
                 {
                     dropCountDown = dropCD;
                     player_animator.SetBool("Move", true);
@@ -450,9 +411,8 @@ public class PlayerMove : MonoBehaviour
                     player_animator.SetBool("Move", false);
                 }
             }
-            //Debug.Log(velocity);
             ChangeFaceDir(convertedAngleZ, velocity);
-            rb.linearVelocity = new Vector2(velocity.x, velocity.y);
+            rb.linearVelocity = velocity.normalized * movementSpeedBase;
         }
         else
         {
@@ -473,12 +433,12 @@ public class PlayerMove : MonoBehaviour
 
     private void CountDownDrop()
     {
-        if(dropCountDown > 0)
+        if (dropCountDown > 0)
         {
             dropCountDown -= Time.deltaTime;
         }
 
-        if(isGrounded && dropCountDown < 0)
+        if (isGrounded && dropCountDown < 0)
         {
             rb.gravityScale = originalGravityScale;
         }
@@ -523,7 +483,7 @@ public class PlayerMove : MonoBehaviour
 
     private void CoyoteTimeCount()
     {
-        if(isGrounded && !jumpClicked)
+        if (isGrounded && !jumpClicked)
         {
             coyoteTimeCountDown = coyoteTime;
         }
@@ -535,7 +495,7 @@ public class PlayerMove : MonoBehaviour
 
     private void JumpBufferCount()
     {
-        if(jumpAction.triggered)
+        if (jumpAction.triggered)
         {
             jumpBufferCountDown = jumpBufferTime;
         }
@@ -545,23 +505,41 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private Dictionary<string, AudioData> audioDict = new();
 
+    private void InitAudioDict()
+    {
+        foreach (AudioData data in playerAudioSO.Conf.ConfList)
+        {
+            audioDict[data.name] = data;
+        }
+    }
+
+    private void PlayAudio(string action)
+    {
+        AudioData data = null;
+        audioDict.TryGetValue(action, out data);
+        if (data != null)
+            AudioManager.Instance.CreateSound().WithAudioData(data).Play();
+    }
+
+
+    public AudioData jumpSound;
     // 跳跃 - 根據當前角度朝不同方向跳
     // 跳跃 - 根據當前角度朝不同方向跳
     private void Jump()
     {
         rb.gravityScale = originalGravityScale;
-        contactingObj = null;
         jumpClicked = true;
         isGrounded = false;
-
 
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
         Vector2 jumpDirection = Vector2.zero;
         rb.linearVelocity = new Vector2(rb.linearVelocityX, 0);
         transform.localRotation = Quaternion.Euler(0, 0, 0);
-        //angleWhenMove = float.NaN;
         releaseMove = true;
+
+        PlayAudio("Jump");
 
         // 根據角度設置跳躍方向
         if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
@@ -588,7 +566,7 @@ public class PlayerMove : MonoBehaviour
         {
             jumpDirection = new Vector2(0, 1); // 垂直向上跳
         }
-        jumpDirection = new Vector2 (jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.3f, jumpDirection.y);
+        jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.3f, jumpDirection.y);
         jumpDirection.Normalize();
         // 應用跳躍方向和力度
         rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
@@ -596,7 +574,6 @@ public class PlayerMove : MonoBehaviour
         // 冷卻跳躍輸入，避免連續觸發
         StartCoroutine(freezeMovement());
     }
-
 
     public static void StopMovement()
     {
@@ -620,7 +597,6 @@ public class PlayerMove : MonoBehaviour
     //冲刺-朝着朝向
     private IEnumerator DashA()
     {
-        contactingObj = null;
         canDash = false;
         isDashing = true;
         rb.gravityScale = 0;
@@ -650,35 +626,32 @@ public class PlayerMove : MonoBehaviour
             bool surfaceSet = false;
             isGrounded = true;
             collisionEnter = true;
-            
+
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 Vector2 normal = contact.normal;
                 float angle = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
-                if(angleWhenMove != (ConvertTo360Base(angle - 90f)))
+                if (angleWhenMove != (ConvertTo360Base(angle - 90f)))
                 {
-                    Debug.Log("Surface Normal: " + normal + ", tangent Angle: " + (ConvertTo360Base(angle - 90f) + "angle when move: " + angleWhenMove));
+                    //Debug.Log("Surface Normal: " + normal + ", tangent Angle: " + (ConvertTo360Base(angle - 90f) + "angle when move: " + angleWhenMove));
                     surfaceNormal = contact.normal; // Get the surface normal
                     surfaceSet = true;
                     break;
                 }
-                else if(angleWhenMove == float.NaN)
+                else if (angleWhenMove == float.NaN)
                 {
                     surfaceNormal = contact.normal;
                     surfaceSet = true;
                     break;
                 }
             }
-            if(jumpClicked && !surfaceSet)
+            if (jumpClicked && !surfaceSet)
             {
                 surfaceNormal = collision.contacts[0].normal;
-                Debug.Log("?");
+                //Debug.Log("?");
             }
 
             jumpClicked = false;
-            float groundAngle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
-            float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-            HandleRotation(groundAngle, convertedAngleZ);
         }
     }
 
@@ -687,6 +660,10 @@ public class PlayerMove : MonoBehaviour
         if (collision.gameObject.layer == 3)
         {
             HandleCollision(collision);
+        }
+        if (collision.gameObject.CompareTag("Moving Platform"))
+        {
+            this.transform.SetParent(collision.gameObject.transform.parent.transform, true);
         }
     }
 
@@ -698,10 +675,6 @@ public class PlayerMove : MonoBehaviour
             {
                 rb.gravityScale = 0;
             }
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                //surfaceNormal = contact.normal; // Get the surface normal
-            }
             isGrounded = true;
         }
     }
@@ -711,11 +684,16 @@ public class PlayerMove : MonoBehaviour
         if (collision.gameObject.layer == 3)
         {
             isGrounded = false;
-            contactingObj = null;
             //由用戶控制導致地離開地板 不吸回地面
             if (jumpClicked || isDashing)
             {
                 rb.gravityScale = originalGravityScale;
+                //Bug 由於
+                if (collision.gameObject.CompareTag("Moving Platform"))
+                {
+                    this.transform.SetParent(null);
+                    this.transform.localScale = Vector3.one;
+                }
                 return;
             }
             else if (stickPower > 0)
@@ -724,57 +702,17 @@ public class PlayerMove : MonoBehaviour
                 DetectNotOnGround();
             }
 
-            if(!isGrounded)
+            if (!isGrounded)
             {
-                Debug.Log("自然掉落");
+                //Debug.Log("自然掉落");
+                if (collision.gameObject.CompareTag("Moving Platform"))
+                {
+                    this.transform.SetParent(null);
+                    this.transform.localScale = Vector3.one;
+                }
                 angleWhenMove = float.NaN;
                 releaseMove = true;
             }
-        }
-    }
-
-    private Npc npc;
-    public void TalkToNpc(InputAction.CallbackContext context)
-    {
-        if (inNpc && context.started)
-        {
-            GameManager.ActivateActionMap("Npc");
-            npc.StartDialogue();
-        }
-    }
-
-    private bool inNpc = false;
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        //interactable layer
-        if (collision.gameObject.layer == 11)
-        {
-            collision.gameObject.transform.Find("UI").gameObject.SetActive(true);
-            //可以創一個string var 在playerkeybind那邊在設置時再修改這邊的string才不用每次調用
-            collision.gameObject.transform.Find("UI/KeyHint/Key Text").GetComponent<TMP_Text>().text = inputActions.FindActionMap("Player").FindAction("Interact").GetBindingDisplayString(0);
-        }
-        if(collision.CompareTag("Npc"))
-        {
-            inNpc =true;
-            collision.TryGetComponent<Npc>(out npc);
-            if(npc == null)
-            {
-                Debug.LogWarning("no npc script");
-            }
-        }
-    }
-
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        //interactable layer
-        if (collision.gameObject.layer == 11)
-        {
-            collision.gameObject.transform.Find("UI").gameObject.SetActive(false);
-        }
-        if (collision.CompareTag("Npc"))
-        {
-            inNpc = false;
         }
     }
 
