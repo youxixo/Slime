@@ -8,6 +8,9 @@ using static UnityEngine.Timeline.DirectorControlPlayable;
 using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine.InputSystem.Interactions;
+using UnityEditor;
+using UnityEngine;
+using Unity.Collections;
 
 public enum SlimeType
 {
@@ -18,6 +21,9 @@ public enum SlimeType
 
 public class PlayerController : MonoBehaviour
 {
+    public PlayerMove playerMove;
+    public Rigidbody2D rb;
+
 
     [SerializeField] private SlimeType currentSlimeType = SlimeType.Water;
     private Dictionary<SlimeType, Color> colorDict;
@@ -30,8 +36,19 @@ public class PlayerController : MonoBehaviour
     private InputAction attackAction;
     private InputAction skillAction;
 
+
     private Dictionary<SlimeType, PlayerBasicAttack> attackDict = new Dictionary<SlimeType, PlayerBasicAttack> { };
     private Dictionary<SlimeType, PlayerSkillAttack> skillDict = new Dictionary<SlimeType, PlayerSkillAttack> { };
+
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 3;
+    [SerializeField] private int currentHealth;
+    [SerializeField] private Transform healthSpawnParent;
+    [SerializeField] private GameObject healthPrefab;
+    [SerializeField] private List<Transform> healths;
+
+
+
 
 
     public InputAction GetAttackAction()
@@ -78,6 +95,17 @@ public class PlayerController : MonoBehaviour
         //sprd = gameObject.GetComponent<SpriteRenderer>();
 
         EventHandler.CallSlimeTypeEnterEvent(SlimeType.Water);
+
+
+        // 生成生命
+        for (int i = 0; i < maxHealth; i++)
+        {
+            Debug.Log("Initilizing Health");
+            GameObject health = GameObject.Instantiate(healthPrefab, healthSpawnParent);
+            healths.Add(health.transform);
+        }
+        currentHealth = maxHealth;
+
     }
 
 
@@ -98,6 +126,13 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
+        Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+
+        // Change Playmode Tint in editor preferences
+        EditorPrefs.SetString("Playmode Tint", UnityEngine.ColorUtility.ToHtmlStringRGBA(randomColor));
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             SlimeType targetType = (int)currentSlimeType + 1 < 3 ? currentSlimeType + 1 : 0;
@@ -204,5 +239,54 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    [Header("碰撞伤害")]
+    [SerializeField] private float horzForce = 100;
+    [SerializeField] private float vertForce = 100;
+    [SerializeField] private float freezeTime = 0.2f;
+
+
+    private void DealHurt(int damage)
+    {
+        ChangeHealth(-damage);
+
+    }
+
+    private void ChangeHealth(int value)
+    {
+        currentHealth += value;
+        currentHealth = Math.Clamp(currentHealth, 0, maxHealth);
+
+        for (int i = 0; i < maxHealth; i++)
+        {
+            if(i < currentHealth)
+            {
+                healths[i].Find("Health").gameObject.SetActive(true);
+            }
+            else
+            {
+                healths[i].Find("Health").gameObject.SetActive(false);
+            }
+        }
+
+    }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+        if(collision.collider.tag == "Enemy")
+        {
+            Debug.LogWarning("collide with enemy");
+            int horzDir = collision.transform.position.x < gameObject.transform.position.x ? 1 : -1;
+            Vector2 hurtForce = new Vector2(horzForce * horzDir, vertForce);
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(hurtForce, ForceMode2D.Impulse);
+            playerMove.FreeControl(freezeTime);
+
+            ChangeHealth(-1);
+        }
+
+
+    }
 
 }
