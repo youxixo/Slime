@@ -104,6 +104,7 @@ public class PlayerSave : MonoBehaviour
     {
         PlayerMove.StopMovement();
         this.transform.position = testData.playerData.position;
+        this.transform.rotation = Quaternion.identity;
         Debug.Log("Data load successful, player at position: " + testData.playerData.position);
     }
 }

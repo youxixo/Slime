@@ -37,7 +37,7 @@ public class PlayerMove : MonoBehaviour
     //Vector2 movementDirection = new Vector2(); //移动方向
 
     private bool jumpClicked = false; //按下跳跃
-    private bool allowToMove = true; //能否移动
+    public bool allowToMove = true; //能否移动
     private bool isGrounded = false; //检查是否在地上
     private Vector2 velocity; //角色目前移动速度&方向
 
@@ -53,6 +53,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float raycastDistance = 100f; //檢測地面的raycast長度
     [SerializeField] Transform wallDetect; //檢測地面的raycast位置
     private float maxVelocity = 40;
+    [SerializeField] private float maxWaterSkillVelocity = 100;
+
     Vector2 movementAxis = new Vector2();
     private bool releaseMove = true; //是否鬆開移動鍵
     private float angleWhenMove = float.NaN; //開始移動的角度
@@ -130,8 +132,20 @@ public class PlayerMove : MonoBehaviour
         DetectNotOnGround();
     }
 
+    public void ChangeWaterSkillMaxVel()
+    {
+        maxVelocity = maxWaterSkillVelocity;
+    }
+
+    public void ChangeBackNormalMaxVel()
+    {
+        maxVelocity = 40;
+    }
+
     private void Update()
     {
+        if (!allowToMove) return;
+
         if (dashAction.IsPressed() && canDash)
         {
             //StartCoroutine(DashA());
@@ -298,6 +312,22 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    public void DisableWallstick()
+    {
+        stickPower =-1;
+    }
+    public void EnableWallstick()
+    {
+        stickPower = maxStickPower;
+    }
+
+    public bool CheckOnGround()
+    {
+        var hit = Physics2D.Raycast(wallDetect.position, Vector2.down, raycastDistance, groundLayer);
+        return hit.collider != null;
+    }
+
+
     private void DetectNotOnGround()
     {
         var hit = Physics2D.Raycast(wallDetect.position, -transform.up.normalized, raycastDistance, groundLayer);
@@ -358,7 +388,7 @@ public class PlayerMove : MonoBehaviour
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-        if (isGrounded)
+        if (isGrounded && allowToMove)
         {
             player_animator.SetBool("Jump", false);
             player_animator.SetBool("Fall", false);
@@ -427,7 +457,7 @@ public class PlayerMove : MonoBehaviour
         else
         {
             // 在空中也可以控制方向
-            if (horizontalInput != 0)
+            if (horizontalInput != 0 && allowToMove)
             {
                 rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
                 ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
@@ -573,6 +603,19 @@ public class PlayerMove : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
     }
 
+    public void FreeControl(float time)
+    {
+        StartCoroutine("FreeMoveControl", time);
+        
+    }
+
+    private IEnumerator FreeMoveControl(float time)
+    {
+        allowToMove = false;
+        yield return new WaitForSeconds(time);
+        allowToMove = true;
+    }
+
     //*需優化
     //冲刺-朝着朝向
     private IEnumerator DashA()
@@ -590,17 +633,19 @@ public class PlayerMove : MonoBehaviour
         canDash = true;
     }
 
-    private IEnumerator freezeMovement()
+    public IEnumerator freezeMovement()
     {
         allowToMove = false;
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(.1f);
         allowToMove = true;
     }
 
     //落地時取得地板的法線
     private void HandleCollision(Collision2D collision)
     {
-        if (collision.gameObject.layer == 3)
+         
+
+        if (collision.gameObject.layer == 3 && allowToMove)
         {
             bool surfaceSet = false;
             isGrounded = true;
