@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerBasicNormalAttack : PlayerBasicAttack
+
+public class PlayerSkillFireAttack : PlayerSkillAttack
 {
     private bool inAttackFrames;
 
@@ -11,7 +12,7 @@ public class PlayerBasicNormalAttack : PlayerBasicAttack
     {
         EventHandler.AttackCheckStartEvent += OnAttackCheckStartEvent;
         EventHandler.AttackCheckEndEvent += OnAttackCheckEndEvent;
-        slimeType = SlimeType.None;
+        slimeType = SlimeType.Fire;
         Init();
     }
 
@@ -32,7 +33,7 @@ public class PlayerBasicNormalAttack : PlayerBasicAttack
     // Update is called once per frame
     void Update()
     {
-        InputAction attackAction = controller.GetAttackAction();
+        InputAction attackAction = controller.GetSkillAction();
 
     }
 
@@ -60,11 +61,10 @@ public class PlayerBasicNormalAttack : PlayerBasicAttack
     private void OnTriggerStay2D(Collider2D collision)
     {
         Debug.Log("check attack collision: hit an enemy");
-        if (collision.tag == "Enemy" && inAttackFrames)
+        if (collision.tag == "Enemy")
         {
             Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
         }
     }
-
 }

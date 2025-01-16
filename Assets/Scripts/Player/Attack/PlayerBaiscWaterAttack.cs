@@ -57,9 +57,9 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
     public override void Attack()
     {
         base.Attack();
-
+        Debug.LogWarning("start shooting");
         Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, transform.rotation, bulletParent).GetComponent<Bullet>();
-        bullet.Init(InTagName: "Player", InDir : controller.FacingToRightDirection() ? Vector2.right :Vector2.left);
+        bullet.Init(10, InTagName: "Player", InDir : controller.FacingToRightDirection() ? Vector2.right :Vector2.left);
     }
 
 

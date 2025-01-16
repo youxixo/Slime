@@ -26,13 +26,13 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         // 子弹沿着它的前进方向移动
-        transform.Translate(dir * speed * Time.deltaTime);
+        transform.Translate(dir * speed * Time.deltaTime,Space.World);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.LogWarning("collider 1");
         if (other.tag == tag.ToString()) return;
-
         Debug.Log(tag.ToString() + " bullet hit" + other );
         if (other.tag == "Player")
         {
@@ -45,9 +45,22 @@ public class Bullet : MonoBehaviour
             EventHandler.CallBulletHitEnemyEvent(tag);
             Destroy(gameObject);
         }
+        else if (other.tag == "Ground")
+        {
+            Destroy(gameObject);
+        }
         else
         {
             //Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.LogWarning("collider 2");
+        if (collision.collider.tag == "Ground")
+        {
+            Destroy(gameObject);
         }
     }
 }

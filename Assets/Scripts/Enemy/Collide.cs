@@ -93,9 +93,18 @@ public class Collide : MonoBehaviour
         }
 
         if (isAttack)
-        {
+        { 
             anim.SetBool("Attack", true);
-            Speed = AttackSpeed;
+            AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            
+            if (stateInfo.IsTag("Attack"))
+            {
+                Speed = 0;
+            }
+            if(stateInfo.IsTag("Attacking"))
+            {
+                Speed = AttackSpeed;
+            }
         }  
         else
         {
