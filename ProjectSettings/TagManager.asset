@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - UIChild
-  - Keybind
   - Enemy
   - SavePoint
   - DeathPoint
@@ -13,6 +12,9 @@ TagManager:
   - Prop
   - Ground
   - Moving Platform
+  - SingleKeybind
+  - CompositeKeybind
+  - Keybind
   layers:
   - Default
   - TransparentFX
