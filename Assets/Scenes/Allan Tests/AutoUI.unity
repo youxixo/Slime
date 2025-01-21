@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 303340867}
   - component: {fileID: 303340869}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: KeybindPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

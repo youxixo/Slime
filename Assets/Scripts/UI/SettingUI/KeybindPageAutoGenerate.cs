@@ -30,7 +30,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     private void Start()
     {
         LoadActionMapKeybindPage("Player");
-        currentActionMap.SaveBindingOverridesAsJson();
+        //currentActionMap.SaveBindingOverridesAsJson();
     }
 
     private void Update()
@@ -62,6 +62,30 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         {
             RestoreToDefault();
         }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            LoadActionMapKeybindPage("Player");
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            if (CompareKeybindSet())
+                Debug.Log("Same keybind");
+            else
+                Debug.Log("Diff");
+            SaveKeybindSet();
+            DestroyBindingDisplay();
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            if (CompareKeybindSet())
+                Debug.Log("Same keybind");
+            else
+                Debug.Log("Diff");
+            NoSaveKeybindSet();
+            DestroyBindingDisplay();
+        }
+
+
     }
 
     /// <summary>
@@ -76,7 +100,9 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         currentActionMap = inputActions.FindActionMap(mapName);
         if (currentActionMap != null)
         {
-            oldBindingJson = currentActionMap.ToJson();
+            //oldBindingJson = currentActionMap.ToJson(); ToJson returns the default one, not the override
+            oldBindingJson = currentActionMap.SaveBindingOverridesAsJson();
+            Debug.Log(oldBindingJson);
             currentActionMap.Disable();
             SpawnKeyViewItem(currentActionMap);
         }
@@ -248,22 +274,19 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         selectedKeyDisplay = null;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    private void SaveKeybindSet()
+    public void SaveKeybindSet()
     {
-        currentActionMap.SaveBindingOverridesAsJson();
+        //currentActionMap.SaveBindingOverridesAsJson();
     }
 
-    private void NoSaveKeybindSet()
+    public void NoSaveKeybindSet()
     {
         currentActionMap.LoadBindingOverridesFromJson(oldBindingJson);
     }
 
-    private bool ChangedKeybindSet()
+    private bool CompareKeybindSet()
     {
-        if (oldBindingJson == currentActionMap.ToJson())
+        if (oldBindingJson == currentActionMap.SaveBindingOverridesAsJson())
             return true;
         return false;
     }
