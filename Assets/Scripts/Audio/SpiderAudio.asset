@@ -10,17 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f206dd01a00a1bf449e20968cba0f648, type: 3}
-  m_Name: PlayerAudio
+  m_Name: SpiderAudio
   m_EditorClassIdentifier: 
   Conf:
     ConfList:
-    - name: Jump
-      clipPath: Audio/Jump
-      audioMixer: SFX
-      loop: 0
-      playOnAwake: 0
-    - name: Jump
-      clipPath: Audio/Jump
+    - name: Attack
+      clipPath: Enemy/Attack
       audioMixer: SFX
       loop: 0
       playOnAwake: 0
