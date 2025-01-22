@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class KeybindDisplay : MonoBehaviour, IKeybindDisplay
+public class KeybindDisplay : MonoBehaviour
 {
     public TMP_Text actionNameText;
     public Transform buttonParent;

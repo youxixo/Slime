@@ -1,13 +1,11 @@
-﻿using Newtonsoft.Json.Bson;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 using static UnityEngine.InputSystem.InputActionRebindingExtensions;
+using DG.Tweening;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Auto generate and update the keybinds for inputs
@@ -19,15 +17,16 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     public Transform scrollViewContent;
     public InputActionMap currentActionMap;
     public TMP_Text actionMapNameDisplay;
+    public TMP_Text bindingDescription;
 
     private InputActionRebindingExtensions.RebindingOperation _rebindingOperation; //rebind
     private KeybindButton selectedKeyDisplay;
     private Dictionary<string, KeybindButton> ActionButtonPair = new(); //key = action name, value = array of key bindings
     private Dictionary<string, KeybindButton> keyButtonPairs = new();
     private int compositeKeyIndex;
-    private string newBindingsJson;
     private string oldBindingJson;
     private string prevBindingJson;
+    private Sequence currentSequence;
 
     private const string Single_Keybind_Tag = "SingleKeybind";
     private const string Composite_Keybind_Tag = "CompositeKeybind";
@@ -45,7 +44,6 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             currentActionMap.Disable(); //***Delete after, sb unity activate all actionmap when start
 
             GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
-            //***´À ÓÖÔÙ´ÎÈ¡µÃGetComponent ¿´¿´Ö®ááÄÜ²»ÄÜ“Q·½·¨ 
             if (selectedObject != null)
             {
                 selectedKeyDisplay = selectedObject.GetComponent<KeybindButton>();
@@ -60,7 +58,12 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                     CompositeKeyBind(selectedObject.gameObject.name);
                 }
                 else
+                {
                     Debug.LogWarning("Selected Object is not keybind");
+                    return;
+                }
+                currentSequence?.Kill();
+                bindingDescription.text = "Changing rebind for: " + selectedKeyDisplay.actionName;
             }
         }
         if (Input.GetKeyDown(KeyCode.Backspace))
@@ -105,6 +108,8 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     /// <param name="mapName"></param>
     public void LoadActionMapKeybindPage(string mapName)
     {
+        ActionButtonPair.Clear();
+        keyButtonPairs.Clear();
         if(actionMapNameDisplay)
             actionMapNameDisplay.text = mapName;
 
@@ -113,7 +118,6 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         {
             //oldBindingJson = currentActionMap.ToJson(); ToJson returns the default one, not the override
             oldBindingJson = currentActionMap.SaveBindingOverridesAsJson();
-            Debug.Log(oldBindingJson);
             currentActionMap.Disable();
             SpawnKeyViewItem(currentActionMap);
         }
@@ -140,7 +144,6 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     public void RestoreToDefault()
     {
         currentActionMap.RemoveAllBindingOverrides();
-        currentActionMap.ToJson();
         RefreshBindingDisplay();
     }
 
@@ -149,6 +152,8 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     /// </summary>
     public void RefreshBindingDisplay()
     {
+        keyButtonPairs.Clear();
+        string bindingText = null;
         foreach (InputAction action in currentActionMap.actions)
         {
             if (action.bindings.Count > 1)
@@ -158,7 +163,9 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                     int bindingIndex = action.bindings.IndexOf(b => b == binding);
                     if (ActionButtonPair.ContainsKey(binding.name))
                     {
-                        ActionButtonPair[binding.name].buttonText.text = action.GetBindingDisplayString(bindingIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                        bindingText = action.GetBindingDisplayString(bindingIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                        ActionButtonPair[binding.name].buttonText.text = bindingText;
+                        keyButtonPairs[bindingText] = ActionButtonPair[binding.name];
                     }
                     else
                     {
@@ -171,12 +178,13 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                 if (ActionButtonPair.ContainsKey(action.name))
                 {
                     //***hard code 0, change later
-                    ActionButtonPair[action.name].buttonText.text = action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                    bindingText = action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                    ActionButtonPair[action.name].buttonText.text = bindingText;
+                    keyButtonPairs[bindingText] = ActionButtonPair[action.name];
                 }
             }
         }
     }
-
 
     /// <summary>
     /// Instantiate the key displays according to the actionmap
@@ -287,13 +295,20 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         {
             bindingText = changingAction.GetBindingDisplayString(compositeKeyIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
         }
+        bindingDescription.text = "";
         //there are key conflicts
         if (keyButtonPairs.ContainsKey(bindingText))
         {
             if(keyButtonPairs[bindingText] == selectedKeyDisplay)
                 return;
             changingAction.LoadBindingOverridesFromJson(prevBindingJson);
+            KeyConflictAnimation(keyButtonPairs[bindingText]);
             Debug.LogWarning("Already contains key use " + bindingText + " for " + keyButtonPairs[bindingText].actionName);
+            bindingDescription.text = "\"" + bindingText + "\" key already use for " + keyButtonPairs[bindingText].actionName;
+            currentSequence?.Kill();
+            currentSequence = DOTween.Sequence()
+                .AppendInterval(3f) // Wait for 5 seconds
+                .AppendCallback(() => bindingDescription.text = "");
             return;
         }
 
@@ -319,5 +334,14 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         if (oldBindingJson == currentActionMap.SaveBindingOverridesAsJson())
             return true;
         return false;
+    }
+
+    private void KeyConflictAnimation(KeybindButton key)
+    {
+        key.buttonImage.DOColor(Color.red, 0.5f)
+        .OnComplete(() =>
+        {
+            key.buttonImage.DOColor(Color.white, 0.5f);
+        });
     }
 }
