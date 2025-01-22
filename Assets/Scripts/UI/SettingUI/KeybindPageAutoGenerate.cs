@@ -1,5 +1,8 @@
+锘縰sing Newtonsoft.Json.Bson;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -19,10 +22,12 @@ public class KeybindPageAutoGenerate : MonoBehaviour
 
     private InputActionRebindingExtensions.RebindingOperation _rebindingOperation; //rebind
     private KeybindButton selectedKeyDisplay;
-    private Dictionary<string, KeybindButton> ActionNameBindingPair = new(); //key = action name, value = array of key bindings
+    private Dictionary<string, KeybindButton> ActionButtonPair = new(); //key = action name, value = array of key bindings
+    private Dictionary<string, KeybindButton> keyButtonPairs = new();
     private int compositeKeyIndex;
     private string newBindingsJson;
     private string oldBindingJson;
+    private string prevBindingJson;
 
     private const string Single_Keybind_Tag = "SingleKeybind";
     private const string Composite_Keybind_Tag = "CompositeKeybind";
@@ -40,7 +45,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             currentActionMap.Disable(); //***Delete after, sb unity activate all actionmap when start
 
             GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
-            //***蠢 又再次取得GetComponent 看看之後能不能換方法 
+            //***麓脌 脫脰脭脵麓脦脠隆碌脙GetComponent 驴麓驴麓脰庐谩谩脛脺虏禄脛脺鈥淨路陆路篓 
             if (selectedObject != null)
             {
                 selectedKeyDisplay = selectedObject.GetComponent<KeybindButton>();
@@ -84,8 +89,14 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             NoSaveKeybindSet();
             DestroyBindingDisplay();
         }
-
-
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            //DetectDuplicateKeyF();
+        }
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            RefreshBindingDisplay();
+        }
     }
 
     /// <summary>
@@ -145,9 +156,9 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                 foreach (InputBinding binding in action.bindings)
                 {
                     int bindingIndex = action.bindings.IndexOf(b => b == binding);
-                    if (ActionNameBindingPair.ContainsKey(binding.name))
+                    if (ActionButtonPair.ContainsKey(binding.name))
                     {
-                        ActionNameBindingPair[binding.name].buttonText.text = action.GetBindingDisplayString(bindingIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                        ActionButtonPair[binding.name].buttonText.text = action.GetBindingDisplayString(bindingIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
                     }
                     else
                     {
@@ -157,14 +168,15 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             }
             else
             {
-                if (ActionNameBindingPair.ContainsKey(action.name))
+                if (ActionButtonPair.ContainsKey(action.name))
                 {
                     //***hard code 0, change later
-                    ActionNameBindingPair[action.name].buttonText.text = action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                    ActionButtonPair[action.name].buttonText.text = action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
                 }
             }
         }
     }
+
 
     /// <summary>
     /// Instantiate the key displays according to the actionmap
@@ -189,7 +201,9 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                         if (bindingIndex != -1)
                         {
                             string bindingText = action.GetBindingDisplayString(bindingIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
-                            ActionNameBindingPair[binding.name] = displayItem.GenerateButton(action.name, bindingText, binding.name, Composite_Keybind_Tag);
+                            KeybindButton generateKey = displayItem.GenerateButton(action.name, bindingText, binding.name, Composite_Keybind_Tag);
+                            ActionButtonPair[binding.name] = generateKey;
+                            keyButtonPairs[bindingText] = generateKey;
                             //ActionNameBindingPair[binding.name] = bindingText;
                         }
                     }
@@ -200,7 +214,9 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             {
                 string bindingText = action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
                 displayItem.SetActionNameText(action.name);
-                ActionNameBindingPair[action.name] = displayItem.GenerateButton(null, action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions), action.name, Single_Keybind_Tag);
+                KeybindButton generateKey = displayItem.GenerateButton(null, action.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions), action.name, Single_Keybind_Tag);
+                ActionButtonPair[action.name] = generateKey;
+                keyButtonPairs[bindingText] = generateKey;
                 //ActionNameBindingPair[action.name] = bindingText;
             }
         }
@@ -219,6 +235,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             selectedKeyDisplay = null;
             return;
         }
+        prevBindingJson = changingAction.SaveBindingOverridesAsJson();
 
         _rebindingOperation = changingAction.PerformInteractiveRebinding()
             .WithControlsExcluding("Mouse")
@@ -239,6 +256,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
             if (changingAction.bindings[i].name == actionName)
             {
                 compositeKeyIndex = i;
+
                 _rebindingOperation = changingAction.PerformInteractiveRebinding(i)
                     .WithControlsExcluding("Mouse")
                     .OnMatchWaitForAnother(0.1f)
@@ -252,7 +270,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     }
 
     /// <summary>
-    /// 完成鍵位設置時 Dispose防止leak
+    /// 脥锚鲁脡忙I脦禄脭O脰脙鈥 Dispose路脌脰鹿leak
     /// </summary>
     /// <param name="actionName"></param>
     /// <param name="changingAction"></param>
@@ -269,6 +287,18 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         {
             bindingText = changingAction.GetBindingDisplayString(compositeKeyIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions);
         }
+        //there are key conflicts
+        if (keyButtonPairs.ContainsKey(bindingText))
+        {
+            if(keyButtonPairs[bindingText] == selectedKeyDisplay)
+                return;
+            changingAction.LoadBindingOverridesFromJson(prevBindingJson);
+            Debug.LogWarning("Already contains key use " + bindingText + " for " + keyButtonPairs[bindingText].actionName);
+            return;
+        }
+
+        keyButtonPairs.Remove(selectedKeyDisplay.buttonText.text);
+        keyButtonPairs[bindingText] = selectedKeyDisplay;
         //ActionNameBindingPair[actionName] = bindingText;
         selectedKeyDisplay.buttonText.text = bindingText;
         selectedKeyDisplay = null;
