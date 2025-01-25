@@ -45,6 +45,7 @@ public class MainMenuButtons : MonoBehaviour
     {
         SceneManager.LoadScene("完整关卡");
         GameManager.ActivateActionMap("Player");
+        Debug.Log(GameManager.playerActionMap.enabled);
     }
 
     private void Setting()
