@@ -131,11 +131,6 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         if (!allowToMove) return;
-
-        if (dashAction.IsPressed() && canDash)
-        {
-            //StartCoroutine(DashA());
-        }
         if (jumpBufferCountDown > 0 && coyoteTimeCountDown > 0)
         {
             jumpBufferCountDown = 0;
@@ -154,6 +149,7 @@ public class PlayerMove : MonoBehaviour
 
     private void InitInput()
     {
+        GameManager.ActivateActionMap("Player");
         var playerActionMap = inputActions.FindActionMap("Player");
 
         moveAction = playerActionMap.FindAction("Move");

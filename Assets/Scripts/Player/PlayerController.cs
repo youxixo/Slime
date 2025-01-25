@@ -131,7 +131,7 @@ public class PlayerController : MonoBehaviour
         Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
 
         // Change Playmode Tint in editor preferences
-        EditorPrefs.SetString("Playmode Tint", UnityEngine.ColorUtility.ToHtmlStringRGBA(randomColor));
+        //EditorPrefs.SetString("Playmode Tint", UnityEngine.ColorUtility.ToHtmlStringRGBA(randomColor));
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
