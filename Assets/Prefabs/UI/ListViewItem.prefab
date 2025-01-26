@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 831159325913990593}
   - component: {fileID: -7252431357905530864}
   m_Layer: 5
-  m_Name: KeyListView
+  m_Name: ListViewItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

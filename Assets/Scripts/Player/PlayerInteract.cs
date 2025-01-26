@@ -23,7 +23,7 @@ public class PlayerInteract : MonoBehaviour
 
     public void ExecuteInteraction(InputAction.CallbackContext context)
     {
-        if (interactObject != null)
+        if (interactObject != null && context.started)
         {
             if (interactPair.TryGetValue(interactableTag, out var action))
             {
