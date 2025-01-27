@@ -244,48 +244,30 @@ public class PlayerMove : MonoBehaviour
         if ((angle >= 0 && angle < 90) || angle > 270)
         {
             if (velocity.x > 0)
-            {
-                //true
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.x < 0)
-            {
-                //false
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
         else if ((angle > 90 && angle < 270))
         {
             if (velocity.x > 0)
-            {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.x < 0)
-            {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
         else if (angle == 90)
         {
             if (velocity.y > 0)
-            {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.y < 0)
-            {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
         else if (angle == 270)
         {
             if (velocity.y > 0)
-            {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.y < 0)
-            {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
     }
 
@@ -568,7 +550,8 @@ public class PlayerMove : MonoBehaviour
         jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.3f, jumpDirection.y);
         jumpDirection.Normalize();
         // 應用跳躍方向和力度
-        rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
+        //rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
+        rb.linearVelocity = jumpDirection.normalized * jumpForce;
 
         // 冷卻跳躍輸入，避免連續觸發
         StartCoroutine(freezeMovement());

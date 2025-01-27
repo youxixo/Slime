@@ -17,9 +17,9 @@ public class SettingUIController : MonoBehaviour
     private static PlayerSettingsData defaultSettings = 
         new PlayerSettingsData
         {
-            masterVolume = 60,
-            musicVolume = 60,
-            sfxVolume = 60,
+            masterVolume = 0,
+            musicVolume = 0,
+            sfxVolume = 0,
             screenSizeMode = 0,
             resolutionMode = 0
         };
@@ -32,7 +32,6 @@ public class SettingUIController : MonoBehaviour
     [SerializeField] private Transform panelList;
     private Dictionary<string, SettingPageParent> buttonPanelPair = new();
 
-    public static UnityEvent finishSetting = new UnityEvent();
 
     [Header("Input")]
     [SerializeField] private InputActionAsset inputActions;
@@ -40,19 +39,7 @@ public class SettingUIController : MonoBehaviour
     private InputAction exitAction;
 
     [Header("Panel")]
-    [SerializeField] private GameObject pauseMenu;
-    [SerializeField] private GameObject settingPage;
     [SerializeField] private CanvasGroup panelsGroup;
-
-    [Header("Pause Menu Buttons")]
-    [SerializeField] private Button continueButton;
-    [SerializeField] private Button settingButton;
-    [SerializeField] private Button exitGameButton;
-    [SerializeField] private GameObject selectedButtonOnPause;
-
-    [Header("Setting Menu Buttons")]
-    [SerializeField] private Button keybindButton;
-    [SerializeField] private GameObject selectedButtonOnSetting;
 
     [Header("Confirm Setting Menu")]
     [SerializeField] private GameObject confirmMenu;
@@ -61,18 +48,24 @@ public class SettingUIController : MonoBehaviour
 
     [Header("Events")]
     public static UnityEvent resumeGameEvent = new UnityEvent();
+    public static UnityEvent finishSetting = new UnityEvent();
 
     private void Start()
     {
-        settingChanged = true;
-        Debug.LogWarning("right now setting settingChanged to true when start for testing, make sure to change later");
-        DontDestroyOnLoad(this);
-
         newPlayerSettings = defaultSettings;
         prevPlayerSettings = defaultSettings;
+
         Initialize();
         InitInput();
+    }
 
+    public void OnEnable()
+    {
+        settingChanged = true;
+        Debug.LogWarning("right now setting settingChanged to true when start for testing, make sure to change later");
+        buttonList.interactable = true;
+        panelsGroup.alpha = 1;
+        panelsGroup.interactable = true;
         EventSystem.current.SetSelectedGameObject(buttonList.transform.GetChild(0).gameObject);
     }
 
@@ -99,6 +92,7 @@ public class SettingUIController : MonoBehaviour
         }
         if(navigateAction.triggered)
         {
+            Debug.Log("mmsd");
             ChangeSetting();
         }
     }
@@ -127,10 +121,10 @@ public class SettingUIController : MonoBehaviour
         selectedPanelButton = EventSystem.current.currentSelectedGameObject;
         prevPage = currentPage;
         currentPage = buttonPanelPair[selectedPanelButton.name];
-        if(currentPage.firstSelectObj!=null) EventSystem.current.SetSelectedGameObject(currentPage.firstSelectObj);
 
         if(prevPage != null) prevPage.Deactivate();
         currentPage.Activate();
+        if (currentPage.firstSelectObj != null) EventSystem.current.SetSelectedGameObject(currentPage.firstSelectObj);
         buttonList.interactable = false;
         currentPage.LoadFromPSD(newPlayerSettings);
     }
@@ -160,20 +154,6 @@ public class SettingUIController : MonoBehaviour
         navigateAction = UIActionMap.FindAction("Navigate");
     }   
 
-    #region 暫停
-    private void OnPause()
-    {
-        pauseMenu.SetActive(true);
-        EventSystem.current.SetSelectedGameObject(selectedButtonOnPause);
-    }
-
-    private void Resume()
-    {
-        pauseMenu.SetActive(false);
-        resumeGameEvent.Invoke();
-    }
-    #endregion
-
     //左右修改設置數值
     private void ChangeSetting()
     {
@@ -184,6 +164,7 @@ public class SettingUIController : MonoBehaviour
             if (selectedSetting.TryGetComponent<Slider>(out Slider slideComponent))
             {
                 slideComponent.value += 10;
+                slideComponent.targetGraphic.transform.localScale = new Vector3(-1, 1, 1);
             }
             else if (selectedSetting.TryGetComponent<TMP_Dropdown>(out TMP_Dropdown dropdownComponent))
             {
@@ -195,6 +176,7 @@ public class SettingUIController : MonoBehaviour
             if (selectedSetting.TryGetComponent<Slider>(out Slider slideComponent))
             {
                 slideComponent.value -= 10;
+                slideComponent.targetGraphic.transform.localScale = new Vector3(1, 1, 1);
             }
             else if (selectedSetting.TryGetComponent<TMP_Dropdown>(out TMP_Dropdown dropdownComponent))
             {
@@ -211,6 +193,8 @@ public class SettingUIController : MonoBehaviour
         soundSetting.ApplyChanges(newPlayerSettings);
         graphicSetting.ApplyChanges(newPlayerSettings);
         keybindPage.ApplyChanges(newPlayerSettings);
+
+        CloseAllPanel();
     }
 
     public void NoSaveSetting()
@@ -220,6 +204,19 @@ public class SettingUIController : MonoBehaviour
         soundSetting.DoNotSaveChanges();
         graphicSetting.DoNotSaveChanges();
         keybindPage.DoNotSaveChanges();
+
+        CloseAllPanel();
+    }
+
+    //***Todo - Add a Close to the interface and let each page deal their own dispose
+    private void CloseAllPanel()
+    {
+        soundSetting.gameObject.SetActive(false);
+        graphicSetting.gameObject.SetActive(false);
+        keybindPage.gameObject.SetActive(false);
+        confirmMenu.SetActive(false);
+        finishSetting.Invoke();
+        this.gameObject.SetActive(false);
     }
 }
 
