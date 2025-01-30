@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class PauseMenuUI : MonoBehaviour
+public class PauseMenuUI : PanelParent
 {
     public GameObject selectedButtonOnPause; 
 
@@ -35,4 +35,5 @@ public class PauseMenuUI : MonoBehaviour
     {
         Application.Quit();
     }
+
 }

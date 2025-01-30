@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 
-public class SettingUIController : MonoBehaviour
+public class SettingUIController : PanelParent
 {
     private bool settingChanged; // 用戶是否更改了設置
     private SettingPageParent currentPage;
@@ -215,6 +215,7 @@ public class SettingUIController : MonoBehaviour
         graphicSetting.gameObject.SetActive(false);
         keybindPage.gameObject.SetActive(false);
         confirmMenu.SetActive(false);
+        MainUIController.Instance.CloseCurrentPanel();
         finishSetting.Invoke();
         this.gameObject.SetActive(false);
     }

@@ -520,8 +520,41 @@ public class PlayerMove : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, 0, 0);
         releaseMove = true;
 
+        float horizontalInput = moveAction.ReadValue<Vector2>().x;
+        float verticalInput = moveAction.ReadValue<Vector2>().y;
+
         PlayAudio("Jump");
 
+        if (convertedAngleZ < 275 && convertedAngleZ > 265)
+        {
+            jumpDirection = new Vector2(0.5f, 0.5f);
+            //case for wall jump
+            if (verticalInput > 0 && horizontalInput < 0)
+            {
+                jumpDirection.x = 1.2f;
+                jumpDirection.y = 1f;
+            }
+        }
+        else if (convertedAngleZ < 95 && convertedAngleZ > 85)
+        {
+            jumpDirection = new Vector2(-0.5f, 0.5f);
+            //case for wall jump
+            if (verticalInput > 0 && horizontalInput > 0)
+            {
+                jumpDirection.x = -1.2f;
+                jumpDirection.y = 1f;
+            }
+        }
+        else if ((convertedAngleZ >= 0 && convertedAngleZ <= 85) || (convertedAngleZ < 360 && convertedAngleZ >= 275))
+        {
+            jumpDirection = Vector2.up;
+        }
+        else
+        {
+            jumpDirection = Vector2.down;
+        }
+
+        /*
         // 根據角度設置跳躍方向
         if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
         {
@@ -546,12 +579,15 @@ public class PlayerMove : MonoBehaviour
         else if (convertedAngleZ >= 0)
         {
             jumpDirection = new Vector2(0, 1); // 垂直向上跳
+            
         }
-        jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.3f, jumpDirection.y);
-        jumpDirection.Normalize();
+        */
+        jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.5f, jumpDirection.y + moveAction.ReadValue<Vector2>().y * 0.3f);
+        //jumpDirection.Normalize();
         // 應用跳躍方向和力度
-        //rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
-        rb.linearVelocity = jumpDirection.normalized * jumpForce;
+        rb.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
+        Debug.Log(jumpDirection);   
+        //rb.linearVelocity = jumpDirection * jumpForce;
 
         // 冷卻跳躍輸入，避免連續觸發
         StartCoroutine(freezeMovement());
@@ -654,6 +690,7 @@ public class PlayerMove : MonoBehaviour
             if (stickPower > 0)
             {
                 rb.gravityScale = 0;
+                jumpClicked = false;
             }
             isGrounded = true;
         }
