@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
@@ -8,7 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private InputActionAsset inputActionsReference;
 
     //這些action map可以移到UImanager統一管理?
-    private InputActionMap playerActionMap;
+    public static InputActionMap playerActionMap;
     private InputActionMap uiActionMap;
     //private static InputActionMap keybindMap;
 
@@ -47,7 +48,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(GetActiveActionMapCount() > 1)
+        foreach (var actionMap in inputActions.actionMaps)
+        {
+            //Debug.Log(actionMap.name + " " + actionMap.enabled);
+        }
+        //Debug.Log(playerActionMap.enabled);
+        if (GetActiveActionMapCount() > 1 || GetActiveActionMapCount() == 0)
         {
             //好像很容易有問題 因為player input component會在一開始 active所有 action map很煩
             ActivateActionMap("Player");
@@ -82,6 +88,8 @@ public class GameManager : MonoBehaviour
     public static void ActivateActionMap(string targetMapName)
     {
         // 停用所有的 ActionMap
+        Debug.Log(targetMapName);
+        
         foreach (var map in inputActions.actionMaps)
         {
             if (map.name == targetMapName)
