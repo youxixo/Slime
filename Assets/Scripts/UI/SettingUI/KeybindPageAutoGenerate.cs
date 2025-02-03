@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 /// <summary>
 /// Auto generate and update the keybinds for inputs
 /// </summary>
-public class KeybindPageAutoGenerate : MonoBehaviour
+public class KeybindPageAutoGenerate : SettingPageParent
 {
     public InputActionAsset inputActions;
     public KeybindDisplay keybindDisplayPrefab;
@@ -65,40 +65,6 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                 currentSequence?.Kill();
                 bindingDescription.text = "Changing rebind for: " + selectedKeyDisplay.actionName;
             }
-        }
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            RestoreToDefault();
-        }
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            LoadActionMapKeybindPage("Player");
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            if (CompareKeybindSet())
-                Debug.Log("Same keybind");
-            else
-                Debug.Log("Diff");
-            SaveKeybindSet();
-            DestroyBindingDisplay();
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            if (CompareKeybindSet())
-                Debug.Log("Same keybind");
-            else
-                Debug.Log("Diff");
-            NoSaveKeybindSet();
-            DestroyBindingDisplay();
-        }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            //DetectDuplicateKeyF();
-        }
-        if(Input.GetKeyDown(KeyCode.R))
-        {
-            RefreshBindingDisplay();
         }
     }
 
@@ -192,6 +158,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
     /// <param name="actionMap"></param>
     private void SpawnKeyViewItem(InputActionMap actionMap)
     {
+        firstSelectObj = null;
         foreach (InputAction action in actionMap.actions)
         {
             KeybindDisplay displayItem = Instantiate(keybindDisplayPrefab.gameObject, scrollViewContent).GetComponent<KeybindDisplay>();
@@ -226,6 +193,11 @@ public class KeybindPageAutoGenerate : MonoBehaviour
                 ActionButtonPair[action.name] = generateKey;
                 keyButtonPairs[bindingText] = generateKey;
                 //ActionNameBindingPair[action.name] = bindingText;
+            }
+            if (firstSelectObj == null)
+            {
+                firstSelectObj = displayItem.buttonParent.GetChild(0).gameObject;
+                EventSystem.current.SetSelectedGameObject(firstSelectObj);
             }
         }
     }
@@ -321,7 +293,7 @@ public class KeybindPageAutoGenerate : MonoBehaviour
 
     public void SaveKeybindSet()
     {
-        //currentActionMap.SaveBindingOverridesAsJson();
+        oldBindingJson = currentActionMap.SaveBindingOverridesAsJson();
     }
 
     public void NoSaveKeybindSet()
@@ -343,5 +315,40 @@ public class KeybindPageAutoGenerate : MonoBehaviour
         {
             key.buttonImage.DOColor(Color.white, 0.5f);
         });
+    }
+
+    public override void SetPlayerSettingData(ref PlayerSettingsData data)
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public override void LoadFromPSD(PlayerSettingsData data)
+    {
+        RefreshBindingDisplay();
+    }
+
+    public override void ApplyChanges(PlayerSettingsData changingData)
+    {
+        SaveKeybindSet();
+    }
+
+    public override void ChangeToPlayerSettingData(PlayerSettingsData changingData)
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public override void DoNotSaveChanges()
+    {
+        NoSaveKeybindSet();
+    }
+
+    public override void Activate()
+    {
+        this.gameObject.SetActive(true);
+    }
+
+    public override void Deactivate()
+    {
+        this.gameObject.SetActive(false);
     }
 }

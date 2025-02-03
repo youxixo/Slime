@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
         uiActionMap = inputActions.FindActionMap("UI");
 
         PlayerMove.pauseGame.AddListener(PauseGame);
-        UIController.resumeGameEvent.AddListener(ResumeGame);
+        PauseMenuUI.resumeGameEvent.AddListener(ResumeGame);
     }
 
     private int GetActiveActionMapCount()

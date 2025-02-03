@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
@@ -319,3 +319,4 @@ public struct PlayerSettings
     public int screenSizeMode { get; set; }
     public int resolutionMode { get; set; }
 }
+*/

@@ -21,7 +21,7 @@ public class MainMenuButtons : MonoBehaviour
         }
         root.Q<Button>("Start").Focus();
 
-        UIController.finishSetting.AddListener(BackFromSetting);
+        SettingUIController.finishSetting.AddListener(BackFromSetting);
     }
 
     private void OnSelected(Button b)
@@ -50,6 +50,7 @@ public class MainMenuButtons : MonoBehaviour
 
     private void Setting()
     {
+        GameManager.ActivateActionMap("UI");
         settingClick.Invoke();
     }
 

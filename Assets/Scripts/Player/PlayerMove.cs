@@ -108,7 +108,7 @@ public class PlayerMove : MonoBehaviour
         {
             rb.gravityScale = originalGravityScale;
         }
-        if (!isDashing && allowToMove)
+        if (!isDashing)
         {
             Move();
         }
@@ -245,48 +245,30 @@ public class PlayerMove : MonoBehaviour
         if ((angle >= 0 && angle < 90) || angle > 270)
         {
             if (velocity.x > 0)
-            {
-                //true
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.x < 0)
-            {
-                //false
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
         else if ((angle > 90 && angle < 270))
         {
             if (velocity.x > 0)
-            {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.x < 0)
-            {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
         else if (angle == 90)
         {
             if (velocity.y > 0)
-            {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.y < 0)
-            {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
         else if (angle == 270)
         {
             if (velocity.y > 0)
-            {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
             else if (velocity.y < 0)
-            {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-            }
         }
     }
 
@@ -361,55 +343,58 @@ public class PlayerMove : MonoBehaviour
         // 根據地面朝向決定移動方向
         float angle = Mathf.Atan2(surfaceNormal.y, surfaceNormal.x) * Mathf.Rad2Deg;
         float convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-        if (isGrounded && allowToMove)
+        if (isGrounded)
         {
-            player_animator.SetBool("Jump", false);
-            player_animator.SetBool("Fall", false);
             HandleRotation(angle, convertedAngleZ);
+            if (allowToMove)
+            {
+                player_animator.SetBool("Jump", false);
+                player_animator.SetBool("Fall", false);
 
 
-            //just start moving
-            if (horizontalInput != 0 && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
-            {
-                releaseMove = false;
-                angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
-                player_animator.SetBool("Move", true);
-            }
-            else if (horizontalInput == 0 && releaseMove == false)
-            {
-                player_animator.SetBool("Move", false);
-                releaseMove = true;
-                angleWhenMove = float.NaN;
-            }
-            convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
-
-            if (!(Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f))
-            {
-                movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
-                if (horizontalInput != 0)
+                //just start moving
+                if (horizontalInput != 0 && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
                 {
-                    dropCountDown = dropCD;
-                }
-                velocity = horizontalInput * movementAxis;
-            }
-
-            if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
-            {
-                movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
-                velocity = verticalInput * movementAxis;
-                if (verticalInput != 0)
-                {
-                    dropCountDown = dropCD;
-                    player_animator.SetBool("Move", true);
+                    releaseMove = false;
                     angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                    player_animator.SetBool("Move", true);
                 }
-                else
+                else if (horizontalInput == 0 && releaseMove == false)
                 {
                     player_animator.SetBool("Move", false);
+                    releaseMove = true;
+                    angleWhenMove = float.NaN;
                 }
+                convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
+
+                if (!(Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f))
+                {
+                    movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
+                    if (horizontalInput != 0)
+                    {
+                        dropCountDown = dropCD;
+                    }
+                    velocity = horizontalInput * movementAxis;
+                }
+
+                if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
+                {
+                    movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
+                    velocity = verticalInput * movementAxis;
+                    if (verticalInput != 0)
+                    {
+                        dropCountDown = dropCD;
+                        player_animator.SetBool("Move", true);
+                        angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                    }
+                    else
+                    {
+                        player_animator.SetBool("Move", false);
+                    }
+                }
+                ChangeFaceDir(convertedAngleZ, velocity);
+                rb.linearVelocity = velocity.normalized * movementSpeedBase;
             }
-            ChangeFaceDir(convertedAngleZ, velocity);
-            rb.linearVelocity = velocity.normalized * movementSpeedBase;
         }
         else
         {
@@ -536,8 +521,41 @@ public class PlayerMove : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, 0, 0);
         releaseMove = true;
 
+        float horizontalInput = moveAction.ReadValue<Vector2>().x;
+        float verticalInput = moveAction.ReadValue<Vector2>().y;
+
         PlayAudio("Jump");
 
+        if (convertedAngleZ < 275 && convertedAngleZ > 265)
+        {
+            jumpDirection = new Vector2(0.5f, 0.5f);
+            //case for wall jump
+            if (verticalInput > 0 && horizontalInput < 0)
+            {
+                jumpDirection.x = 1.2f;
+                jumpDirection.y = 1f;
+            }
+        }
+        else if (convertedAngleZ < 95 && convertedAngleZ > 85)
+        {
+            jumpDirection = new Vector2(-0.5f, 0.5f);
+            //case for wall jump
+            if (verticalInput > 0 && horizontalInput > 0)
+            {
+                jumpDirection.x = -1.2f;
+                jumpDirection.y = 1f;
+            }
+        }
+        else if ((convertedAngleZ >= 0 && convertedAngleZ <= 85) || (convertedAngleZ < 360 && convertedAngleZ >= 275))
+        {
+            jumpDirection = Vector2.up;
+        }
+        else
+        {
+            jumpDirection = Vector2.down;
+        }
+
+        /*
         // 根據角度設置跳躍方向
         if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
         {
@@ -562,11 +580,15 @@ public class PlayerMove : MonoBehaviour
         else if (convertedAngleZ >= 0)
         {
             jumpDirection = new Vector2(0, 1); // 垂直向上跳
+            
         }
-        jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.3f, jumpDirection.y);
-        jumpDirection.Normalize();
+        */
+        jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.5f, jumpDirection.y + moveAction.ReadValue<Vector2>().y * 0.3f);
+        //jumpDirection.Normalize();
         // 應用跳躍方向和力度
-        rb.AddForce(jumpDirection.normalized * jumpForce, ForceMode2D.Impulse);
+        rb.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
+        Debug.Log(jumpDirection);   
+        //rb.linearVelocity = jumpDirection * jumpForce;
 
         // 冷卻跳躍輸入，避免連續觸發
         StartCoroutine(freezeMovement());
@@ -616,9 +638,7 @@ public class PlayerMove : MonoBehaviour
     //落地時取得地板的法線
     private void HandleCollision(Collision2D collision)
     {
-         
-
-        if (collision.gameObject.layer == 3 && allowToMove)
+        if (collision.gameObject.layer == 3)
         {
             bool surfaceSet = false;
             isGrounded = true;
@@ -671,6 +691,7 @@ public class PlayerMove : MonoBehaviour
             if (stickPower > 0)
             {
                 rb.gravityScale = 0;
+                jumpClicked = false;
             }
             isGrounded = true;
         }
