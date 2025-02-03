@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,6 +9,7 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform bulletParent;
     [SerializeField] private Transform bulletSpawnPos;
+    PlayerController playerController;
 
     private void OnEnable()
     {
@@ -58,11 +60,16 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
     {
         base.Attack();
         Debug.LogWarning("start shooting");
-        Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, transform.rotation, bulletParent).GetComponent<Bullet>();
-        bullet.Init(10, InTagName: "Player", InDir : controller.FacingToRightDirection() ? Vector2.right :Vector2.left);
+        Bullet bullet = GameObject.Instantiate(bulletPrefab, bulletSpawnPos.position, Quaternion.identity, bulletParent).GetComponent<Bullet>();
+
+        bullet.Init(20, InTagName: "Player", InDir: controller.transform.localScale.x > 0 ? controller.transform.right : -controller.transform.right );
+
+        controller.playerMove.Anim.Play("water_normal_attack");
+        //controller.playerMove.Anim.SetBool("Attack", false);
+
+
+
     }
-
-
 
 
     private void OnTriggerStay2D(Collider2D collision)

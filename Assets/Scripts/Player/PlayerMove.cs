@@ -78,6 +78,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private SpriteRenderer _sr;
     [SerializeField] private Animator player_animator;
+    public Animator Anim { get { return player_animator; } }
 
     [Header("Audio")]
     [SerializeField] private AudioSO playerAudioSO;

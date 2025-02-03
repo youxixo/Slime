@@ -147,9 +147,9 @@ public class PlayerController : MonoBehaviour
             if (attackDict[currentSlimeType].CanAttack())
             {
                 foreach (KeyValuePair<SlimeType, PlayerBasicAttack> pair in attackDict)
-                { 
+                {
+                    if (pair.Key == SlimeType.Fire) continue;
                     pair.Value.gameObject.SetActive(false);
-                    Debug.Log(pair);
                 }
                 attackDict[currentSlimeType].gameObject.SetActive(true);
                 attackDict[currentSlimeType].Attack();
@@ -169,7 +169,6 @@ public class PlayerController : MonoBehaviour
                 foreach (KeyValuePair<SlimeType, PlayerSkillAttack> pair in skillDict)
                 {
                     pair.Value.gameObject.SetActive(false);
-                    Debug.Log(pair);
                 }
                 skillDict[currentSlimeType].gameObject.SetActive(true);
                 skillDict[currentSlimeType].Attack();

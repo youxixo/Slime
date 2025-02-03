@@ -7,6 +7,7 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
 {
     [SerializeField] private bool inAttackFrames;
     [SerializeField] private SpriteRenderer sprd;
+    [SerializeField] private Animation fireAttackAnim;
 
 
     private void OnEnable()
@@ -54,9 +55,9 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
     {
         base.Attack();
 
-        Debug.Log("fire attack" + Time.realtimeSinceStartup);
-
-        sprd.enabled = true;
+        Debug.Log("fire attack");
+        if(!sprd.enabled)
+            sprd.enabled = true;
         inAttackFrames = true;
 
         //anim.Play();
@@ -68,7 +69,9 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
     {
         yield return new WaitForSeconds(0.5f);
         inAttackFrames = false;
-        sprd.enabled = false;
+        if (sprd.enabled)
+            sprd.enabled = false;
+        //fireAttackAnim.Stop();
         Debug.LogWarning("Fire in atacck end ");
     }
 
