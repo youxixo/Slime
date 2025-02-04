@@ -50,6 +50,8 @@ public class PlayerAttackBase : MonoBehaviour
 
     virtual public void Attack()
     {
+        //controller.playerMove.Anim.SetBool("Attack", true);
+        //controller.playerMove.Anim.Play("water_normal_attack");
 
     }
 

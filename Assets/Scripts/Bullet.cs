@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 5f; // 子弹速度
+    private float speed = 5f; // 子弹速度
     public float lifetime = 3f; // 子弹存活时间
     public TagHandle tag;
     public Vector2 dir;
