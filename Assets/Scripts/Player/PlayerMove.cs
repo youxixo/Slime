@@ -401,8 +401,17 @@ public class PlayerMove : MonoBehaviour
             // 在空中也可以控制方向
             if (horizontalInput != 0 && allowToMove)
             {
-                rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
-                ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
+                if (!isGrounded)
+                {
+                    Vector2 targetVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
+                    rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, targetVelocity, Time.deltaTime * 30f); // 10f controls the speed of change
+                    ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
+                }
+                else
+                {
+                    rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
+                    ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
+                }
             }
             player_animator.SetBool("Move", false);
         }
@@ -535,6 +544,11 @@ public class PlayerMove : MonoBehaviour
                 jumpDirection.x = 1.2f;
                 jumpDirection.y = 1f;
             }
+            else if (verticalInput > 0 && horizontalInput > 0)
+            {
+                jumpDirection.x = 1.5f;
+                jumpDirection.y = 1.8f;
+            }
         }
         else if (convertedAngleZ < 95 && convertedAngleZ > 85)
         {
@@ -544,6 +558,11 @@ public class PlayerMove : MonoBehaviour
             {
                 jumpDirection.x = -1.2f;
                 jumpDirection.y = 1f;
+            }
+            else if (verticalInput > 0 && horizontalInput < 0)
+            {
+                jumpDirection.x = -1.5f;
+                jumpDirection.y = 1.8f;
             }
         }
         else if ((convertedAngleZ >= 0 && convertedAngleZ <= 85) || (convertedAngleZ < 360 && convertedAngleZ >= 275))
@@ -691,7 +710,7 @@ public class PlayerMove : MonoBehaviour
             if (stickPower > 0)
             {
                 rb.gravityScale = 0;
-                jumpClicked = false;
+                //jumpClicked = false;
             }
             isGrounded = true;
         }
