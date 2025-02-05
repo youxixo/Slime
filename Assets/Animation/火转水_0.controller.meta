@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Animation/火转水_0.controller.meta
 guid: 6a84b84e659e2cf4cb1a64548c5be84d
+========
+guid: 2cd9e8349de133b47a500855e5d2ace2
+>>>>>>>> Allanhihi:Assets/Animation/Fire.controller.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 9100000

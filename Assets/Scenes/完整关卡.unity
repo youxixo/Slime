@@ -1748,6 +1748,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &273986048 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5698818402797012901, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+  m_PrefabInstance: {fileID: 1512129239}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &303875911
 GameObject:
   m_ObjectHideFlags: 0
@@ -4720,6 +4725,24 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7009499732049091772, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
   m_PrefabInstance: {fileID: 1512129239}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &777271872 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 758788694363729559, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+  m_PrefabInstance: {fileID: 1512129239}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &777271874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273986048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31bad922ecf7fda4aa19e86e74dda52a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1323408144}
 --- !u!1 &796690010
 GameObject:
   m_ObjectHideFlags: 0
@@ -10602,6 +10625,10 @@ PrefabInstance:
       propertyPath: mapCamera
       value: 
       objectReference: {fileID: 1910577731}
+    - target: {fileID: 758788694363729559, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 63360a7b609f6fc41b4ad4f62d6a4a5a, type: 2}
     - target: {fileID: 1572897980914530094, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: _sr
       value: 
@@ -10851,6 +10878,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1323408158}
     - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 777271872}
+    - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: horzForce
       value: 12
       objectReference: {fileID: 0}
@@ -10867,9 +10898,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1323408157}
     - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: fireAnimator
+      value: 
+      objectReference: {fileID: 9100000, guid: 0dcabc1dc017b574086ae1f83a8a8211, type: 2}
+    - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: healthPrefab
       value: 
       objectReference: {fileID: 1480786017889134186, guid: ab823fc7fd819494c9af9be2af9e9c2a, type: 3}
+    - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: grassAnimator
+      value: 
+      objectReference: {fileID: 9100000, guid: 63360a7b609f6fc41b4ad4f62d6a4a5a, type: 2}
+    - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: waterAnimator
+      value: 
+      objectReference: {fileID: 9100000, guid: 255d98d2515a417439472ad597baf055, type: 2}
+    - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      propertyPath: currentAnimator
+      value: 
+      objectReference: {fileID: 777271872}
     - target: {fileID: 9127748092651119099, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       propertyPath: currentSlimeType
       value: 0
@@ -10905,6 +10952,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6414684366762424267, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1323408152}
+    - targetCorrespondingSourceObject: {fileID: 5698818402797012901, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 777271874}
     - targetCorrespondingSourceObject: {fileID: 2956513107393030669, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       insertIndex: -1
       addedObject: {fileID: 500625022}

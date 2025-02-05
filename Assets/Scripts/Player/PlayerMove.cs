@@ -99,6 +99,7 @@ public class PlayerMove : MonoBehaviour
         {
             playerInput.actions.Disable(); // Disable the entire InputActionAsset
         }
+        movementSpeedBase = 12;
     }
 
 
@@ -401,18 +402,14 @@ public class PlayerMove : MonoBehaviour
             // 在空中也可以控制方向
             if (horizontalInput != 0 && allowToMove)
             {
-                if (!isGrounded)
-                {
-                    Vector2 targetVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
-                    rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, targetVelocity, Time.deltaTime * 30f); // 10f controls the speed of change
-                    ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
-                }
-                else
-                {
                     rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
-                    ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
-                }
             }
+            else if(horizontalInput == 0 && jumpClicked)
+            {
+                Vector2 targetVelocity = new Vector2(rb.linearVelocity.normalized.x * movementSpeedBase, rb.linearVelocity.y);
+                rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, targetVelocity, Time.deltaTime * 10f); // 10f controls the speed of change
+            }
+            ChangeFaceDir(convertedAngleZ, new Vector2(horizontalInput, 0));
             player_animator.SetBool("Move", false);
         }
 
@@ -546,8 +543,8 @@ public class PlayerMove : MonoBehaviour
             }
             else if (verticalInput > 0 && horizontalInput > 0)
             {
-                jumpDirection.x = 1.5f;
-                jumpDirection.y = 1.8f;
+                jumpDirection.x = 2f;
+                jumpDirection.y = 2f;
             }
         }
         else if (convertedAngleZ < 95 && convertedAngleZ > 85)
@@ -561,8 +558,8 @@ public class PlayerMove : MonoBehaviour
             }
             else if (verticalInput > 0 && horizontalInput < 0)
             {
-                jumpDirection.x = -1.5f;
-                jumpDirection.y = 1.8f;
+                jumpDirection.x = -2f;
+                jumpDirection.y = 2f;
             }
         }
         else if ((convertedAngleZ >= 0 && convertedAngleZ <= 85) || (convertedAngleZ < 360 && convertedAngleZ >= 275))
@@ -573,39 +570,11 @@ public class PlayerMove : MonoBehaviour
         {
             jumpDirection = Vector2.down;
         }
-
-        /*
-        // 根據角度設置跳躍方向
-        if (Mathf.Abs(convertedAngleZ - 270) < 0.2f)
-        {
-            jumpDirection = new Vector2(1, 1.8f); // 右上方跳
-        }
-        else if (convertedAngleZ >= 270)
-        {
-            jumpDirection = new Vector2(0, 1); // 垂直向上跳
-        }
-        else if (Mathf.Abs(convertedAngleZ - 90) < 0.2f)
-        {
-            jumpDirection = new Vector2(-1, 1.8f); // 左上方跳
-        }
-        else if (convertedAngleZ >= 250 && convertedAngleZ < 270)
-        {
-            jumpDirection = new Vector2(1, 1); // 右上方跳
-        }
-        else if (convertedAngleZ >= 90)
-        {
-            jumpDirection = new Vector2(0, -0.25f); // 垂直向下跳
-        }
-        else if (convertedAngleZ >= 0)
-        {
-            jumpDirection = new Vector2(0, 1); // 垂直向上跳
-            
-        }
-        */
         jumpDirection = new Vector2(jumpDirection.x + moveAction.ReadValue<Vector2>().x * 0.5f, jumpDirection.y + moveAction.ReadValue<Vector2>().y * 0.3f);
         //jumpDirection.Normalize();
         // 應用跳躍方向和力度
-        rb.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
+        //rb.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
+        rb.linearVelocity += jumpDirection * jumpForce;
         Debug.Log(jumpDirection);   
         //rb.linearVelocity = jumpDirection * jumpForce;
 
