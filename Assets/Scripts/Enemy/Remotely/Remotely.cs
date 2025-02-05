@@ -13,9 +13,10 @@ public class Remotely : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     public bool isAttack = false;
-
+    public GameObject DeadEffect;
     public bool isleft = true;    // 面朝向
     private bool hasAttack = false;
+    private float playerLocalScale;
 
     void Start()
     {
@@ -30,6 +31,7 @@ public class Remotely : MonoBehaviour
 
     void Update()
     {
+        playerLocalScale = GameObject.Find("Player").transform.localScale.x;
         if (isAttack)
         {
             Attack(); // 停止移动并生成子弹
@@ -95,4 +97,22 @@ public class Remotely : MonoBehaviour
     }
     }
 
+    void OnTriggerStay2D(Collider2D collision)
+    {
+
+        if (collision.tag == "PlayerAttack")
+        {
+            if(playerLocalScale == 1)
+            {
+                rb.AddForce(new Vector2(1, 1).normalized * 3, ForceMode2D.Impulse);
+            }
+            else if(playerLocalScale == -1)
+            {
+                rb.AddForce(new Vector2(-1, 1).normalized * 3, ForceMode2D.Impulse);
+            }
+        }
+
+        Instantiate(DeadEffect, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
 }

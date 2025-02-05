@@ -3034,6 +3034,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7629719843658856407, guid: 44c03219646691841956cb0c8e006948, type: 3}
+      propertyPath: DeadEffect
+      value: 
+      objectReference: {fileID: 7095011544199488910, guid: 3d5ae64c217147048b85c7a211a4ce57, type: 3}
     - target: {fileID: 8452747579390325113, guid: 44c03219646691841956cb0c8e006948, type: 3}
       propertyPath: m_Name
       value: Remotely 1 (1)
@@ -4403,6 +4407,10 @@ PrefabInstance:
     - target: {fileID: 4329438566662227978, guid: 44c03219646691841956cb0c8e006948, type: 3}
       propertyPath: m_LocalPosition.x
       value: 27.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5263570057307719144, guid: 44c03219646691841956cb0c8e006948, type: 3}
+      propertyPath: m_Mass
+      value: 3.6039536
       objectReference: {fileID: 0}
     - target: {fileID: 5306032212561050143, guid: 44c03219646691841956cb0c8e006948, type: 3}
       propertyPath: m_LocalScale.x
@@ -11196,10 +11204,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3191923514000657132, guid: 52b3653c3cdfc4e4c934305623077eec, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 36.59
-      objectReference: {fileID: 0}
     - target: {fileID: 4145332276345478318, guid: 52b3653c3cdfc4e4c934305623077eec, type: 3}
       propertyPath: m_Name
       value: Collider (2)

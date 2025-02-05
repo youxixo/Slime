@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CloseCombat : MonoBehaviour
@@ -5,10 +6,14 @@ public class CloseCombat : MonoBehaviour
     public Transform LeftPoint;
     public Transform RightPoint;
     public float MoveSpeed = 1f; // Movement speed
+    public GameObject DeadEffect;
     private float LeftPointX;
     private float RightPointX;
     private Rigidbody2D rb;
     private bool isMovingLeft = true;
+
+    private float playerLocalScale;
+
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +29,7 @@ public class CloseCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        playerLocalScale = GameObject.Find("Player").transform.localScale.x;
         Move();
     }
 
@@ -45,5 +51,24 @@ public class CloseCombat : MonoBehaviour
         {
             isMovingLeft = true;
         }
+    }
+
+    void OnTriggerStay2D(Collider2D collision)
+    {
+
+        if (collision.tag == "PlayerAttack")
+        {
+            if(playerLocalScale == 1)
+            {
+                rb.AddForce(new Vector2(1, 1).normalized * 3, ForceMode2D.Impulse);
+            }
+            else if(playerLocalScale == -1)
+            {
+                rb.AddForce(new Vector2(-1, 1).normalized * 3, ForceMode2D.Impulse);
+            }
+        }
+
+        Instantiate(DeadEffect, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }

@@ -325,6 +325,7 @@ MonoBehaviour:
   firePoint: {fileID: 8419213141762882908}
   MoveSpeed: 10
   isAttack: 0
+  DeadEffect: {fileID: 7095011544199488910, guid: 3d5ae64c217147048b85c7a211a4ce57, type: 3}
   isleft: 1
 --- !u!95 &4179969770735673701
 Animator:

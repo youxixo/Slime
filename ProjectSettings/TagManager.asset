@@ -15,6 +15,7 @@ TagManager:
   - SingleKeybind
   - CompositeKeybind
   - Keybind
+  - PlayerAttack
   layers:
   - Default
   - TransparentFX
