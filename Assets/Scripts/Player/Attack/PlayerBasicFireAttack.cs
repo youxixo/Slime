@@ -2,12 +2,16 @@ using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEditorInternal;
 
 public class PlayerBasicFireAttack : PlayerBasicAttack
 {
     [SerializeField] private bool inAttackFrames;
     [SerializeField] private SpriteRenderer sprd;
-    [SerializeField] private Animation fireAttackAnim;
+    [SerializeField] private Animator fireAttackAnim;
+
+    [SerializeField] private float timeLength;
+
 
 
     private void OnEnable()
@@ -29,7 +33,7 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        
 
     }
 
@@ -55,24 +59,36 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
     {
         base.Attack();
 
-        Debug.Log("fire attack");
-        if(!sprd.enabled)
-            sprd.enabled = true;
-        inAttackFrames = true;
+        //Debug.Log("fire attack");
+        //if(!sprd.enabled)
+        //    sprd.enabled = true;
+        //inAttackFrames = true;
 
-        //anim.Play();
-        StopAllCoroutines();
+        ////anim.Play();
+        //StopAllCoroutines();
+        //StartCoroutine(StopPlayAnim());
+
+        controller.playerMove.FreeControl(timeLength);
+        fireAttackAnim.SetBool("canAttack", true);
+        //fireAttackAnim.Play("fireAttack");
         StartCoroutine(StopPlayAnim());
+        sprd.enabled = true;
+
     }
 
     IEnumerator StopPlayAnim()
     {
-        yield return new WaitForSeconds(0.5f);
-        inAttackFrames = false;
-        if (sprd.enabled)
-            sprd.enabled = false;
-        //fireAttackAnim.Stop();
-        Debug.LogWarning("Fire in atacck end ");
+        //yield return new WaitForSeconds(0.5f);
+        //inAttackFrames = false;
+        //if (sprd.enabled)
+        //    sprd.enabled = false;
+        ////fireAttackAnim.Stop();
+        //Debug.LogWarning("Fire in atacck end ");
+        yield return new WaitForSeconds(timeLength);
+        fireAttackAnim.SetBool("canAttack", false);
+        sprd.enabled = false;
+
+
     }
 
 
