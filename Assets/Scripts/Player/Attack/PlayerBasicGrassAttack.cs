@@ -63,7 +63,7 @@ public class PlayerBasicGrassAttack : PlayerBasicAttack
         if (collision.tag == "Enemy" && inAttackFrames)
         {
             Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
-            Destroy(collision.gameObject);
+            //Destroy(collision.gameObject);
         }
     }
 

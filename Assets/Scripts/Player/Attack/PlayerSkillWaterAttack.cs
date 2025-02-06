@@ -88,7 +88,7 @@ public class PlayerSkillWaterAttack : PlayerSkillAttack
         if (collision.tag == "Enemy" && inAttackFrames)
         {
             Debug.Log("grass check attack collision: hit an enemy" + Time.realtimeSinceStartup);
-            Destroy(collision.gameObject);
+           // Destroy(collision.gameObject);
         }
     }
 }

@@ -64,7 +64,7 @@ public class PlayerSkillFireAttack : PlayerSkillAttack
         if (collision.tag == "Enemy")
         {
             Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
-            Destroy(collision.gameObject);
+          //  Destroy(collision.gameObject);
         }
     }
 }
