@@ -534,7 +534,7 @@ public class PlayerMove : MonoBehaviour
 
         if (convertedAngleZ < 275 && convertedAngleZ > 265)
         {
-            jumpDirection = new Vector2(0.5f, 0.5f);
+            jumpDirection = new Vector2(0.8f, 0.5f);
             //case for wall jump
             if (verticalInput > 0 && horizontalInput < 0)
             {
@@ -549,7 +549,7 @@ public class PlayerMove : MonoBehaviour
         }
         else if (convertedAngleZ < 95 && convertedAngleZ > 85)
         {
-            jumpDirection = new Vector2(-0.5f, 0.5f);
+            jumpDirection = new Vector2(-0.8f, 0.5f);
             //case for wall jump
             if (verticalInput > 0 && horizontalInput > 0)
             {

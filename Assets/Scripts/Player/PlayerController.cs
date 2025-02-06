@@ -12,6 +12,7 @@ using UnityEditor;
 using UnityEngine;
 using Unity.Collections;
 using UnityEditor.Animations;
+using UnityEngine.Events;
 
 public enum SlimeType
 {
@@ -51,8 +52,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform healthSpawnParent;
     [SerializeField] private GameObject healthPrefab;
     [SerializeField] private List<Transform> healths;
-
-
 
 
 
@@ -128,7 +127,7 @@ public class PlayerController : MonoBehaviour
         EventHandler.SlimeTypeLeaveEvent += OnSlimeTypeLeave;
 
     }
-
+    public bool transforming;
     // Update is called once per frame
     void Update()
     {
@@ -139,12 +138,13 @@ public class PlayerController : MonoBehaviour
         // Change Playmode Tint in editor preferences
         //EditorPrefs.SetString("Playmode Tint", UnityEngine.ColorUtility.ToHtmlStringRGBA(randomColor));
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) && !transforming)
         {
             SlimeType targetType = (int)currentSlimeType + 1 < 3 ? currentSlimeType + 1 : 0;
             ChangeType(targetType);
-            EventHandler.CallSlimeTypeEnterEvent(targetType);
+            //EventHandler.CallSlimeTypeEnterEvent(targetType);
             Debug.LogWarning(targetType);
+            transforming = true;
         }
 
         if (attackAction.ReadValue<float>() > 0)
@@ -299,7 +299,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
         if(collision.collider.tag == "Enemy")
         {
             Debug.LogWarning("collide with enemy");
@@ -311,8 +310,6 @@ public class PlayerController : MonoBehaviour
 
             ChangeHealth(-1);
         }
-
-
     }
 
 }
