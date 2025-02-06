@@ -11,7 +11,6 @@ using UnityEngine.InputSystem.Interactions;
 using UnityEditor;
 using UnityEngine;
 using Unity.Collections;
-using UnityEditor.Animations;
 using UnityEngine.Events;
 
 public enum SlimeType
@@ -27,9 +26,9 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public Animator animator;
 
-    public AnimatorController waterAnimator;
-    public AnimatorController fireAnimator;
-    public AnimatorController grassAnimator;
+    public RuntimeAnimatorController waterAnimator;
+    public RuntimeAnimatorController fireAnimator;
+    public RuntimeAnimatorController grassAnimator;
 
     [SerializeField] private SlimeType currentSlimeType = SlimeType.Water;
     private Dictionary<SlimeType, Color> colorDict;
