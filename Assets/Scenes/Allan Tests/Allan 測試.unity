@@ -8283,9 +8283,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6414684366762424267, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
       insertIndex: 5
       addedObject: {fileID: 1804321968}
-    - targetCorrespondingSourceObject: {fileID: 5698818402797012901, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2115672072}
   m_SourcePrefab: {fileID: 100100000, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
 --- !u!1 &1528520027
 GameObject:
@@ -11211,36 +11208,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &2115672071 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5698818402797012901, guid: 9435aef30dcee17478602e1b39e92e22, type: 3}
-  m_PrefabInstance: {fileID: 1512129239}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2115672072
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2115672071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d097481cc2f83f84bbc98803e8a7534c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerMove: {fileID: 0}
-  rb: {fileID: 0}
-  currentSlimeType: 0
-  sprd: {fileID: 0}
-  inputActions: {fileID: 0}
-  maxHealth: 3
-  currentHealth: 0
-  healthSpawnParent: {fileID: 0}
-  healthPrefab: {fileID: 0}
-  healths: []
-  horzForce: 100
-  vertForce: 100
-  freezeTime: 0.2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

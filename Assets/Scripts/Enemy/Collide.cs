@@ -42,7 +42,7 @@ public class Collide : MonoBehaviour
     void Update()
     {
         PlayerTransformX = GameObject.FindWithTag("Player").GetComponent<Transform>().position.x;
-        playerLocalScale = GameObject.Find("Player").transform.localScale.x;
+        playerLocalScale = GameObject.Find("PlayerFR").transform.localScale.x;
         MyTransform = GetComponent<Transform>().position.x;
 
         if(!isWaiting)
@@ -128,9 +128,10 @@ public class Collide : MonoBehaviour
         anim.SetBool("Waiting", false);
     }
 
-    void OnTriggerStay2D(Collider2D collision)
-    {
 
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
         if (collision.tag == "PlayerAttack")
         {
             if(playerLocalScale == 1)
@@ -141,9 +142,9 @@ public class Collide : MonoBehaviour
             {
                 rb.AddForce(new Vector2(-1, 1).normalized * 3, ForceMode2D.Impulse);
             }
+            Instantiate(DeadEffect, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+            Debug.Log("Hit! should destroy");
         }
-
-        Instantiate(DeadEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
     }
 }

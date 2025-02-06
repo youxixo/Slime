@@ -29,7 +29,7 @@ public class CloseCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerLocalScale = GameObject.Find("Player").transform.localScale.x;
+        playerLocalScale = GameObject.Find("PlayerFR").transform.localScale.x;
         Move();
     }
 
@@ -53,7 +53,7 @@ public class CloseCombat : MonoBehaviour
         }
     }
 
-    void OnTriggerStay2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
 
         if (collision.tag == "PlayerAttack")
@@ -66,9 +66,9 @@ public class CloseCombat : MonoBehaviour
             {
                 rb.AddForce(new Vector2(-1, 1).normalized * 3, ForceMode2D.Impulse);
             }
-        }
 
-        Instantiate(DeadEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+            Instantiate(DeadEffect, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+        }
     }
 }

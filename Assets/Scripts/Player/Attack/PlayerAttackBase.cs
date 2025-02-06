@@ -20,7 +20,7 @@ public class PlayerAttackBase : MonoBehaviour
 
     virtual public bool CanAttack()
     {
-        Debug.Log("can attck : " + canAttack.ToString()+ timer);
+        //Debug.Log("can attck : " + canAttack.ToString()+ timer);
 
         if(Time.realtimeSinceStartup - timer > attackCD)
         {
