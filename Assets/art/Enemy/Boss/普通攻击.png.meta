@@ -70,7 +70,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -141,7 +141,7 @@ TextureImporter:
         width: 1681
         height: 898
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -163,7 +163,7 @@ TextureImporter:
         width: 1653
         height: 914
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -185,7 +185,7 @@ TextureImporter:
         width: 1647
         height: 925
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -207,7 +207,7 @@ TextureImporter:
         width: 1657
         height: 925
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -229,7 +229,7 @@ TextureImporter:
         width: 1692
         height: 925
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -251,7 +251,7 @@ TextureImporter:
         width: 1694
         height: 925
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -273,7 +273,7 @@ TextureImporter:
         width: 1668
         height: 914
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -295,7 +295,7 @@ TextureImporter:
         width: 1648
         height: 914
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -309,50 +309,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "\u666E\u901A\u653B\u51FB_8"
-      rect:
-        serializedVersion: 2
-        x: 5948
-        y: 235
-        width: 131
-        height: 235
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0e8a2a9732a58a6a0800000000000000
-      internalID: -6437796558915065632
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u666E\u901A\u653B\u51FB_9"
-      rect:
-        serializedVersion: 2
-        x: 5952
-        y: 467
-        width: 13
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b82caf5d719ec4db0800000000000000
-      internalID: -4806210413727661429
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: "\u666E\u901A\u653B\u51FB_10"
       rect:
         serializedVersion: 2
@@ -361,7 +317,7 @@ TextureImporter:
         width: 1439
         height: 898
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -374,33 +330,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: "\u666E\u901A\u653B\u51FB_11"
-      rect:
-        serializedVersion: 2
-        x: 6018
-        y: 268
-        width: 79
-        height: 94
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 905978da2309d70f0800000000000000
-      internalID: -1117578585183906551
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9890eb6818f9e874fae16dc499b7c40f
     internalID: 0
     vertices: []
     indices: 
@@ -409,7 +343,19 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "\u666E\u901A\u653B\u51FB_0": 7893941464857363438
+      "\u666E\u901A\u653B\u51FB_1": -1826464810899565671
+      "\u666E\u901A\u653B\u51FB_10": -7355197801831807795
+      "\u666E\u901A\u653B\u51FB_11": -1117578585183906551
+      "\u666E\u901A\u653B\u51FB_2": 6120445346774816109
+      "\u666E\u901A\u653B\u51FB_3": 8950537379586743952
+      "\u666E\u901A\u653B\u51FB_4": 4918487540738035856
+      "\u666E\u901A\u653B\u51FB_5": 2180078253567048324
+      "\u666E\u901A\u653B\u51FB_6": -3980596086199790316
+      "\u666E\u901A\u653B\u51FB_7": 7603562914632489025
+      "\u666E\u901A\u653B\u51FB_8": -6437796558915065632
+      "\u666E\u901A\u653B\u51FB_9": -4806210413727661429
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
