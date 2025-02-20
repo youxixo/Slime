@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Input")]
     [SerializeField] private InputActionAsset inputActions;
+    private InputAction transformAction;
     private InputAction attackAction;
     private InputAction skillAction;
 
@@ -113,7 +114,12 @@ public class PlayerController : MonoBehaviour
 
     }
 
-
+    private IEnumerator ResetTransformTime()
+    {
+        yield return new WaitForSeconds(1f);
+        if(transforming)
+            transforming = false;
+    }
 
     private void OnEnable()
     {
@@ -138,13 +144,15 @@ public class PlayerController : MonoBehaviour
         // Change Playmode Tint in editor preferences
         //EditorPrefs.SetString("Playmode Tint", UnityEngine.ColorUtility.ToHtmlStringRGBA(randomColor));
 
-        if (Input.GetKeyDown(KeyCode.Q) && !transforming)
+        if (transformAction.triggered && !transforming)
         {
+            StopAllCoroutines();
             SlimeType targetType = (int)currentSlimeType + 1 < 3 ? currentSlimeType + 1 : 0;
             ChangeType(targetType);
             //EventHandler.CallSlimeTypeEnterEvent(targetType);
             Debug.LogWarning(targetType);
             transforming = true;
+            StartCoroutine(ResetTransformTime());
         }
 
         if (attackAction.ReadValue<float>() > 0)
@@ -194,8 +202,7 @@ public class PlayerController : MonoBehaviour
         var playerActionMap = inputActions.FindActionMap("Player");
         attackAction = playerActionMap.FindAction("Attack");
         skillAction = playerActionMap.FindAction("Skill");
-
-        Debug.Log("asd");
+        transformAction = playerActionMap.FindAction("Transform");
     }
 
     private void OnSlimeTypeEnter(SlimeType type)

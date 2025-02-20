@@ -84,7 +84,6 @@ public class PlayerSkillWaterAttack : PlayerSkillAttack
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        Debug.Log("grass check attack collision: hit an enemy");
         if (collision.tag == "Enemy" && inAttackFrames)
         {
             Debug.Log("grass check attack collision: hit an enemy" + Time.realtimeSinceStartup);
