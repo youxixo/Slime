@@ -16,6 +16,7 @@ TagManager:
   - CompositeKeybind
   - Keybind
   - PlayerAttack
+  - Jungle
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - Platform
   - MapSign
   - Interactable
-  - Jungle
+  - 
   - 
   - 
   - 
