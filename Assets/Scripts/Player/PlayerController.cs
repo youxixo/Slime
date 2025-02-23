@@ -309,6 +309,18 @@ public class PlayerController : MonoBehaviour
 
             ChangeHealth(-1);
         }
+        else if (collision.collider.tag == "Jungle")
+        {
+            Debug.LogWarning("collide with Jungle");
+            int horzDir = collision.transform.position.x < gameObject.transform.position.x ? 1 : -1;
+            Vector2 hurtForce = new Vector2(horzForce * horzDir, vertForce);
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(hurtForce, ForceMode2D.Impulse);
+            playerMove.FreeControl(freezeTime);
+
+            ChangeHealth(-1);
+        }
+
     }
 
 }
