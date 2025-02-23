@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 5f; // 子弹速度
+    private float speed = 5f; // 子弹速度
     public float lifetime = 3f; // 子弹存活时间
     public TagHandle tag;
     public Vector2 dir;
@@ -33,15 +33,15 @@ public class Bullet : MonoBehaviour
     {
         Debug.LogWarning("collider 1");
         if (other.tag == tag.ToString()) return;
-        Debug.Log(tag.ToString() + " bullet hit" + other );
+        Debug.Log(tag.ToString() + " bullet hit" + other.tag );
         if (other.tag == "Player")
         {
             EventHandler.CallBulletHitPlayerEvent(tag);
-            Destroy(gameObject); // 子弹命中后销毁
+            Destroy(gameObject); 
         }
         else if (other.tag == "Enemy")
         {
-            Destroy(other.gameObject);
+            //Destroy(other.gameObject);
             EventHandler.CallBulletHitEnemyEvent(tag);
             Destroy(gameObject);
         }

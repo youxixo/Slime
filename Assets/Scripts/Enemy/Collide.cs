@@ -10,6 +10,8 @@ public class Collide : MonoBehaviour
     public float AttackSpeed = 2f;//攻击速度
 
     public float WaitingTime = 5f;
+    public GameObject DeadEffect;
+
     private float LeftPointX;
     private float RightPointX;
     private float MyTransform;
@@ -18,6 +20,7 @@ public class Collide : MonoBehaviour
     public bool isAttack = false;
 
     private Animator anim;
+    private float playerLocalScale;
     
     public bool isleft = true;//面朝向
     private bool isWaiting = false; //是否在等待
@@ -39,6 +42,7 @@ public class Collide : MonoBehaviour
     void Update()
     {
         PlayerTransformX = GameObject.FindWithTag("Player").GetComponent<Transform>().position.x;
+        playerLocalScale = GameObject.Find("PlayerFR").transform.localScale.x;
         MyTransform = GetComponent<Transform>().position.x;
 
         if(!isWaiting)
@@ -122,5 +126,25 @@ public class Collide : MonoBehaviour
         isleft = !isleft;
         isWaiting = false;
         anim.SetBool("Waiting", false);
+    }
+
+
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "PlayerAttack")
+        {
+            if(playerLocalScale == 1)
+            {
+                rb.AddForce(new Vector2(1, 1).normalized * 3, ForceMode2D.Impulse);
+            }
+            else if(playerLocalScale == -1)
+            {
+                rb.AddForce(new Vector2(-1, 1).normalized * 3, ForceMode2D.Impulse);
+            }
+            Instantiate(DeadEffect, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+            Debug.Log("Hit! should destroy");
+        }
     }
 }

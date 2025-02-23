@@ -11,6 +11,7 @@ using UnityEngine.InputSystem.Interactions;
 using UnityEditor;
 using UnityEngine;
 using Unity.Collections;
+using UnityEngine.Events;
 
 public enum SlimeType
 {
@@ -23,7 +24,11 @@ public class PlayerController : MonoBehaviour
 {
     public PlayerMove playerMove;
     public Rigidbody2D rb;
+    public Animator animator;
 
+    public RuntimeAnimatorController waterAnimator;
+    public RuntimeAnimatorController fireAnimator;
+    public RuntimeAnimatorController grassAnimator;
 
     [SerializeField] private SlimeType currentSlimeType = SlimeType.Water;
     private Dictionary<SlimeType, Color> colorDict;
@@ -46,8 +51,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform healthSpawnParent;
     [SerializeField] private GameObject healthPrefab;
     [SerializeField] private List<Transform> healths;
-
-
 
 
 
@@ -89,12 +92,13 @@ public class PlayerController : MonoBehaviour
         //    Debug.LogWarning(v);
         //Debug.LogWarning(attackDict.Keys.ToString());
 
-        colorDict = new Dictionary<SlimeType, Color> { { SlimeType.Water, Color.cyan }, 
-                                                       { SlimeType.Fire, Color.red }, { SlimeType.Grass, Color.green }, };
+        //colorDict = new Dictionary<SlimeType, Color> { { SlimeType.Water, Color.cyan }, 
+        //                                               { SlimeType.Fire, Color.red }, { SlimeType.Grass, Color.green }, };
         trans = gameObject.GetComponent<Transform>();
         //sprd = gameObject.GetComponent<SpriteRenderer>();
 
         EventHandler.CallSlimeTypeEnterEvent(SlimeType.Water);
+        ChangeToWater();
 
 
         // 生成生命
@@ -122,22 +126,24 @@ public class PlayerController : MonoBehaviour
         EventHandler.SlimeTypeLeaveEvent += OnSlimeTypeLeave;
 
     }
-
+    public bool transforming;
     // Update is called once per frame
     void Update()
     {
 
 
-        Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+        //Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
 
         // Change Playmode Tint in editor preferences
         //EditorPrefs.SetString("Playmode Tint", UnityEngine.ColorUtility.ToHtmlStringRGBA(randomColor));
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) && !transforming)
         {
             SlimeType targetType = (int)currentSlimeType + 1 < 3 ? currentSlimeType + 1 : 0;
-            EventHandler.CallSlimeTypeEnterEvent(targetType);
+            ChangeType(targetType);
+            //EventHandler.CallSlimeTypeEnterEvent(targetType);
             Debug.LogWarning(targetType);
+            transforming = true;
         }
 
         if (attackAction.ReadValue<float>() > 0)
@@ -147,9 +153,9 @@ public class PlayerController : MonoBehaviour
             if (attackDict[currentSlimeType].CanAttack())
             {
                 foreach (KeyValuePair<SlimeType, PlayerBasicAttack> pair in attackDict)
-                { 
+                {
+                    if (pair.Key == SlimeType.Fire) continue;
                     pair.Value.gameObject.SetActive(false);
-                    Debug.Log(pair);
                 }
                 attackDict[currentSlimeType].gameObject.SetActive(true);
                 attackDict[currentSlimeType].Attack();
@@ -169,7 +175,6 @@ public class PlayerController : MonoBehaviour
                 foreach (KeyValuePair<SlimeType, PlayerSkillAttack> pair in skillDict)
                 {
                     pair.Value.gameObject.SetActive(false);
-                    Debug.Log(pair);
                 }
                 skillDict[currentSlimeType].gameObject.SetActive(true);
                 skillDict[currentSlimeType].Attack();
@@ -198,7 +203,7 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("switch slime type to " + type);
         currentSlimeType = type;
-        sprd.color = colorDict[type];
+        //sprd.color = colorDict[type];
         switch (type)
         {
             case SlimeType.Water:
@@ -227,7 +232,27 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+    }
 
+    private void ChangeType(SlimeType targetType)
+    {
+        Debug.Log(currentSlimeType.ToString() + "To" + targetType.ToString());
+        animator.SetTrigger(currentSlimeType.ToString() + "To" + targetType.ToString());
+    }
+
+    public void ChangeToFire()
+    {
+        animator.runtimeAnimatorController = fireAnimator;
+    }
+
+    public void ChangeToGrass()
+    {
+        animator.runtimeAnimatorController = grassAnimator;
+    }
+
+    public void ChangeToWater()
+    {
+        animator.runtimeAnimatorController = waterAnimator;
     }
     
     public bool FacingToRightDirection()
@@ -273,7 +298,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
         if(collision.collider.tag == "Enemy")
         {
             Debug.LogWarning("collide with enemy");
@@ -285,7 +309,17 @@ public class PlayerController : MonoBehaviour
 
             ChangeHealth(-1);
         }
+        else if (collision.collider.tag == "Jungle")
+        {
+            Debug.LogWarning("collide with Jungle");
+            int horzDir = collision.transform.position.x < gameObject.transform.position.x ? 1 : -1;
+            Vector2 hurtForce = new Vector2(horzForce * horzDir, vertForce);
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(hurtForce, ForceMode2D.Impulse);
+            playerMove.FreeControl(freezeTime);
 
+            ChangeHealth(-1);
+        }
 
     }
 

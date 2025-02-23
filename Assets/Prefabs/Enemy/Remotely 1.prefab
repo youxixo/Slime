@@ -295,7 +295,7 @@ Rigidbody2D:
   m_Mass: 1.616636
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 100
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -325,6 +325,7 @@ MonoBehaviour:
   firePoint: {fileID: 8419213141762882908}
   MoveSpeed: 10
   isAttack: 0
+  DeadEffect: {fileID: 7095011544199488910, guid: 3d5ae64c217147048b85c7a211a4ce57, type: 3}
   isleft: 1
 --- !u!95 &4179969770735673701
 Animator:

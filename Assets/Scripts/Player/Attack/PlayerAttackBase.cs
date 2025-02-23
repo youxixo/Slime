@@ -20,7 +20,7 @@ public class PlayerAttackBase : MonoBehaviour
 
     virtual public bool CanAttack()
     {
-        Debug.Log("can attck : " + canAttack.ToString()+ timer);
+        //Debug.Log("can attck : " + canAttack.ToString()+ timer);
 
         if(Time.realtimeSinceStartup - timer > attackCD)
         {
@@ -50,6 +50,8 @@ public class PlayerAttackBase : MonoBehaviour
 
     virtual public void Attack()
     {
+        //controller.playerMove.Anim.SetBool("Attack", true);
+        //controller.playerMove.Anim.Play("water_normal_attack");
 
     }
 

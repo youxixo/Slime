@@ -140,7 +140,7 @@ Rigidbody2D:
   m_Mass: 2.2656393
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 100
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -167,7 +167,7 @@ MonoBehaviour:
   LeftPoint: {fileID: 5906699282822919594}
   RightPoint: {fileID: 2790864841721814545}
   MoveSpeed: 15
-  isAttack: 0
+  DeadEffect: {fileID: 7095011544199488910, guid: 3d5ae64c217147048b85c7a211a4ce57, type: 3}
 --- !u!60 &37506249376098810
 PolygonCollider2D:
   m_ObjectHideFlags: 0
