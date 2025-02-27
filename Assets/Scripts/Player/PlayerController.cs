@@ -270,11 +270,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float freezeTime = 0.2f;
 
 
-    private void DealHurt(int damage)
+    public void DealDamage(int damage)
     {
         ChangeHealth(-damage);
-
     }
+
 
     private void ChangeHealth(int value)
     {
@@ -292,6 +292,17 @@ public class PlayerController : MonoBehaviour
                 healths[i].Find("Health").gameObject.SetActive(false);
             }
         }
+
+        if(currentHealth <= 0)
+        {
+            GetComponent<PlayerSave>().PlayerDataLoad();
+            for (int i = 0; i < maxHealth; i++)
+            {
+                healths[i].Find("Health").gameObject.SetActive(true);
+            }
+            currentHealth = maxHealth;
+        }
+
 
     }
 
