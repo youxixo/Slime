@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.InputSystem;
 using System.Collections;
-using UnityEditorInternal;
 
 public class PlayerBasicFireAttack : PlayerBasicAttack
 {

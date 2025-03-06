@@ -11,7 +11,6 @@ using UnityEngine.InputSystem.Interactions;
 using UnityEditor;
 using UnityEngine;
 using Unity.Collections;
-using UnityEditor.Animations;
 using UnityEngine.Events;
 
 public enum SlimeType
@@ -27,9 +26,9 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public Animator animator;
 
-    public AnimatorController waterAnimator;
-    public AnimatorController fireAnimator;
-    public AnimatorController grassAnimator;
+    public RuntimeAnimatorController waterAnimator;
+    public RuntimeAnimatorController fireAnimator;
+    public RuntimeAnimatorController grassAnimator;
 
     [SerializeField] private SlimeType currentSlimeType = SlimeType.Water;
     private Dictionary<SlimeType, Color> colorDict;
@@ -317,6 +316,18 @@ public class PlayerController : MonoBehaviour
 
             ChangeHealth(-1);
         }
+        else if (collision.collider.tag == "Jungle")
+        {
+            Debug.LogWarning("collide with Jungle");
+            int horzDir = collision.transform.position.x < gameObject.transform.position.x ? 1 : -1;
+            Vector2 hurtForce = new Vector2(horzForce * horzDir, vertForce);
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(hurtForce, ForceMode2D.Impulse);
+            playerMove.FreeControl(freezeTime);
+
+            ChangeHealth(-1);
+        }
+
     }
 
 }
