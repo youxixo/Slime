@@ -10,14 +10,21 @@ public class Boss : MonoBehaviour
     public GameObject Bo;
     public bool CanAttack = false;
     public bool isleft = true;
+    public bool Attacked = false;
+    public GameObject StopPoint;
+    public GameObject AirAttackPoint;
+    public GameObject AirAttack;
+    public GameObject ball;
+    public GameObject Panding;
 
-    private float LeftPointX;
-    private float RightPointX;
+    public float LeftPointX;
+    public float RightPointX;
     private Rigidbody2D rb;
     private Transform playerTr;
     private Animator ani;
-    private bool isGround = false;
-    private bool isJump = false;
+    public int AttackNum = 0;
+    public bool isGround = false;
+    public bool isJump = false;
     void Start()
     {
         LeftPointX = LeftPoint.position.x;
@@ -33,7 +40,56 @@ public class Boss : MonoBehaviour
     {
         playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
         Face();
-        action();
+        Attack();
+    }
+
+    void Attack()
+    {
+        if(AttackNum == 3)
+        {
+            AttackNum = 0;
+            ani.SetBool("空中攻击", true);
+        }
+        if(isleft)
+        {
+            if(playerTr.position.x >= Panding.transform.position.x)
+            {
+                ani.SetBool("walk", true);
+            }
+            if(playerTr.position.x < Panding.transform.position.x)
+            {
+               AttackChange();
+            }
+        }
+        if(!isleft)
+        {
+            if(playerTr.position.x <= Panding.transform.position.x)
+            {
+                ani.SetBool("walk", true);
+            }
+            if(playerTr.position.x > Panding.transform.position.x)
+            {
+                AttackChange();
+            }
+        }
+    }
+
+    void AttackChange()
+    {
+        int num = Random.Range(1, 3);
+        switch (num)
+        {
+            case 1:
+                ani.SetBool("walk", true);
+                break;
+            case 2:
+                ani.SetBool("跳跃攻击", true);
+                break;
+            case 3:
+                AttackNum++;
+                ani.SetBool("刀波", true);
+                break;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D other)
@@ -67,55 +123,17 @@ public class Boss : MonoBehaviour
         }
     }
 
-    void action()
+    void yuancheng()//远程攻击
     {
-        //JumpAttack();
-        // if (CanAttack)
-        // {
-        //     NormalAttack();
-        // }
-        // else
-        // {
-        //     Move();
-        // }
+        Vector3 createPos = new Vector3(-8.66f, -1.95f, 0);
+
+        Vector3 worldPos = transform.TransformPoint(createPos);
+        Instantiate(Bo, worldPos, Quaternion.identity, transform);
     }
 
-    void Move()
+    void Jump()//跳跃 动画器调用
     {
-        ani.SetBool("普通攻击", false);
-        ani.SetBool("walk", true);
-        if (!isleft)
-        {
-            rb.transform.rotation = Quaternion.Euler(0, 180, 0); // 面朝右
-            rb.MovePosition(rb.position + new Vector2(MoveSpeed * Time.deltaTime, 0));
-            if (rb.position.x >= RightPointX)
-            {
-                isleft = true;
-            }
-        }
-        else
-        {
-            rb.transform.rotation = Quaternion.Euler(0, 0, 0); // 面朝左
-            rb.MovePosition(rb.position + new Vector2(-MoveSpeed * Time.deltaTime, 0));
-            if (rb.position.x <= LeftPointX)
-            {
-                isleft = false;
-            }
-        }
-    }
-
-    void NormalAttack()//普通攻击
-    {
-        ani.SetBool("walk", false);
-        ani.SetBool("普通攻击", true);
-    }
-
-    void JumpAttack()//跳跃攻击
-    {
-        ani.SetBool("walk", false);
-        ani.SetBool("跳跃攻击", true);
-
-        void Jump()//跳跃 动画器调用
+        if(ani.GetBool("跳跃攻击"))
         {
             Vector2 staryPos = rb.position;
             Vector2 tarfetPos = playerTr.position;
@@ -133,28 +151,16 @@ public class Boss : MonoBehaviour
             Vector2 jumpVelocity = new Vector2(vx, vy);
 
             rb.linearVelocity = jumpVelocity;
-
-            isJump = true;
         }
-
-        if(rb.linearVelocity.y < 0 && !isGround)//下落
+        if(ani.GetBool("空中攻击"))
         {
-            ani.SetBool("降落", true);
-        }
-
-        if(isGround && isJump)//落地
-        {
-            isJump = false;
-            ani.SetBool("降落", false);
-            ani.SetBool("跳跃攻击", false);
+           rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
         }
     }
 
-    void yuancheng()//远程攻击
+    void Fashe()
     {
-        Vector3 createPos = new Vector3(-8.66f, -1.95f, 0);
-
-        Vector3 worldPos = transform.TransformPoint(createPos);
-        Instantiate(Bo, worldPos, Quaternion.identity, transform);
+        GameObject newBall = Instantiate(ball, AirAttack.transform.position, Quaternion.identity);
+        newBall.transform.SetParent(transform);
     }
 }

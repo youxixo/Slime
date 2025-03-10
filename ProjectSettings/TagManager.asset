@@ -17,6 +17,7 @@ TagManager:
   - Keybind
   - PlayerAttack
   - Jungle
+  - ball
   layers:
   - Default
   - TransparentFX
