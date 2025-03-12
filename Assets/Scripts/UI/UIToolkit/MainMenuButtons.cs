@@ -43,7 +43,7 @@ public class MainMenuButtons : MonoBehaviour
     //可以換成New Game / Load Game
     private void StartGame()
     {
-        SceneManager.LoadScene("完整关卡");
+        SceneManager.LoadScene("完整关卡123");
         GameManager.ActivateActionMap("Player");
         Debug.Log(GameManager.playerActionMap.enabled);
     }
