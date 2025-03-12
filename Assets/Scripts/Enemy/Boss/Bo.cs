@@ -5,10 +5,12 @@ public class Bo : MonoBehaviour
     public float speed;
 
     private bool isleft;
+    private Animator AniBoss;
 
     void Start()
     {
         isleft = GameObject.Find("Boss").GetComponent<Boss>().isleft;
+        AniBoss = GameObject.Find("Boss").GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -29,6 +31,7 @@ public class Bo : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
+            AniBoss.SetBool("刀波", false);
             Destroy(gameObject);
         }
     }
