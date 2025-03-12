@@ -40,7 +40,10 @@ public class Boss : MonoBehaviour
     {
         playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
         Face();
-        Attack();
+        if(playerTr.position.x >= LeftPointX && playerTr.position.x <= RightPointX)
+        {
+            Attack();
+        }
     }
 
     void Attack()
