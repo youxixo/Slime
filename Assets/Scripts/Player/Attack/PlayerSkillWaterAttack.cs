@@ -5,7 +5,7 @@ public class PlayerSkillWaterAttack : PlayerSkillAttack
 {
     [SerializeField] private bool inAttackFrames;
     [SerializeField] private bool inDashDown;
-
+    [SerializeField] private Animation anim2;
     [SerializeField] private float downForce = -1000;
 
 
@@ -48,6 +48,7 @@ public class PlayerSkillWaterAttack : PlayerSkillAttack
                 controller.playerMove.ChangeBackNormalMaxVel();
                 inAttackFrames = false;
                 anim.Play();
+                anim2.Play();
             }
         }
 
