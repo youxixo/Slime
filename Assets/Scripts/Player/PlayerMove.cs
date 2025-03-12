@@ -298,7 +298,7 @@ public class PlayerMove : MonoBehaviour
             rb.gravityScale = originalGravityScale;
             isGrounded = false;
         }
-        if (hit.collider.gameObject.tag != "Moving Platform")
+        else if (hit.collider.gameObject.tag != "Moving Platform")
         {
             this.transform.SetParent(null);
         }
