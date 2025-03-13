@@ -61,10 +61,10 @@ public class PlayerSkillFireAttack : PlayerSkillAttack
     private void OnTriggerStay2D(Collider2D collision)
     {
         Debug.Log("check attack collision: hit an enemy");
-        if (collision.tag == "Enemy")
+        if (collision.tag == "Enemy" && inAttackFrames)
         {
             Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
-          //  Destroy(collision.gameObject);
+            Destroy(collision.gameObject);
         }
     }
 }

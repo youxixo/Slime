@@ -70,6 +70,7 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         controller.playerMove.FreeControl(timeLength);
         fireAttackAnim.SetBool("canAttack", true);
         //fireAttackAnim.Play("fireAttack");
+        inAttackFrames = true;
         StartCoroutine(StopPlayAnim());
         sprd.enabled = true;
 
@@ -86,12 +87,14 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         yield return new WaitForSeconds(timeLength);
         fireAttackAnim.SetBool("canAttack", false);
         sprd.enabled = false;
+        inAttackFrames = false ;
+
 
 
     }
 
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.tag == "Enemy" && inAttackFrames)
         {
