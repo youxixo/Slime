@@ -235,7 +235,8 @@ public class PlayerMove : MonoBehaviour
                 _movementAxis = -_movementAxis;
             }
         }
-        //Debug.Log(_movementAxis);
+        else
+            Debug.Log(_movementAxis);
         return _movementAxis;
     }
 
@@ -297,6 +298,10 @@ public class PlayerMove : MonoBehaviour
             rb.gravityScale = originalGravityScale;
             isGrounded = false;
         }
+        else if (hit.collider.gameObject.tag != "Moving Platform")
+        {
+            this.transform.SetParent(null);
+        }
     }
 
     //Move to the raycast position if possible
@@ -306,6 +311,8 @@ public class PlayerMove : MonoBehaviour
         Vector2 rayDirection = -transform.up * raycastDistance;
         //***change later too long
         var hit = Physics2D.Raycast(wallDetect.position, rayDirection.normalized, raycastDistance, groundLayer);
+        Debug.Log(rayDirection);
+
         if (hit.collider != null)
         {
             surfaceNormal = hit.normal;
@@ -329,8 +336,10 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            Debug.Log("xi fu shi bai");
-            rb.gravityScale = originalGravityScale;
+                Debug.Log("xi fu shi bai");
+                angleWhenMove = float.NaN;
+                releaseMove = true;
+                rb.gravityScale = originalGravityScale;
         }
     }
 
@@ -353,6 +362,34 @@ public class PlayerMove : MonoBehaviour
                 player_animator.SetBool("Fall", false);
 
 
+                convertedAngleZ = ConvertTo360Base(angle - 90f);
+
+                if (!(Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f))
+                {
+                    movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
+                    if (horizontalInput != 0)
+                    {
+                        dropCountDown = dropCD;
+                    }
+                    velocity = horizontalInput * movementAxis;
+                }
+                if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
+                {
+                    movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
+                    velocity = verticalInput * movementAxis;
+                    if (verticalInput != 0)
+                    {
+                        dropCountDown = dropCD;
+                        player_animator.SetBool("Move", true);
+                        //angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
+                    }
+                    else
+                    {
+                        player_animator.SetBool("Move", false);
+                    }
+                }
+
+
                 //just start moving
                 if (horizontalInput != 0 && releaseMove == true && (convertedAngleZ != 90 && convertedAngleZ != 270))
                 {
@@ -366,33 +403,8 @@ public class PlayerMove : MonoBehaviour
                     releaseMove = true;
                     angleWhenMove = float.NaN;
                 }
-                convertedAngleZ = ConvertTo360Base(transform.localEulerAngles.z);
 
-                if (!(Mathf.Abs(convertedAngleZ - 90) <= 0.001f || Mathf.Abs(convertedAngleZ - 270) <= 0.001f))
-                {
-                    movementAxis = DetermineMovementAxis(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
-                    if (horizontalInput != 0)
-                    {
-                        dropCountDown = dropCD;
-                    }
-                    velocity = horizontalInput * movementAxis;
-                }
 
-                if ((((convertedAngleZ > 265) && (convertedAngleZ < 275)) || ((convertedAngleZ > 85) && (convertedAngleZ < 95))) && velocity == Vector2.zero)
-                {
-                    movementAxis = DetermineMovementAxisVertical(Mathf.RoundToInt(convertedAngleZ)); //決定移動方向
-                    velocity = verticalInput * movementAxis;
-                    if (verticalInput != 0)
-                    {
-                        dropCountDown = dropCD;
-                        player_animator.SetBool("Move", true);
-                        angleWhenMove = ConvertTo360Base(transform.localEulerAngles.z);
-                    }
-                    else
-                    {
-                        player_animator.SetBool("Move", false);
-                    }
-                }
                 ChangeFaceDir(convertedAngleZ, velocity);
                 rb.linearVelocity = velocity.normalized * movementSpeedBase;
             }
@@ -402,7 +414,7 @@ public class PlayerMove : MonoBehaviour
             // 在空中也可以控制方向
             if (horizontalInput != 0 && allowToMove)
             {
-                    rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
+                rb.linearVelocity = new Vector2(horizontalInput * movementSpeedBase, rb.linearVelocity.y);
             }
             else if(horizontalInput == 0 && jumpClicked)
             {
@@ -626,8 +638,10 @@ public class PlayerMove : MonoBehaviour
     //落地時取得地板的法線
     private void HandleCollision(Collision2D collision)
     {
-        if (collision.gameObject.layer == 3)
+        if (collision.gameObject.layer == 3 )//&& !isGrounded)
         {
+            rb.linearVelocity = Vector3.zero;
+            Debug.Log("new collision: " + collision.gameObject.name);
             bool surfaceSet = false;
             isGrounded = true;
             collisionEnter = true;
@@ -649,6 +663,7 @@ public class PlayerMove : MonoBehaviour
                     surfaceSet = true;
                     break;
                 }
+                surfaceNormal = contact.normal;
             }
             if (jumpClicked && !surfaceSet)
             {
@@ -694,7 +709,6 @@ public class PlayerMove : MonoBehaviour
             if (jumpClicked || isDashing)
             {
                 rb.gravityScale = originalGravityScale;
-                //Bug 由於
                 if (collision.gameObject.CompareTag("Moving Platform"))
                 {
                     this.transform.SetParent(null);

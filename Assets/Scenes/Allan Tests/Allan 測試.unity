@@ -451,6 +451,7 @@ Transform:
   m_Children:
   - {fileID: 1925563425}
   - {fileID: 2027368619}
+  - {fileID: 1367441133}
   - {fileID: 2110642174}
   - {fileID: 1447056351}
   - {fileID: 165324369}
@@ -514,7 +515,6 @@ Transform:
   - {fileID: 643799408}
   - {fileID: 683859812}
   - {fileID: 1954227515}
-  - {fileID: 1367441133}
   - {fileID: 207009016}
   - {fileID: 612033405}
   m_Father: {fileID: 0}
@@ -6942,7 +6942,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_CompositeOperation: 0
+  m_CompositeOperation: 1
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
@@ -7020,7 +7020,7 @@ RectTransform:
   m_GameObject: {fileID: 1367441130}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 15.8}
-  m_LocalScale: {x: 6.95, y: 0.79545325, z: 0.1761293}
+  m_LocalScale: {x: 19, y: 0.79545325, z: 0.1761293}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 101738104}
@@ -10536,13 +10536,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2027368618}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: -0, y: -0, z: 0.79990715, w: 0.6001238}
   m_LocalPosition: {x: -4.8, y: -157.7, z: 0}
-  m_LocalScale: {x: 17.13, y: 0.7560416, z: 0.1761293}
+  m_LocalScale: {x: 17.130003, y: 0.7560417, z: 0.1761293}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 101738104}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 106.242}
 --- !u!61 &2027368620
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10575,7 +10575,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_CompositeOperation: 0
+  m_CompositeOperation: 1
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
@@ -11230,6 +11230,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerMove: {fileID: 0}
   rb: {fileID: 0}
+  animator: {fileID: 0}
+  waterAnimator: {fileID: 0}
+  fireAnimator: {fileID: 0}
+  grassAnimator: {fileID: 0}
   currentSlimeType: 0
   sprd: {fileID: 0}
   inputActions: {fileID: 0}
@@ -11238,6 +11242,7 @@ MonoBehaviour:
   healthSpawnParent: {fileID: 0}
   healthPrefab: {fileID: 0}
   healths: []
+  transforming: 0
   horzForce: 100
   vertForce: 100
   freezeTime: 0.2
