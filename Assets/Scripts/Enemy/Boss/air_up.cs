@@ -17,10 +17,9 @@ public class air_up : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         float bossY = boss.transform.position.y;
-        if(bossY >= 8.06f)
+        if(bossY >= boss.StopPoint.transform.position.y)
         {
             animator.transform.position = boss.StopPoint.transform.position;
-            rb.linearVelocity = Vector2.zero;
             animator.SetBool("空中", true);
         }
     }

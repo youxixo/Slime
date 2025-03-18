@@ -16,7 +16,6 @@ public class jump_up : StateMachineBehaviour
     {
         if(rb.linearVelocity.y < 0)//下落
         {
-            ani.GetComponent<Boss>().AttackNum++;
             ani.SetBool("降落", true);
         }
     }

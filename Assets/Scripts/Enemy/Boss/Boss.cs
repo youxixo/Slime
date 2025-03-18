@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Boss : MonoBehaviour
 {
@@ -7,26 +8,34 @@ public class Boss : MonoBehaviour
     public Transform RightPoint;
     public float MoveSpeed = 1f; // Movement speed
     public float JumpTime = 10f; // Jump force
+    public float 上升力 = 40f;
+    public float HP;
+    public GameObject HPUI;
     public GameObject Bo;
     public bool CanAttack = false;
-    public bool isleft = true;
-    public bool Attacked = false;
     public GameObject StopPoint;
     public GameObject AirAttackPoint;
     public GameObject AirAttack;
     public GameObject ball;
     public GameObject Panding;
+    public GameObject AirColl;
+    public GameObject Dead;
 
     public float LeftPointX;
     public float RightPointX;
     private Rigidbody2D rb;
     private Transform playerTr;
     private Animator ani;
-    public int AttackNum = 0;
+    public static int AttackNum = 0;
     public bool isGround = false;
     public bool isJump = false;
+    public bool Air= false;
+    public static float downYspeed;
     void Start()
     {
+        HPUI.GetComponent<Slider>().maxValue = HP;
+        HPUI.GetComponent<Slider>().value = HP;
+        AttackNum = 0;
         LeftPointX = LeftPoint.position.x;
         RightPointX = RightPoint.position.x;
         rb = GetComponent<Rigidbody2D>();
@@ -39,91 +48,22 @@ public class Boss : MonoBehaviour
     void Update()
     {
         playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
-        Face();
-        if(playerTr.position.x >= LeftPointX && playerTr.position.x <= RightPointX)
+        if(HPUI.GetComponent<Slider>().value <= 0)
         {
-            Attack();
-        }
-    }
-
-    void Attack()
-    {
-        if(AttackNum == 3)
-        {
-            AttackNum = 0;
-            ani.SetBool("空中攻击", true);
-        }
-        if(isleft)
-        {
-            if(playerTr.position.x >= Panding.transform.position.x)
-            {
-                ani.SetBool("walk", true);
-            }
-            if(playerTr.position.x < Panding.transform.position.x)
-            {
-               AttackChange();
-            }
-        }
-        if(!isleft)
-        {
-            if(playerTr.position.x <= Panding.transform.position.x)
-            {
-                ani.SetBool("walk", true);
-            }
-            if(playerTr.position.x > Panding.transform.position.x)
-            {
-                AttackChange();
-            }
-        }
-    }
-
-    void AttackChange()
-    {
-        int num = Random.Range(1, 3);
-        switch (num)
-        {
-            case 1:
-                ani.SetBool("walk", true);
-                break;
-            case 2:
-                ani.SetBool("跳跃攻击", true);
-                break;
-            case 3:
-                AttackNum++;
-                ani.SetBool("刀波", true);
-                break;
+            HPUI.SetActive(false);
+            Instantiate(Dead, transform.position, Quaternion.identity);
+            Destroy(gameObject);
         }
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.tag == "Ground")
-        {
-            isGround = true;
-        }
+        
     }
 
     void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.tag == "Ground")
-        {
-            isGround = false;
-        }
-    }
-
-    void Face()
-    {
-        if(playerTr.position.x > LeftPointX && playerTr.position.x < RightPointX)//判断玩家是否在范围内,并进行追杀
-        {
-            if (playerTr.position.x > transform.position.x)
-            {
-                isleft = false;
-            }
-            else
-            {
-                isleft = true;
-            }
-        }
+        
     }
 
     void yuancheng()//远程攻击
@@ -136,8 +76,6 @@ public class Boss : MonoBehaviour
 
     void Jump()//跳跃 动画器调用
     {
-        if(ani.GetBool("跳跃攻击"))
-        {
             Vector2 staryPos = rb.position;
             Vector2 tarfetPos = playerTr.position;
             Vector2 dir = tarfetPos - staryPos;
@@ -154,16 +92,32 @@ public class Boss : MonoBehaviour
             Vector2 jumpVelocity = new Vector2(vx, vy);
 
             rb.linearVelocity = jumpVelocity;
-        }
-        if(ani.GetBool("空中攻击"))
-        {
-           rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
-        }
     }
 
     void Fashe()
     {
         GameObject newBall = Instantiate(ball, AirAttack.transform.position, Quaternion.identity);
         newBall.transform.SetParent(transform);
+    }
+
+    void 上升()
+    {
+        rb.AddForce(Vector2.up * 上升力, ForceMode2D.Impulse);
+    }
+
+    public bool Isleft()
+    {
+        if(playerTr.position.x >= LeftPointX && playerTr.position.x <= RightPointX)//判断玩家是否在范围内,并进行追杀
+        {
+            if (playerTr.position.x > transform.position.x)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false; // Default return value when player is not within range
     }
 }

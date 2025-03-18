@@ -13,14 +13,13 @@ public class NormalAttack : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         
-        boss.Attacked = true;
-        animator.SetBool("普通攻击", false);
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
+        animator.SetBool("普通攻击", false);
+        animator.SetBool("walk", false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

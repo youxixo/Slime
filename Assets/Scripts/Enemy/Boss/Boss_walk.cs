@@ -10,36 +10,25 @@ public class Boss_walk : StateMachineBehaviour
     {
         boss = animator.GetComponent<Boss>();
         rb = animator.GetComponent<Rigidbody2D>();
-        InitialOrientation = animator.GetComponent<Boss>().isleft;
-        Debug.Log("是否攻击过： "+boss.Attacked);
-        if(boss.Attacked)
-        {
-            animator.SetBool("walk", false);
-        }
+        InitialOrientation = boss.Isleft();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         bool attack = boss.CanAttack;
-        bool isleft = boss.isleft;
 
-        if (isleft != InitialOrientation || boss.Attacked)
+        if (boss.Isleft() != InitialOrientation && !attack)
         {
-            boss.AttackNum++;
-            animator.SetBool("普通攻击", false);
             animator.SetBool("walk", false);
         }
-        else if (!boss.Attacked)
+        else if (boss.Isleft() == InitialOrientation && attack)
         {
-            if (attack)
-            {
-                animator.SetBool("普通攻击", true);
-            }
-            else
-            {
-                move(isleft);
-            }
+            animator.SetBool("普通攻击", true);
+        }
+        else
+        {
+            move();
         }
     }
 
@@ -48,25 +37,17 @@ public class Boss_walk : StateMachineBehaviour
     //{
     //    
     //}
-    void move(bool isleft)
+    void move()
     {
-        if (!isleft)
+        if (!boss.Isleft())
         {
-            rb.transform.rotation = Quaternion.Euler(0, 180, 0); // 面朝右
             rb.MovePosition(rb.position + new Vector2(boss.MoveSpeed * Time.deltaTime, 0));
-            if (rb.position.x >= boss.RightPointX)
-            {
-                isleft = true;
-            }
+            boss.Isleft();
         }
         else
         {
-            rb.transform.rotation = Quaternion.Euler(0, 0, 0); // 面朝左
             rb.MovePosition(rb.position + new Vector2(-boss.MoveSpeed * Time.deltaTime, 0));
-            if (rb.position.x <= boss.LeftPointX)
-            {
-                isleft = false;
-            }
+            boss.Isleft();
         }
     }
 }

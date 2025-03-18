@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class air : StateMachineBehaviour
 {
+    private GameObject aircoll;
     private Boss boss;
     private Rigidbody2D rb;
     private float AirAttackPointY;
@@ -10,15 +11,21 @@ public class air : StateMachineBehaviour
     {
         boss = animator.GetComponent<Boss>();
         rb = animator.GetComponent<Rigidbody2D>();
+        aircoll = boss.AirColl;
         AirAttackPointY = boss.AirAttackPoint.transform.position.y;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if(aircoll != null && !aircoll.activeSelf)
+        {
+            aircoll.SetActive(true);
+        }
         float bossY = boss.transform.position.y;
         if(bossY <= AirAttackPointY)
         {
+            Boss.downYspeed = rb.linearVelocity.y;
             rb.constraints = RigidbodyConstraints2D.FreezePositionY;
             animator.SetBool("空中", false);
         }
