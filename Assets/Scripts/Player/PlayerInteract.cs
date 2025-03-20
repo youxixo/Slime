@@ -69,7 +69,7 @@ public class PlayerInteract : MonoBehaviour
         if(collision.tag == "DeathPoint")
         {
             save.PlayerDataLoad();
-            GetComponent<PlayerController>().DealDamage(1);
+            GetComponent<PlayerController>().DealDamage(10);
         }
     }
 

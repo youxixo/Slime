@@ -49,6 +49,11 @@ public class Bullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        else if (other.CompareTag("Boss"))
+        {
+            other.GetComponent<Boss>().GetHurt(20);
+            Destroy(gameObject); // 子弹命中后销毁
+        }
         else
         {
             //Destroy(gameObject);

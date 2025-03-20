@@ -88,11 +88,13 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
         fireAttackAnim.SetBool("canAttack", false);
         sprd.enabled = false;
         inAttackFrames = false ;
+        isColliding = false;
 
 
 
     }
 
+    public bool isColliding = false;
 
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -101,7 +103,19 @@ public class PlayerBasicFireAttack : PlayerBasicAttack
             Debug.LogWarning("Fire check: Exit" + collision.gameObject.name);
 
             Debug.LogWarning("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
+
+           
+
             Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.name == "Boss" && inAttackFrames)
+        {
+            if (isColliding)
+            {
+                return;
+            }
+            collision.GetComponent<Boss>().GetHurt(20);
+            isColliding = true;
         }
     }
 }

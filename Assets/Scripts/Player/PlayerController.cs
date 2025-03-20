@@ -12,6 +12,7 @@ using UnityEditor;
 using UnityEngine;
 using Unity.Collections;
 using UnityEngine.Events;
+using Unity.Cinemachine;
 
 public enum SlimeType
 {
@@ -282,7 +283,7 @@ public class PlayerController : MonoBehaviour
         ChangeHealth(-damage);
     }
 
-
+    [SerializeField] private CinemachineCamera cinemachineCamera;
     private void ChangeHealth(int value)
     {
         currentHealth += value;
@@ -308,6 +309,9 @@ public class PlayerController : MonoBehaviour
                 healths[i].Find("Health").gameObject.SetActive(true);
             }
             currentHealth = maxHealth;
+
+            cinemachineCamera.Follow = this.transform;
+            Boss.Instance.PlayerDead();
         }
 
 

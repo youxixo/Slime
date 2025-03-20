@@ -75,11 +75,15 @@ public class PlayerBaiscWaterAttack : PlayerBasicAttack
     private void OnTriggerStay2D(Collider2D collision)
     {
 
-        if (collision.tag == "Enemy" && inAttackFrames)
-        {
-            Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
-            Destroy(collision.gameObject);
-        }
+        //if (collision.tag == "Enemy" && inAttackFrames)
+        //{
+        //    Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
+        //    Destroy(collision.gameObject);
+        //}
+        //else if (collision.gameObject.name == "Boss")
+        //{
+        //    collision.GetComponent<Boss>().GetHurt(20);
+        //}
     }
 
 }

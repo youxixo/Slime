@@ -64,6 +64,7 @@ public class PlayerSkillWaterAttack : PlayerSkillAttack
     {
         Debug.Log("end check attack collision" + Time.realtimeSinceStartup);
         inAttackFrames = false;
+        isColliding = false;
     }
 
     public override void Attack()
@@ -82,13 +83,22 @@ public class PlayerSkillWaterAttack : PlayerSkillAttack
     }
 
 
-
+    public bool isColliding = false;
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.tag == "Enemy" && inAttackFrames)
         {
             Debug.Log("grass check attack collision: hit an enemy" + Time.realtimeSinceStartup);
            // Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.name == "Boss" && inAttackFrames)
+        {
+            if (isColliding)
+            {
+                return;
+            }
+            collision.GetComponent<Boss>().GetHurt(20);
+            isColliding = true;
         }
     }
 }

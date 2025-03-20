@@ -65,6 +65,10 @@ public class PlayerBasicGrassAttack : PlayerBasicAttack
             Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
         }
+        else if (collision.gameObject.name == "Boss" && inAttackFrames)
+        {
+            collision.GetComponent<Boss>().GetHurt(20);
+        }
     }
 
 }

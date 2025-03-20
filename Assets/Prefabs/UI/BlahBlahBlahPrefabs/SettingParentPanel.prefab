@@ -637,6 +637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8be3324ad7a4243b213d8d8751bbd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectedButtonWhenOpen: {fileID: 0}
   graphicSetting: {fileID: 5824920976537582182}
   soundSetting: {fileID: 5858771310828157157}
   keybindPage: {fileID: 504523266046714180}

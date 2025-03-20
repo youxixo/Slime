@@ -37,6 +37,11 @@ public class Bullets : MonoBehaviour
         Debug.Log("Player hit!");
         Destroy(gameObject); // 子弹命中后销毁
     }
-    
-}
+        if (other.CompareTag("Boss"))
+        {
+            other.GetComponent<Boss>().GetHurt(20);
+            Destroy(gameObject); // 子弹命中后销毁
+        }
+
+    }
 }

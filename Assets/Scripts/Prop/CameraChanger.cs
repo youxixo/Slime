@@ -10,7 +10,16 @@ public class CameraChanger : MonoBehaviour
     [SerializeField] private CinemachineCamera CinemachineCamera;
     [SerializeField] AudioClip bossMusic;
     [SerializeField] AudioSource source;
-    
+
+
+    public static CameraChanger Instance;
+
+    private void Start()
+    {
+        if (Instance == null)
+            Instance = this;
+    }
+
     private void ActiveChild()
     {
         foreach(Transform child in transform)
@@ -19,7 +28,7 @@ public class CameraChanger : MonoBehaviour
         }
     }
 
-    private void DeactiveChild()
+    public void DeactiveChild()
     {
         foreach (Transform child in transform)
         {

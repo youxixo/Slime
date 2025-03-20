@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ public class Boss : MonoBehaviour
     public float JumpTime = 10f; // Jump force
     public float 上升力 = 40f;
     public float HP;
+    public float currentHp;
     public GameObject HPUI;
     public GameObject Bo;
     public bool CanAttack = false;
@@ -33,8 +35,15 @@ public class Boss : MonoBehaviour
     public static float downYspeed;
     void Start()
     {
+        if(Instance != null)
+            Instance= null;
+        Instance = this;
+
         HPUI.GetComponent<Slider>().maxValue = HP;
         HPUI.GetComponent<Slider>().value = HP;
+        currentHp = HP;
+
+
         AttackNum = 0;
         LeftPointX = LeftPoint.position.x;
         RightPointX = RightPoint.position.x;
@@ -47,6 +56,7 @@ public class Boss : MonoBehaviour
 
     void Update()
     {
+        isColliding = false;
         playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
         if(HPUI.GetComponent<Slider>().value <= 0)
         {
@@ -119,5 +129,35 @@ public class Boss : MonoBehaviour
             }
         }
         return false; // Default return value when player is not within range
+    }
+
+    public void GetHurt(float damage)
+    {
+        currentHp = Math.Clamp(currentHp - damage, 0, HP);
+        HPUI.GetComponent<Slider>().value = currentHp;
+
+    }
+    public bool isColliding = false;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //if(collision.tag == "PlayerAttack" )
+        //{
+        //    if (isColliding)
+        //    {
+        //        return;
+        //    }
+        //    //collision.overl  
+        //    GetHurt(20);
+        //    isColliding = true;
+        //}
+    }
+    public static Boss Instance;
+    public void PlayerDead()
+    {
+        HPUI.SetActive(false);
+        currentHp = HP;
+        HPUI.GetComponent<Slider>().value = currentHp;
+        CameraChanger.Instance.DeactiveChild();
     }
 }

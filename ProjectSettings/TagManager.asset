@@ -18,6 +18,7 @@ TagManager:
   - PlayerAttack
   - Jungle
   - ball
+  - Boss
   layers:
   - Default
   - TransparentFX

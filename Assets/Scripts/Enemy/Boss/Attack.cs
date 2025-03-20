@@ -6,6 +6,7 @@ public class Attack : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
+            collision.GetComponent<PlayerController>().DealDamage(1);
             Debug.Log("Player is attacked");
         }
     }

@@ -34,7 +34,6 @@ public class PlayerSkillFireAttack : PlayerSkillAttack
     void Update()
     {
         InputAction attackAction = controller.GetSkillAction();
-
     }
 
 
@@ -47,6 +46,7 @@ public class PlayerSkillFireAttack : PlayerSkillAttack
     {
         Debug.Log("end check attack collision" + Time.realtimeSinceStartup);
         inAttackFrames = false;
+        isColliding = false;
     }
 
     public override void Attack()
@@ -56,7 +56,7 @@ public class PlayerSkillFireAttack : PlayerSkillAttack
         anim.Play();
     }
 
-
+    public bool isColliding = false;
 
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -65,6 +65,15 @@ public class PlayerSkillFireAttack : PlayerSkillAttack
         {
             Debug.Log("check attack collision: hit an enemy" + Time.realtimeSinceStartup);
             Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.name == "Boss" && inAttackFrames)
+        {
+            if(isColliding)
+            {
+                return;
+            }
+            collision.GetComponent<Boss>().GetHurt(20);
+            isColliding = true;
         }
     }
 }

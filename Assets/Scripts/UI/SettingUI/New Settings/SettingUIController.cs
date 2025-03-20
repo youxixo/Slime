@@ -118,6 +118,7 @@ public class SettingUIController : PanelParent
 
     public void MenuSelect()
     {
+        print("click select");
         selectedPanelButton = EventSystem.current.currentSelectedGameObject;
         prevPage = currentPage;
         currentPage = buttonPanelPair[selectedPanelButton.name];
